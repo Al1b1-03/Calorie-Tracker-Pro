@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { workoutsApi } from '../api/workouts';
-import { workoutsData } from '../data/workouts';
+import { getApiOrigin } from '../api/products';
+import { useLanguage } from '../i18n/LanguageContext';
+import { translateWorkoutText } from '../i18n/dynamicContent';
 import './WorkoutsPage.css';
 
 const WorkoutIcon = ({ id = 'workout-g' }) => (
@@ -24,33 +26,146 @@ const WorkoutIcon = ({ id = 'workout-g' }) => (
 );
 
 export default function WorkoutsPage() {
+  const { lang } = useLanguage();
+  const tr = lang === 'en'
+    ? { title: 'Workouts', all: 'All', arms: 'Arms', core: 'Core', chest: 'Chest', back: 'Back', legs: 'Legs', cardio: 'Cardio', fullbody: 'Full body', loading: 'Loading...', details: 'Details', close: 'Close', short: 'SHORT:', benefits: 'WHAT IT DEVELOPS:', howTo: 'HOW TO DO:', regime: 'REGIME:', important: 'IMPORTANT:', rest: 'Rest:' }
+    : lang === 'kk'
+      ? { title: 'Жаттығулар', all: 'Барлығы', arms: 'Қол', core: 'Пресс / Кор', chest: 'Кеуде', back: 'Арқа', legs: 'Аяқ', cardio: 'Кардио', fullbody: 'Толық дене', loading: 'Жүктелуде...', details: 'Толығырақ', close: 'Жабу', short: 'ҚЫСҚАША:', benefits: 'НЕ ДАМЫТАДЫ:', howTo: 'ҚАЛАЙ ОРЫНДАУ:', regime: 'РЕЖИМ:', important: 'МАҢЫЗДЫ:', rest: 'Демалыс:' }
+      : { title: 'Тренировки', all: 'Все', arms: 'Руки', core: 'Пресс / Кор', chest: 'Грудь', back: 'Спина', legs: 'Ноги', cardio: 'Кардио', fullbody: 'Всё тело', loading: 'Загрузка...', details: 'Подробнее', close: 'Закрыть', short: 'КРАТКО:', benefits: 'ЧТО РАЗВИВАЕТ:', howTo: 'КАК ВЫПОЛНЯТЬ:', regime: 'РЕЖИМ:', important: 'ВАЖНО:', rest: 'Отдых:' };
+
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
+  const apiOrigin = getApiOrigin();
+  const [filter, setFilter] = useState('all');
+
+  const getTargetMusclesChips = (workout) => {
+    const raw = workout?.targetMuscles;
+    if (!raw || typeof raw !== 'string') return [];
+    return raw
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+  };
+
+  const getDifficultyLevel = (difficulty) => {
+    const raw = (difficulty || '').toString().trim().toLowerCase();
+    const d = raw.replace(/ё/g, 'е'); // нормализуем «лёгкая» -> «легкая»
+    if (/легк|easy/i.test(d)) return 'easy'; // Лёгкая
+    if (/высок|сложн|hard|тяжел/i.test(d)) return 'hard'; // Высокая / Сложная
+    return 'medium';
+  };
+
+  const getWorkoutImageSrc = (workout) => {
+    const raw = workout?.imageUrl || workout?.image;
+    if (!raw || typeof raw !== 'string') return null;
+    const trimmed = raw.trim();
+    if (!trimmed) return null;
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    const filename = trimmed.split(/[/\\]/).pop();
+    if (!filename) return null;
+    return `${apiOrigin}/api/uploads/products/${filename}`;
+  };
 
   useEffect(() => {
     workoutsApi
       .list()
-      .then(({ workouts: data }) => setWorkouts(data ?? []))
-      .catch(() => setWorkouts(workoutsData))
+      .then(({ workouts: data }) => setWorkouts(Array.isArray(data) ? data : []))
+      .catch((err) => {
+        console.warn('Workouts API:', err?.message || err);
+        setWorkouts([]);
+      })
       .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    const prev = document.title;
+    document.title = 'Calorie Tracker Pro - Тренировки';
+    return () => { document.title = prev; };
   }, []);
 
   const openDetails = (workout) => setSelectedWorkout(workout);
   const closeDetails = () => setSelectedWorkout(null);
 
-  const list = workouts.length > 0 ? workouts : workoutsData;
+  const visibleWorkouts = workouts.filter((w) =>
+    filter === 'all' ? true : (w.category || 'other') === filter
+  );
 
   return (
     <div className="workouts-page">
-      <h1 className="workouts-page__title">Тренировки</h1>
-      {loading && <p className="workouts-page__loading">Загрузка...</p>}
+      <h1 className="workouts-page__title">{tr.title}</h1>
+      <div className="workouts-filters">
+        <button
+          type="button"
+          className={`workouts-filter ${filter === 'all' ? 'workouts-filter--active' : ''}`}
+          onClick={() => setFilter('all')}
+        >
+          {tr.all}
+        </button>
+        <button
+          type="button"
+          className={`workouts-filter ${filter === 'arms' ? 'workouts-filter--active' : ''}`}
+          onClick={() => setFilter('arms')}
+        >
+          💪 {tr.arms}
+        </button>
+        <button
+          type="button"
+          className={`workouts-filter ${filter === 'core' ? 'workouts-filter--active' : ''}`}
+          onClick={() => setFilter('core')}
+        >
+          🔥 {tr.core}
+        </button>
+        <button
+          type="button"
+          className={`workouts-filter ${filter === 'chest' ? 'workouts-filter--active' : ''}`}
+          onClick={() => setFilter('chest')}
+        >
+          🏋️ {tr.chest}
+        </button>
+        <button
+          type="button"
+          className={`workouts-filter ${filter === 'back' ? 'workouts-filter--active' : ''}`}
+          onClick={() => setFilter('back')}
+        >
+          🔙 {tr.back}
+        </button>
+        <button
+          type="button"
+          className={`workouts-filter ${filter === 'legs' ? 'workouts-filter--active' : ''}`}
+          onClick={() => setFilter('legs')}
+        >
+          🦵 {tr.legs}
+        </button>
+        <button
+          type="button"
+          className={`workouts-filter ${filter === 'cardio' ? 'workouts-filter--active' : ''}`}
+          onClick={() => setFilter('cardio')}
+        >
+          🏃 {tr.cardio}
+        </button>
+        <button
+          type="button"
+          className={`workouts-filter ${filter === 'fullbody' ? 'workouts-filter--active' : ''}`}
+          onClick={() => setFilter('fullbody')}
+        >
+          ⚡ {tr.fullbody}
+        </button>
+      </div>
+      {loading && <p className="workouts-page__loading">{tr.loading}</p>}
       <div className="workouts-grid">
-        {list.map((workout) => (
+        {visibleWorkouts.map((workout) => (
           <div key={workout.id} className="workout-card">
             <div className="workout-card__image-wrap">
-              {workout.image ? (
-                <img src={workout.image} alt={workout.title} className="workout-card__image" />
+              {getWorkoutImageSrc(workout) ? (
+                <img
+                  src={getWorkoutImageSrc(workout)}
+                  alt={translateWorkoutText(lang, workout.title)}
+                  className="workout-card__image"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
               ) : (
                 <div className="workout-card__placeholder">
                   <WorkoutIcon id={workout.id} />
@@ -58,19 +173,28 @@ export default function WorkoutsPage() {
               )}
             </div>
             <div className="workout-card__content">
-              <h3 className="workout-card__name">{workout.title}</h3>
-              <p className="workout-card__desc">{workout.shortDesc}</p>
+              <h3 className="workout-card__name">{translateWorkoutText(lang, workout.title)}</h3>
+              <p className="workout-card__desc">{translateWorkoutText(lang, workout.shortDesc)}</p>
               <div className="workout-card__meta">
-                <span className="workout-card__meta-item">{workout.duration} мин</span>
-                <span className="workout-card__meta-item">{workout.calories} Ккал</span>
-                <span className="workout-card__meta-item">{workout.difficulty}</span>
+                {workout.difficulty && (
+                  <span
+                    className={`workout-card__meta-item workout-card__meta-item--difficulty workout-card__meta-item--${getDifficultyLevel(workout.difficulty)}`}
+                  >
+                      {translateWorkoutText(lang, workout.difficulty)}
+                  </span>
+                )}
+                {getTargetMusclesChips(workout).map((muscle) => (
+                  <span key={muscle} className="workout-card__meta-item">
+                    {muscle}
+                  </span>
+                ))}
               </div>
               <button
                 type="button"
-                className="workout-card__btn"
+                className="workout-card__btn workout-card__btn--primary"
                 onClick={() => openDetails(workout)}
               >
-                Подробнее
+                {tr.details}
               </button>
             </div>
           </div>
@@ -84,30 +208,92 @@ export default function WorkoutsPage() {
               type="button"
               className="workout-modal__close"
               onClick={closeDetails}
-              aria-label="Закрыть"
+              aria-label={tr.close}
             >
               ×
             </button>
-            <h2 className="workout-modal__title">{selectedWorkout.title}</h2>
-            <div className="workout-modal__meta">
-              <span>{selectedWorkout.duration} мин</span>
-              <span>{selectedWorkout.calories} Ккал</span>
-              <span>{selectedWorkout.difficulty}</span>
-            </div>
-            <p className="workout-modal__desc">{selectedWorkout.fullDescription}</p>
-            <h4 className="workout-modal__exercises-title">Упражнения</h4>
-            <div className="workout-modal__exercises">
-              {(selectedWorkout.exercises || []).map((ex, idx) => (
-                <div key={idx} className="workout-modal__exercise">
-                  <div className="workout-modal__exercise-header">
-                    <span className="workout-modal__exercise-name">{ex.name}</span>
-                    <span className="workout-modal__exercise-sets">{ex.sets} × {ex.reps}</span>
-                  </div>
-                  {ex.rest && ex.rest !== '—' && (
-                    <span className="workout-modal__exercise-rest">Отдых: {ex.rest}</span>
+            <div className="workout-modal__layout">
+              <div className="workout-modal__left">
+                <div className="workout-modal__left-illustration">
+                  {getWorkoutImageSrc(selectedWorkout) ? (
+                    <img
+                      src={getWorkoutImageSrc(selectedWorkout)}
+                      alt={selectedWorkout.title}
+                      className="workout-modal__left-image"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <WorkoutIcon id={selectedWorkout.id} />
                   )}
                 </div>
-              ))}
+                <div className="workout-modal__left-title">{translateWorkoutText(lang, selectedWorkout.title)}</div>
+              </div>
+              <div className="workout-modal__right">
+                <h2 className="workout-modal__title">{translateWorkoutText(lang, selectedWorkout.title)}</h2>
+                <div className="workout-modal__chips">
+                  {selectedWorkout.difficulty && (
+                    <span
+                      className={`workout-chip workout-chip--difficulty workout-chip--difficulty-${getDifficultyLevel(selectedWorkout.difficulty)}`}
+                    >
+                      {translateWorkoutText(lang, selectedWorkout.difficulty)}
+                    </span>
+                  )}
+                  {getTargetMusclesChips(selectedWorkout).map((muscle) => (
+                    <span key={muscle} className="workout-chip workout-chip--muscle">
+                      {muscle}
+                    </span>
+                  ))}
+                </div>
+                {selectedWorkout.shortDesc && (
+                  <>
+                    <h4 className="workout-modal__section-title">{tr.short}</h4>
+                    <p className="workout-modal__desc">{translateWorkoutText(lang, selectedWorkout.shortDesc)}</p>
+                  </>
+                )}
+                {(selectedWorkout.benefits || selectedWorkout.fullDescription) && (
+                  <>
+                    <h4 className="workout-modal__section-title">{tr.benefits}</h4>
+                    <p className="workout-modal__desc">
+                      {translateWorkoutText(lang, selectedWorkout.benefits || selectedWorkout.fullDescription)}
+                    </p>
+                  </>
+                )}
+                {selectedWorkout.howTo && (
+                  <>
+                    <h4 className="workout-modal__section-title">{tr.howTo}</h4>
+                    <p className="workout-modal__desc">{translateWorkoutText(lang, selectedWorkout.howTo)}</p>
+                  </>
+                )}
+                {selectedWorkout.regime && (
+                  <>
+                    <h4 className="workout-modal__section-title">{tr.regime}</h4>
+                    <p className="workout-modal__desc">{translateWorkoutText(lang, selectedWorkout.regime)}</p>
+                  </>
+                )}
+                {selectedWorkout.important && (
+                  <>
+                    <h4 className="workout-modal__section-title">{tr.important}</h4>
+                    <p className="workout-modal__desc">{translateWorkoutText(lang, selectedWorkout.important)}</p>
+                  </>
+                )}
+                <div className="workout-modal__exercises">
+                  {(selectedWorkout.exercises || []).map((ex, idx) => (
+                    <div key={idx} className="workout-modal__exercise">
+                      <div className="workout-modal__exercise-header">
+                        <span className="workout-modal__exercise-name">{translateWorkoutText(lang, ex.name)}</span>
+                        <span className="workout-modal__exercise-sets">
+                          {ex.sets} × {ex.reps}
+                        </span>
+                      </div>
+                      {ex.rest && ex.rest !== '—' && (
+                        <span className="workout-modal__exercise-rest">{tr.rest} {translateWorkoutText(lang, ex.rest)}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>

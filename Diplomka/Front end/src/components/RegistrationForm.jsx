@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { EmailIcon, PhoneIcon, LockIcon, CloseIcon } from '../shared/icons';
 import { authApi } from '../api/auth';
+import { useLanguage } from '../i18n/LanguageContext';
 import './RegistrationForm.css';
 
 export default function RegistrationForm() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: '',
@@ -34,12 +36,12 @@ export default function RegistrationForm() {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Пароли не совпадают');
+      setError(t('auth.passwordMismatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Пароль должен быть не менее 6 символов');
+      setError(t('auth.passwordMin'));
       return;
     }
 
@@ -49,7 +51,7 @@ export default function RegistrationForm() {
       setSuccess(true);
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
-      setError(err.message || 'Ошибка регистрации');
+      setError(err.message || t('auth.registerError'));
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ export default function RegistrationForm() {
   return (
     <div className="registration-page">
       <div className="registration-card">
-        <button className="registration-card__close" aria-label="Закрыть">
+        <button className="registration-card__close" aria-label={t('common.close')}>
           <CloseIcon />
         </button>
         <h1 className="registration-card__title">Calorie Tracker Pro</h1>
@@ -68,26 +70,26 @@ export default function RegistrationForm() {
             to="/login"
             className="registration-card__tab registration-card__tab--inactive"
           >
-            Вход
+            {t('auth.loginTab')}
           </Link>
           <span className="registration-card__tab registration-card__tab--active">
-            Регистрация
+            {t('auth.registerTab')}
           </span>
         </div>
 
         <form className="registration-form" onSubmit={handleSubmit}>
           {success && (
             <p className="registration-form__success">
-              Регистрация прошла успешно! Перенаправление на страницу входа...
+              {t('auth.registerSuccess')}
             </p>
           )}
           {error && <p className="registration-form__error">{error}</p>}
           <div className="registration-form__field">
-            <label className="registration-form__label">Имя</label>
+            <label className="registration-form__label">{t('auth.firstName')}</label>
             <input
               type="text"
               name="firstName"
-              placeholder="Ваше имя"
+              placeholder={t('auth.firstNamePlaceholder')}
               value={formData.firstName}
               onChange={handleChange}
               className="registration-form__input"
@@ -95,11 +97,11 @@ export default function RegistrationForm() {
           </div>
 
           <div className="registration-form__field">
-            <label className="registration-form__label">Фамилия</label>
+            <label className="registration-form__label">{t('auth.lastName')}</label>
             <input
               type="text"
               name="lastName"
-              placeholder="Ваше фамилия"
+              placeholder={t('auth.lastNamePlaceholder')}
               value={formData.lastName}
               onChange={handleChange}
               className="registration-form__input"
@@ -107,11 +109,11 @@ export default function RegistrationForm() {
           </div>
 
           <div className="registration-form__field">
-            <label className="registration-form__label">Номер</label>
+            <label className="registration-form__label">{t('auth.phone')}</label>
             <input
               type="tel"
               name="phone"
-              placeholder="Ваш номер"
+              placeholder={t('auth.phonePlaceholder')}
               value={formData.phone}
               onChange={handleChange}
               className="registration-form__input registration-form__input--with-icon"
@@ -122,11 +124,11 @@ export default function RegistrationForm() {
           </div>
 
           <div className="registration-form__field">
-            <label className="registration-form__label">Email</label>
+            <label className="registration-form__label">{t('auth.email')}</label>
             <input
               type="email"
               name="email"
-              placeholder="Ваш email"
+              placeholder={t('auth.emailPlaceholder')}
               value={formData.email}
               onChange={handleChange}
               className="registration-form__input registration-form__input--with-icon"
@@ -137,11 +139,11 @@ export default function RegistrationForm() {
           </div>
 
           <div className="registration-form__field">
-            <label className="registration-form__label">Пароль</label>
+            <label className="registration-form__label">{t('auth.password')}</label>
             <input
               type="password"
               name="password"
-              placeholder="Придумайте пароль"
+              placeholder={t('auth.newPasswordPlaceholder')}
               value={formData.password}
               onChange={handleChange}
               className="registration-form__input registration-form__input--with-icon"
@@ -152,11 +154,11 @@ export default function RegistrationForm() {
           </div>
 
           <div className="registration-form__field">
-            <label className="registration-form__label">Потверждение пароля</label>
+            <label className="registration-form__label">{t('auth.confirmPassword')}</label>
             <input
               type="password"
               name="confirmPassword"
-              placeholder="Повторите пароль"
+              placeholder={t('auth.repeatPasswordPlaceholder')}
               value={formData.confirmPassword}
               onChange={handleChange}
               className="registration-form__input registration-form__input--with-icon"
@@ -167,11 +169,11 @@ export default function RegistrationForm() {
           </div>
 
           <button type="submit" className="registration-form__submit" disabled={loading || success}>
-            {loading ? 'Регистрация...' : 'Зарегистрироватся'}
+            {loading ? t('auth.registerLoading') : t('auth.registerButton')}
           </button>
 
           <p className="registration-form__footer">
-            Уже есть аккаунт? <Link to="/login">Войти</Link>
+            {t('auth.hasAccount')} <Link to="/login">{t('auth.loginButton')}</Link>
           </p>
         </form>
       </div>

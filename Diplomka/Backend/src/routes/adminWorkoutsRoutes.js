@@ -5,8 +5,10 @@ import {
   createWorkout,
   updateWorkout,
   deleteWorkout,
+  uploadWorkoutImage,
 } from '../controllers/workoutsController.js';
 import { handleValidationErrors } from '../middleware/validation.js';
+import { uploadProductImage } from '../middleware/upload.js';
 
 const router = Router();
 
@@ -30,6 +32,20 @@ router.patch(
   updateWorkout
 );
 
+router.post(
+  '/:id/image',
+  (req, res, next) => {
+    uploadProductImage.single('image')(req, res, (err) => {
+      if (err) {
+        return res.status(400).json({ error: err.message || 'Ошибка загрузки файла' });
+      }
+      next();
+    });
+  },
+  uploadWorkoutImage
+);
+
 router.delete('/:id', deleteWorkout);
 
 export default router;
+

@@ -89,12 +89,16 @@ export default function ProfilePage() {
     setError('');
     setSuccess(false);
 
-    if (formData.newPassword) {
-      if (formData.newPassword !== formData.repeatPassword) {
+    const nextPassword = String(formData.newPassword || '').trim();
+    const repeatPassword = String(formData.repeatPassword || '').trim();
+    const shouldChangePassword = nextPassword && repeatPassword;
+
+    if (shouldChangePassword) {
+      if (nextPassword !== repeatPassword) {
         setError('Пароли не совпадают');
         return;
       }
-      if (formData.newPassword.length < 6) {
+      if (nextPassword.length < 6) {
         setError('Пароль должен быть не менее 6 символов');
         return;
       }
@@ -112,7 +116,7 @@ export default function ProfilePage() {
         protein: formData.protein,
         fat: formData.fat,
         carbs: formData.carbs,
-        newPassword: formData.newPassword || undefined,
+        newPassword: shouldChangePassword ? nextPassword : undefined,
       });
       setSuccess(true);
       setFormData((prev) => ({ ...prev, newPassword: '', repeatPassword: '' }));
@@ -155,61 +159,63 @@ export default function ProfilePage() {
           {error && <p className="profile-form__error">{error}</p>}
           {success && <p className="profile-form__success">Профиль сохранён</p>}
 
-          <div className="profile-form__field">
-            <label className="profile-form__label">Пол</label>
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-              className="profile-form__input"
-            >
-              <option value="">Выберите</option>
-              {GENDERS.map((g) => (
-                <option key={g.value} value={g.value}>
-                  {g.label}
-                </option>
-              ))}
-            </select>
+          <div className="profile-form__row">
+            <div className="profile-form__field">
+              <label className="profile-form__label">Пол</label>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                className="profile-form__input"
+              >
+                <option value="">Выберите</option>
+                {GENDERS.map((g) => (
+                  <option key={g.value} value={g.value}>
+                    {g.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="profile-form__field">
+              <label className="profile-form__label">Возраст</label>
+              <input
+                type="number"
+                name="age"
+                placeholder="0"
+                min="1"
+                max="120"
+                value={formData.age}
+                onChange={handleChange}
+                className="profile-form__input"
+              />
+            </div>
           </div>
 
-          <div className="profile-form__field">
-            <label className="profile-form__label">Возраст</label>
-            <input
-              type="number"
-              name="age"
-              placeholder="0"
-              min="1"
-              max="120"
-              value={formData.age}
-              onChange={handleChange}
-              className="profile-form__input"
-            />
-          </div>
-
-          <div className="profile-form__field">
-            <label className="profile-form__label">Вес (кг)</label>
-            <input
-              type="number"
-              name="weight"
-              placeholder="0"
-              min="1"
-              value={formData.weight}
-              onChange={handleChange}
-              className="profile-form__input"
-            />
-          </div>
-
-          <div className="profile-form__field">
-            <label className="profile-form__label">Рост</label>
-            <input
-              type="number"
-              name="height"
-              placeholder="0"
-              min="1"
-              value={formData.height}
-              onChange={handleChange}
-              className="profile-form__input"
-            />
+          <div className="profile-form__row">
+            <div className="profile-form__field">
+              <label className="profile-form__label">Вес (кг)</label>
+              <input
+                type="number"
+                name="weight"
+                placeholder="0"
+                min="1"
+                value={formData.weight}
+                onChange={handleChange}
+                className="profile-form__input"
+              />
+            </div>
+            <div className="profile-form__field">
+              <label className="profile-form__label">Рост (см)</label>
+              <input
+                type="number"
+                name="height"
+                placeholder="0"
+                min="1"
+                value={formData.height}
+                onChange={handleChange}
+                className="profile-form__input"
+              />
+            </div>
           </div>
 
           <div className="profile-form__field">
@@ -229,46 +235,24 @@ export default function ProfilePage() {
             </select>
           </div>
 
+          <div className="profile-form__row profile-form__row--calorie">
+            <div className="profile-form__field">
+              <label className="profile-form__label">Норма калорий</label>
+              <input
+                type="number"
+                name="calorieNorm"
+                placeholder="0"
+                min="0"
+                value={formData.calorieNorm}
+                onChange={handleChange}
+                className="profile-form__input"
+              />
+            </div>
+          </div>
+
           <div className="profile-form__section">
-            <h2 className="profile-form__section-title">Смена пароля</h2>
-            <div className="profile-form__field">
-              <label className="profile-form__label">Новый пароль</label>
-              <input
-                type="password"
-                name="newPassword"
-                placeholder="Придумайте пароль"
-                value={formData.newPassword}
-                onChange={handleChange}
-                className="profile-form__input"
-              />
-            </div>
-            <div className="profile-form__field">
-              <label className="profile-form__label">Повторите пароль</label>
-              <input
-                type="password"
-                name="repeatPassword"
-                placeholder="Повторите пароль"
-                value={formData.repeatPassword}
-                onChange={handleChange}
-                className="profile-form__input"
-              />
-            </div>
-          </div>
-
-          <div className="profile-form__field">
-            <label className="profile-form__label">Ваша норма калорий</label>
-            <input
-              type="number"
-              name="calorieNorm"
-              placeholder="0"
-              min="0"
-              value={formData.calorieNorm}
-              onChange={handleChange}
-              className="profile-form__input"
-            />
-          </div>
-
-          <div className="profile-form__macros-inputs">
+            <h2 className="profile-form__section-title">БЖУ (г в день)</h2>
+            <div className="profile-form__macros-inputs">
             <div className="profile-form__field profile-form__field--inline">
               <label className="profile-form__label">Белки (г)</label>
               <input
@@ -304,6 +288,35 @@ export default function ProfilePage() {
                 onChange={handleChange}
                 className="profile-form__input"
               />
+            </div>
+            </div>
+          </div>
+
+          <div className="profile-form__section">
+            <h2 className="profile-form__section-title">Смена пароля</h2>
+            <div className="profile-form__row">
+              <div className="profile-form__field">
+                <label className="profile-form__label">Новый пароль</label>
+                <input
+                  type="password"
+                  name="newPassword"
+                  placeholder="Придумайте пароль"
+                  value={formData.newPassword}
+                  onChange={handleChange}
+                  className="profile-form__input"
+                />
+              </div>
+              <div className="profile-form__field">
+                <label className="profile-form__label">Повторите пароль</label>
+                <input
+                  type="password"
+                  name="repeatPassword"
+                  placeholder="Повторите пароль"
+                  value={formData.repeatPassword}
+                  onChange={handleChange}
+                  className="profile-form__input"
+                />
+              </div>
             </div>
           </div>
 

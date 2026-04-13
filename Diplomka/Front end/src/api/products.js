@@ -1,28 +1,43 @@
-import { request } from './client.js';
+import { request, getApiUrl } from './client.js';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-const API_ORIGIN = API_BASE.startsWith('http') ? API_BASE.replace(/\/api\/?$/, '') : 'http://localhost:3001';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3003/api';
 
-/** Абсолютный URL бэкенда (без /api) для загрузки картинок. */
+/** Origin бэкенда для картинок (хост без /api). */
 export const getApiOrigin = () =>
-  (typeof window !== 'undefined' && window.location.port === '5173')
-    ? window.location.origin.replace(/:\d+$/, ':3001')
-    : (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
+  (API_BASE.replace(/\/$/, '')).replace(/\/api\/?$/, '') || 'http://localhost:3003';
 
-/** URL картинки. Возвращает абсолютный URL: статика бэкенда /uploads/products/... */
+/** URL картинки. Поддерживает: http(s)://..., /путь (фронт public), /api/uploads/products/xxx (бэкенд). */
 export const getImageUrl = (imageUrl, imageFullUrl = null) => {
   const origin = getApiOrigin();
   const path = imageFullUrl || imageUrl;
-  if (!path) return null;
-  if (typeof path === 'string' && path.startsWith('http')) return path;
-  let normalized = path.startsWith('/') ? path : `/${path}`;
-  // /api/uploads/products/xxx или /uploads/products/xxx → статика /uploads/products/xxx
-  if (normalized.startsWith('/api/uploads/products/')) {
-    normalized = normalized.slice(4); // убираем /api
-  } else if (!normalized.startsWith('/uploads/products/')) {
-    normalized = normalized.startsWith('/') ? normalized : `/${normalized}`;
+  if (!path || typeof path !== 'string') return null;
+  const trimmed = path.trim();
+  if (trimmed.startsWith('http')) return trimmed;
+  let normalized = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+  // Путь к файлу на бэкенде (загруженные фото товаров)
+  if (normalized.includes('uploads/products/') || normalized.includes('uploads\\products\\')) {
+    const filename = normalized.split(/[/\\]/).pop() || '';
+    if (filename) return `${origin}/api/uploads/products/${filename}`;
   }
-  return `${origin}${normalized}`;
+  if (/\.(png|jpe?g|gif|webp)$/i.test(normalized)) {
+    const filename = normalized.replace(/^\/+/, '');
+    if (filename.includes('uploads/') || filename.includes('products')) {
+      return `${origin}/api/uploads/products/${filename.split(/[/\\]/).pop() || filename}`;
+    }
+    // Путь от корня фронта (public), например /vitamin-b1-fallback.png — оставляем как есть
+    return normalized;
+  }
+  return normalized.startsWith('/') ? normalized : `${origin}${normalized}`;
+};
+
+/** Для картинки товара: data URL, внешняя ссылка или путь к локальному файлу (/api/uploads/products/...). */
+export const getProductImageSrc = (product) => {
+  if (product?.imageDataUrl) return product.imageDataUrl;
+  const url = product?.imageFullUrl || product?.imageUrl;
+  if (url && typeof url === 'string' && url.trim()) {
+    return getImageUrl(product.imageUrl, product.imageFullUrl);
+  }
+  return null;
 };
 
 export const productsApi = {
@@ -44,8 +59,12 @@ export const productsApi = {
       }),
     }),
 
-  update: (id, data) =>
-    request(`/admin/products/${id}`, {
+  update: (id, data) => {
+    const category = (data.category != null && String(data.category).trim() !== '')
+      ? String(data.category).trim().toLowerCase()
+      : 'dishes';
+    const validCategory = ['ration', 'vitamins', 'dishes'].includes(category) ? category : 'dishes';
+    return request(`/admin/products/${id}`, {
       method: 'PATCH',
       body: JSON.stringify({
         name: data.name,
@@ -55,15 +74,16 @@ export const productsApi = {
         carbs: data.carbs,
         price: data.price,
         imageUrl: data.imageUrl,
-        category: data.category,
+        category: validCategory,
         sortOrder: data.sortOrder,
       }),
-    }),
+    });
+  },
 
   uploadImage: async (id, file) => {
     const formData = new FormData();
     formData.append('image', file);
-    const url = `${API_BASE}/admin/products/${id}/image`;
+    const url = getApiUrl(`/admin/products/${id}/image`);
     const token = localStorage.getItem('token');
     const res = await fetch(url, {
       method: 'POST',
@@ -71,7 +91,7 @@ export const productsApi = {
       body: formData,
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || 'Ошибка загрузки');
+    if (!res.ok) throw new Error(data.error || data.message || 'Ошибка загрузки');
     return data;
   },
 

@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../api/auth';
+import { useLanguage } from '../i18n/LanguageContext';
 import './AdminProfilePage.css';
 
 export default function AdminProfilePage() {
+  const { lang } = useLanguage();
+  const tr = lang === 'en'
+    ? { loading: 'Loading...', title: 'Update profile', mismatch: 'Passwords do not match', min: 'Password must be at least 6 characters', oldReq: 'Enter current password', saveErr: 'Save failed', success: 'Profile updated', old: 'Old password', oldPh: 'Enter old password', nw: 'New password', nwPh: 'Enter new password', repeat: 'Repeat', repeatPh: 'Repeat password', update: 'Update', updating: 'Updating...', logout: 'Log out', emailPh: 'Your email' }
+    : lang === 'kk'
+      ? { loading: 'Жүктелуде...', title: 'Профильді жаңарту', mismatch: 'Құпиясөздер сәйкес емес', min: 'Құпиясөз кемінде 6 таңба болуы керек', oldReq: 'Ағымдағы құпиясөзді енгізіңіз', saveErr: 'Сақтау қатесі', success: 'Профиль жаңартылды', old: 'Ескі құпиясөз', oldPh: 'Ескі құпиясөзді енгізіңіз', nw: 'Жаңа құпиясөз', nwPh: 'Жаңа құпиясөзді енгізіңіз', repeat: 'Қайталау', repeatPh: 'Құпиясөзді растаңыз', update: 'Жаңарту', updating: 'Жаңартылуда...', logout: 'Шығу', emailPh: 'Сіздің email' }
+      : { loading: 'Загрузка...', title: 'Обновить профиль', mismatch: 'Пароли не совпадают', min: 'Пароль должен быть не менее 6 символов', oldReq: 'Введите текущий пароль', saveErr: 'Ошибка сохранения', success: 'Профиль обновлён', old: 'Старый пароль', oldPh: 'Введите старый пароль', nw: 'Новый пароль', nwPh: 'Введите новый пароль', repeat: 'Повторите', repeatPh: 'Потвердите пароль', update: 'Обновить', updating: 'Обновление...', logout: 'Выйти', emailPh: 'Ваш email' };
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -44,15 +51,15 @@ export default function AdminProfilePage() {
 
     if (formData.newPassword) {
       if (formData.newPassword !== formData.repeatPassword) {
-        setError('Пароли не совпадают');
+        setError(tr.mismatch);
         return;
       }
       if (formData.newPassword.length < 6) {
-        setError('Пароль должен быть не менее 6 символов');
+        setError(tr.min);
         return;
       }
       if (!formData.oldPassword) {
-        setError('Введите текущий пароль');
+        setError(tr.oldReq);
         return;
       }
     }
@@ -66,7 +73,7 @@ export default function AdminProfilePage() {
       setSuccess(true);
       setFormData({ oldPassword: '', newPassword: '', repeatPassword: '' });
     } catch (err) {
-      setError(err.message || 'Ошибка сохранения');
+      setError(err.message || tr.saveErr);
     } finally {
       setLoading(false);
     }
@@ -82,7 +89,7 @@ export default function AdminProfilePage() {
     return (
       <div className="admin-profile-page">
         <div className="admin-profile-card">
-          <p className="admin-profile-page__loading">Загрузка...</p>
+          <p className="admin-profile-page__loading">{tr.loading}</p>
         </div>
       </div>
     );
@@ -91,12 +98,12 @@ export default function AdminProfilePage() {
   return (
     <div className="admin-profile-page">
       <div className="admin-profile-page__header">
-        <h1 className="admin-profile-page__title">Обновить профиль</h1>
+        <h1 className="admin-profile-page__title">{tr.title}</h1>
       </div>
       <div className="admin-profile-card">
         <form className="admin-profile-form" onSubmit={handleSubmit}>
           {error && <p className="admin-profile-form__error">{error}</p>}
-          {success && <p className="admin-profile-form__success">Профиль обновлён</p>}
+          {success && <p className="admin-profile-form__success">{tr.success}</p>}
 
           <div className="admin-profile-form__field">
             <label className="admin-profile-form__label">Email</label>
@@ -105,16 +112,16 @@ export default function AdminProfilePage() {
               value={email}
               readOnly
               className="admin-profile-form__input admin-profile-form__input--readonly"
-              placeholder="Ваш email"
+              placeholder={tr.emailPh}
             />
           </div>
 
           <div className="admin-profile-form__field">
-            <label className="admin-profile-form__label">Старый пароль</label>
+            <label className="admin-profile-form__label">{tr.old}</label>
             <input
               type="password"
               name="oldPassword"
-              placeholder="Введите старый пароль"
+              placeholder={tr.oldPh}
               value={formData.oldPassword}
               onChange={handleChange}
               className="admin-profile-form__input"
@@ -122,11 +129,11 @@ export default function AdminProfilePage() {
           </div>
 
           <div className="admin-profile-form__field">
-            <label className="admin-profile-form__label">Новый пароль</label>
+            <label className="admin-profile-form__label">{tr.nw}</label>
             <input
               type="password"
               name="newPassword"
-              placeholder="Введите новый пароль"
+              placeholder={tr.nwPh}
               value={formData.newPassword}
               onChange={handleChange}
               className="admin-profile-form__input"
@@ -134,11 +141,11 @@ export default function AdminProfilePage() {
           </div>
 
           <div className="admin-profile-form__field">
-            <label className="admin-profile-form__label">Повторите</label>
+            <label className="admin-profile-form__label">{tr.repeat}</label>
             <input
               type="password"
               name="repeatPassword"
-              placeholder="Потвердите пароль"
+              placeholder={tr.repeatPh}
               value={formData.repeatPassword}
               onChange={handleChange}
               className="admin-profile-form__input"
@@ -147,14 +154,14 @@ export default function AdminProfilePage() {
 
           <div className="admin-profile-form__actions">
             <button type="submit" className="admin-profile-form__submit" disabled={loading}>
-              {loading ? 'Обновление...' : 'Обновить'}
+              {loading ? tr.updating : tr.update}
             </button>
             <button
               type="button"
               className="admin-profile-form__logout"
               onClick={handleLogout}
             >
-              Выйти
+              {tr.logout}
             </button>
           </div>
         </form>

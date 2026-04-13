@@ -1,0 +1,53 @@
+# Запуск: из папки, где лежат Backend и "Front end" (например Diplomka\Diplomka):
+#   docker compose up --build
+# Сайт: http://localhost:5174   API: http://localhost:3003/api
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: calorie_tracker
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    environment:
+      PORT: 3003
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/calorie_tracker
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      FRONTEND_URL: http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174
+    ports:
+      - "3003:3003"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - backend_uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./Front end
+      dockerfile: Dockerfile
+    environment:
+      VITE_PROXY_TARGET: http://backend:3003
+    ports:
+      - "5174:5173"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  backend_uploads:

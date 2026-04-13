@@ -12,17 +12,32 @@ Fullstack веб-приложение для учёта калорий, упра
 
 ## Быстрый старт
 
-### Вариант 1: С Docker (рекомендуется)
+### Вариант 1: Всё через Docker (рекомендуется)
 
 **Требования:** Docker и Docker Compose
+
+Запуск из папки, где лежат `Backend` и `Front end` (например `Diplomka\Diplomka`):
+
+```bash
+docker compose up --build
+```
+
+Открыть в браузере: **http://localhost:5173** (API: http://localhost:3003/api).
+
+Подробнее: [DOCKER.md](DOCKER.md).
+
+---
+
+### Вариант 1b: Только БД и Backend в Docker
 
 1. **Запустить PostgreSQL и Backend:**
    ```bash
    cd Backend
-   docker-compose up -d
+   docker compose up -d
    ```
+   (если в Backend есть свой docker-compose)
 
-2. **Запустить Frontend:**
+2. **Запустить Frontend локально:**
    ```bash
    cd "Front end"
    npm install

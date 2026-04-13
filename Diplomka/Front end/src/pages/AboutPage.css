@@ -1,0 +1,318 @@
+.about-page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.about-page__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+.about-page__hero-left {
+  background: linear-gradient(180deg, #f5f3fa 0%, #ede9f5 100%);
+  border-radius: 24px;
+  padding: 28px 26px 26px;
+  box-shadow: 0 4px 20px rgba(123, 0, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(123, 0, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.about-page__title {
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: #111827;
+}
+
+.about-page__subtitle {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.about-page__highlights {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.about-page__highlight {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  border: 1px solid rgba(123, 0, 255, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.about-page__highlight-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #61c8ff 0%, #7b00ff 50%, #ff46af 100%);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.about-page__hero-right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.about-page__image-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #111827;
+  color: #fff;
+  box-shadow: 0 6px 26px rgba(15, 23, 42, 0.35);
+}
+
+.about-page__image-card--main {
+  min-height: 210px;
+}
+
+.about-page__image {
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.02);
+}
+
+.about-page__image--nutrition {
+  background-image: url('C:\Users\dcchh\Downloads\Gemini_Generated_Image_k68f53k68f53k68f.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.about-page__image--workout {
+  background-image: linear-gradient(135deg, rgba(56, 189, 248, 0.5), rgba(30, 64, 175, 0.7)),
+    url('/about-workout.jpg');
+}
+
+.about-page__image--vitamins {
+  background-image: linear-gradient(135deg, rgba(251, 191, 36, 0.6), rgba(217, 70, 239, 0.7)),
+    url('/about-vitamins.jpg');
+}
+
+.about-page__image-overlay {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 16px 18px 16px;
+  background: linear-gradient(0deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.35) 100%);
+}
+
+.about-page__image-overlay h2 {
+  margin: 0 0 4px;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.about-page__image-overlay p {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 0.8125rem;
+  color: #e5e7eb;
+}
+
+.about-page__image-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.about-page__image-caption {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  right: 12px;
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 0.8125rem;
+  color: #e5e7eb;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.about-page__section {
+  margin-top: 4px;
+}
+
+.about-page__section--grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 24px;
+}
+
+.about-page__section-card {
+  background: linear-gradient(180deg, #f5f3fa 0%, #ede9f5 100%);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(123, 0, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(123, 0, 255, 0.12);
+  padding: 22px 22px 24px;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.about-page__section-card--accent {
+  background: radial-gradient(circle at top left, #e0f2fe 0%, #ede9f5 40%, #fee2f2 100%);
+}
+
+.about-page__section-card--stats {
+  background: radial-gradient(circle at top right, #e0f2fe 0%, #ede9f5 45%, #fef3c7 100%);
+}
+
+.about-page__section-card h2 {
+  margin: 0 0 14px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.about-page__pill-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.about-page__pill {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 12px 12px 10px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+.about-page__pill h3 {
+  margin: 0 0 4px;
+  font-size: 0.9375rem;
+}
+
+.about-page__pill p {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #4b5563;
+}
+
+.about-page__list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.9375rem;
+  color: #374151;
+}
+
+.about-page__list strong {
+  color: #111827;
+}
+
+.about-page__text {
+  margin: 0 0 10px;
+  font-size: 0.9375rem;
+  color: #374151;
+  line-height: 1.7;
+}
+
+.about-page__stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.about-page__stat {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 2px 8px rgba(148, 163, 184, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.about-page__stat-value {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #7b00ff;
+}
+
+.about-page__stat-label {
+  font-size: 0.8125rem;
+  color: #374151;
+}
+
+@media (max-width: 1024px) {
+  .about-page__hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .about-page__section--grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .about-page__pill-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .about-page__stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .about-page {
+    gap: 24px;
+  }
+
+  .about-page__hero-left {
+    padding: 22px 18px 18px;
+  }
+
+  .about-page__title {
+    font-size: 1.625rem;
+  }
+
+  .about-page__highlights {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .about-page__image-card--main {
+    min-height: 180px;
+  }
+
+  .about-page__pill-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .about-page__stats-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .about-page__section-card {
+    padding: 18px 16px 18px;
+  }
+}
+

@@ -1,5 +1,7 @@
-import { useEffect, useState, useRef } from 'react';
-import { productsApi, getImageUrl } from '../api/products';
+import { useEffect, useState, useRef, useMemo } from 'react';
+import { productsApi, getImageUrl, getProductImageSrc } from '../api/products';
+import { useLanguage } from '../i18n/LanguageContext';
+import { translateProductText } from '../i18n/dynamicContent';
 import './ProductsPage.css';
 
 const CATEGORY_OPTIONS = [
@@ -7,6 +9,16 @@ const CATEGORY_OPTIONS = [
   { value: 'vitamins', label: 'Витамины' },
   { value: 'dishes', label: 'Блюда и напитки' },
 ];
+
+const CATEGORY_ORDER = ['ration', 'vitamins', 'dishes'];
+const CATEGORY_LABELS = { ration: 'Рацион питания', vitamins: 'Витамины', dishes: 'Блюда и напитки' };
+
+// Встроенный плейсхолдер (data URL), не требует интернета
+const FALLBACK_IMAGE =
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200"><rect fill="#e8e8e8" width="320" height="200"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="16">Нет фото</text></svg>'
+  );
 
 const INITIAL_FORM = {
   name: '',
@@ -21,6 +33,12 @@ const INITIAL_FORM = {
 };
 
 export default function ProductsPage() {
+  const { lang } = useLanguage();
+  const tr = lang === 'en'
+    ? { addProduct: '+ Add product', loadErr: 'Failed to load products', needName: 'Enter product name', saveErr: 'Save failed', delErr: 'Delete failed', cancel: 'Cancel', save: 'Save', add: 'Add', saving: 'Saving...', edit: 'Edit', del: 'Delete', emptyCatalog: 'No products in this catalog yet', emptyAll: 'No products. Add the first one.', newProduct: 'New product', editProduct: 'Edit product', ration: 'Nutrition', vitamins: 'Vitamins', dishes: 'Meals and drinks' }
+    : lang === 'kk'
+      ? { addProduct: '+ Тауар қосу', loadErr: 'Тауарларды жүктеу қатесі', needName: 'Тауар атауын енгізіңіз', saveErr: 'Сақтау қатесі', delErr: 'Жою қатесі', cancel: 'Бас тарту', save: 'Сақтау', add: 'Қосу', saving: 'Сақталуда...', edit: 'Өңдеу', del: 'Жою', emptyCatalog: 'Бұл каталогта әзірге тауар жоқ', emptyAll: 'Тауар жоқ. Алғашқысын қосыңыз.', newProduct: 'Жаңа тауар', editProduct: 'Тауарды өңдеу', ration: 'Тамақ рационы', vitamins: 'Дәрумендер', dishes: 'Тағамдар мен сусындар' }
+      : { addProduct: '+ Добавить товар', loadErr: 'Ошибка загрузки товаров', needName: 'Введите название товара', saveErr: 'Ошибка сохранения', delErr: 'Ошибка удаления', cancel: 'Отмена', save: 'Сохранить', add: 'Добавить', saving: 'Сохранение...', edit: 'Редактировать', del: 'Удалить', emptyCatalog: 'В этом каталоге пока нет товаров', emptyAll: 'Нет товаров. Добавьте первый.', newProduct: 'Новый товар', editProduct: 'Редактировать товар', ration: 'Рацион питания', vitamins: 'Витамины', dishes: 'Блюда и напитки' };
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -39,7 +57,7 @@ export default function ProductsPage() {
       const { products: data } = await productsApi.list();
       setProducts(data);
     } catch (err) {
-      setError(err.message || 'Ошибка загрузки товаров');
+      setError(err.message || tr.loadErr);
     } finally {
       setLoading(false);
     }
@@ -47,7 +65,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [tr.loadErr]);
 
   const setImageFromFile = (file) => {
     if (!file || !file.type.startsWith('image/')) return;
@@ -130,7 +148,7 @@ export default function ProductsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) {
-      setError('Введите название товара');
+      setError(tr.needName);
       return;
     }
 
@@ -138,7 +156,7 @@ export default function ProductsPage() {
     setError('');
     try {
       if (editingId) {
-        const updated = await productsApi.update(editingId, {
+        await productsApi.update(editingId, {
           name: formData.name.trim(),
           calories: formData.calories ? parseInt(formData.calories, 10) : 0,
           protein: formData.protein ? parseFloat(formData.protein) : 0,
@@ -150,15 +168,10 @@ export default function ProductsPage() {
           sortOrder: formData.sortOrder === '' ? 0 : parseInt(formData.sortOrder, 10) || 0,
         });
         if (imageFile) {
-          const withImage = await productsApi.uploadImage(editingId, imageFile);
-          setProducts((prev) =>
-            prev.map((p) => (p.id === editingId ? withImage.product : p))
-          );
-        } else {
-          setProducts((prev) =>
-            prev.map((p) => (p.id === editingId ? updated.product : p))
-          );
+          await productsApi.uploadImage(editingId, imageFile);
         }
+        const { products: refreshed } = await productsApi.list();
+        setProducts(refreshed);
       } else {
         const numOrZero = (v) => {
           const n = v === '' || v == null ? 0 : Number(v);
@@ -185,29 +198,51 @@ export default function ProductsPage() {
       }
       closeForm();
     } catch (err) {
-      setError(err.message || 'Ошибка сохранения');
+      setError(err.message || tr.saveErr);
     } finally {
       setActionLoading(null);
     }
   };
 
   const handleDelete = async (product) => {
-    if (!window.confirm(`Удалить товар «${product.name}»?`)) return;
+    if (!window.confirm(`Удалить товар «${translateProductText(lang, product.name)}»?`)) return;
     setActionLoading(product.id);
     try {
       await productsApi.delete(product.id);
       setProducts((prev) => prev.filter((p) => p.id !== product.id));
     } catch (err) {
-      setError(err.message || 'Ошибка удаления');
+      setError(err.message || tr.delErr);
     } finally {
       setActionLoading(null);
     }
   };
 
+  const normalizeCategory = (c) => {
+    const v = (c && String(c).toLowerCase()) || 'dishes';
+    return CATEGORY_ORDER.includes(v) ? v : 'dishes';
+  };
+
+  const byCategory = useMemo(() => {
+    const map = { ration: [], vitamins: [], dishes: [] };
+    (products || []).forEach((p) => {
+      const cat = normalizeCategory(p.category);
+      map[cat].push(p);
+    });
+    return CATEGORY_ORDER.map((key) => ({
+      key,
+      label: ({ ration: tr.ration, vitamins: tr.vitamins, dishes: tr.dishes }[key]) || CATEGORY_LABELS[key],
+      items: (map[key] || []).sort((a, b) => {
+        const sa = Number(a.sortOrder ?? 0);
+        const sb = Number(b.sortOrder ?? 0);
+        if (sa !== sb) return sa - sb;
+        return String(a.name || '').localeCompare(String(b.name || ''));
+      }),
+    }));
+  }, [products, tr.dishes, tr.ration, tr.vitamins]);
+
   if (loading) {
     return (
       <div className="products-page">
-        <h1 className="products-page__title">Товары</h1>
         <p className="products-page__loading">Загрузка...</p>
       </div>
     );
@@ -216,26 +251,33 @@ export default function ProductsPage() {
   return (
     <div className="products-page">
       <div className="products-page__header">
-        <h1 className="products-page__title">Товары</h1>
         <button
           type="button"
           className="products-page__add-btn"
+          style={{ background: '#7b00ff', borderRadius: 12, padding: '12px 24px', fontWeight: 600 }}
           onClick={openAddForm}
         >
-          + Добавить товар
+          {tr.addProduct}
         </button>
       </div>
 
       {error && <p className="products-page__error">{error}</p>}
 
       {showForm && (
-        <div className="products-modal" onClick={closeForm}>
+        <div className="products-modal" style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }} onClick={closeForm}>
           <div
             className="products-modal__content"
+            style={{
+              background: '#f5f3fa',
+              borderRadius: '20px',
+              border: '2px solid rgba(123,0,255,0.25)',
+              borderLeft: '5px solid #7b00ff',
+              boxShadow: '0 12px 40px rgba(123,0,255,0.2), 0 4px 12px rgba(0,0,0,0.1)',
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="products-modal__title">
-              {editingId ? 'Редактировать товар' : 'Новый товар'}
+            <h2 className="products-modal__title" style={{ color: '#7b00ff', fontWeight: 600, marginBottom: 20 }}>
+              {editingId ? tr.editProduct : tr.newProduct}
             </h2>
             <form className="products-form" onSubmit={handleSubmit} onPaste={handlePaste}>
               <div className="products-form__body">
@@ -264,9 +306,20 @@ export default function ProductsPage() {
                 {(imagePreview || (editingId && formData.imageUrl) || formData.imageUrl?.trim()) && (
                   <div className="products-form__preview">
                     <img
-                      src={imagePreview || (editingId && products.find((p) => p.id === editingId)?.imageDataUrl) || getImageUrl(formData.imageUrl, editingId ? products.find((p) => p.id === editingId)?.imageFullUrl : null)}
+                      src={
+                        imagePreview ||
+                        (editingId && products.find((p) => p.id === editingId)?.imageDataUrl) ||
+                        getImageUrl(
+                          formData.imageUrl,
+                          editingId ? products.find((p) => p.id === editingId)?.imageFullUrl : null
+                        )
+                      }
                       alt="Превью"
                       className="products-form__preview-img"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = FALLBACK_IMAGE;
+                      }}
                     />
                   </div>
                 )}
@@ -308,7 +361,7 @@ export default function ProductsPage() {
                   placeholder="0"
                   min="0"
                   className="products-form__input"
-                  title="Меньше — выше в списке (напр. пробный день = 0)"
+                  title="1 — первый, 2 — второй и т.д. (товары без числа будут ниже)"
                 />
               </div>
               <div className="products-form__field">
@@ -386,7 +439,7 @@ export default function ProductsPage() {
                   className="products-form__btn products-form__btn--cancel"
                   onClick={closeForm}
                 >
-                  Отмена
+                  {tr.cancel}
                 </button>
                 <button
                   type="submit"
@@ -394,10 +447,10 @@ export default function ProductsPage() {
                   disabled={actionLoading === (editingId ?? 'new')}
                 >
                   {actionLoading === (editingId ?? 'new')
-                    ? 'Сохранение...'
+                    ? tr.saving
                     : editingId
-                    ? 'Сохранить'
-                    : 'Добавить'}
+                    ? tr.save
+                    : tr.add}
                 </button>
               </div>
             </form>
@@ -405,50 +458,74 @@ export default function ProductsPage() {
         </div>
       )}
 
-      <div className="products-grid">
-        {products.map((product) => (
-          <div key={product.id} className="products-card">
-            <div className="products-card__main">
-              {product.imageUrl && (
-                <div className="products-card__image-wrap">
-                  <img
-                    src={product.imageDataUrl || getImageUrl(product.imageUrl, product.imageFullUrl)}
-                    alt={product.name}
-                    className="products-card__image"
-                  />
+      {byCategory.map((section) => (
+        <section key={section.key} className="products-page__catalog">
+          <h2 className="products-page__catalog-title">{section.label}</h2>
+          <div className="products-grid">
+            {section.items.length === 0 ? (
+              <p className="products-page__catalog-empty">{tr.emptyCatalog}</p>
+            ) : (
+              section.items.map((product) => (
+                <div
+                  key={product.id}
+                  className="products-card"
+                  style={{
+                    background: 'linear-gradient(180deg, #f5f3fa 0%, #ede9f5 100%)',
+                    borderRadius: 20,
+                    border: '1px solid rgba(123,0,255,0.15)',
+                    boxShadow: '0 4px 20px rgba(123,0,255,0.12), 0 2px 6px rgba(0,0,0,0.06)',
+                  }}
+                >
+                  <div className="products-card__main">
+                    <div className="products-card__image-wrap">
+                      <img
+                        src={getProductImageSrc(product) || FALLBACK_IMAGE}
+                        alt={translateProductText(lang, product.name)}
+                        className="products-card__image"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = FALLBACK_IMAGE;
+                        }}
+                      />
+                    </div>
+                    <h3 className="products-card__name">{translateProductText(lang, product.name)}</h3>
+                    <p className="products-card__price">{product.price ?? 0} ₸</p>
+                    {Number(product.calories) ? (
+                      <p className="products-card__calories">{product.calories} Ккал</p>
+                    ) : null}
+                    {(Number(product.protein) || Number(product.fat) || Number(product.carbs)) ? (
+                      <p className="products-card__macros">
+                        Б: {product.protein ?? 0} · Ж: {product.fat ?? 0} · У: {product.carbs ?? 0}
+                      </p>
+                    ) : null}
+                  </div>
+                  <div className="products-card__actions">
+                    <button
+                      type="button"
+                      className="products-card__btn products-card__btn--edit"
+                      onClick={() => openEditForm(product)}
+                      disabled={actionLoading === product.id}
+                    >
+                      {tr.edit}
+                    </button>
+                    <button
+                      type="button"
+                      className="products-card__btn products-card__btn--delete"
+                      onClick={() => handleDelete(product)}
+                      disabled={actionLoading === product.id}
+                    >
+                      {actionLoading === product.id ? '...' : tr.del}
+                    </button>
+                  </div>
                 </div>
-              )}
-              <h3 className="products-card__name">{product.name}</h3>
-              <p className="products-card__price">{product.price ?? 0} ₸</p>
-              <p className="products-card__calories">{product.calories} Ккал</p>
-              <p className="products-card__macros">
-                Б: {product.protein} · Ж: {product.fat} · У: {product.carbs}
-              </p>
-            </div>
-            <div className="products-card__actions">
-              <button
-                type="button"
-                className="products-card__btn products-card__btn--edit"
-                onClick={() => openEditForm(product)}
-                disabled={actionLoading === product.id}
-              >
-                Редактировать
-              </button>
-              <button
-                type="button"
-                className="products-card__btn products-card__btn--delete"
-                onClick={() => handleDelete(product)}
-                disabled={actionLoading === product.id}
-              >
-                {actionLoading === product.id ? '...' : 'Удалить'}
-              </button>
-            </div>
+              ))
+            )}
           </div>
-        ))}
-      </div>
+        </section>
+      ))}
 
       {products.length === 0 && !loading && (
-        <p className="products-page__empty">Нет товаров. Добавьте первый.</p>
+        <p className="products-page__empty">{tr.emptyAll}</p>
       )}
     </div>
   );

@@ -1,0 +1,21 @@
+[
+  { "name": "Борщ", "calories": 49, "protein": 2.2, "fat": 1.5, "carbs": 5.8, "price": 450, "category": "dishes", "sort_order": 10 },
+  { "name": "Куриный суп", "calories": 38, "protein": 3.1, "fat": 1.2, "carbs": 4.2, "price": 380, "category": "dishes", "sort_order": 20 },
+  { "name": "Омлет", "calories": 154, "protein": 10.6, "fat": 11.5, "carbs": 0.6, "price": 320, "category": "dishes", "sort_order": 30 },
+  { "name": "Гречка отварная", "calories": 101, "protein": 3.6, "fat": 1.1, "carbs": 18.6, "price": 180, "category": "dishes", "sort_order": 40 },
+  { "name": "Рис отварной", "calories": 116, "protein": 2.2, "fat": 0.5, "carbs": 24.9, "price": 150, "category": "dishes", "sort_order": 50 },
+  { "name": "Куриная грудка запечённая", "calories": 137, "protein": 29.8, "fat": 1.8, "carbs": 0, "price": 520, "category": "dishes", "sort_order": 60 },
+  { "name": "Салат овощной", "calories": 35, "protein": 1.8, "fat": 0.4, "carbs": 6.2, "price": 280, "category": "dishes", "sort_order": 70 },
+  { "name": "Творог 5%", "calories": 121, "protein": 17.2, "fat": 5, "carbs": 1.8, "price": 350, "category": "dishes", "sort_order": 80 },
+  { "name": "Овсянка на молоке", "calories": 102, "protein": 3.4, "fat": 4.1, "carbs": 14.2, "price": 220, "category": "dishes", "sort_order": 90 },
+  { "name": "Яблоко", "calories": 52, "protein": 0.3, "fat": 0.2, "carbs": 13.8, "price": 120, "category": "dishes", "sort_order": 100 },
+  { "name": "Банан", "calories": 89, "protein": 1.1, "fat": 0.3, "carbs": 22.8, "price": 90, "category": "dishes", "sort_order": 110 },
+  { "name": "Кофе чёрный", "calories": 2, "protein": 0.2, "fat": 0, "carbs": 0, "price": 150, "category": "dishes", "sort_order": 120 },
+  { "name": "Рацион «Классик»", "calories": 1200, "protein": 80, "fat": 45, "carbs": 110, "price": 3500, "category": "ration", "sort_order": 10 },
+  { "name": "Рацион «Фитнес»", "calories": 1400, "protein": 120, "fat": 35, "carbs": 100, "price": 4200, "category": "ration", "sort_order": 20 },
+  { "name": "Рацион «Лайт»", "calories": 900, "protein": 60, "fat": 30, "carbs": 85, "price": 3200, "category": "ration", "sort_order": 30 },
+  { "name": "Витамин D3", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "price": 2500, "category": "vitamins", "sort_order": 10 },
+  { "name": "Омега-3", "calories": 10, "protein": 0, "fat": 1, "carbs": 0, "price": 3200, "category": "vitamins", "sort_order": 20 },
+  { "name": "Витамин C", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "price": 890, "category": "vitamins", "sort_order": 30 },
+  { "name": "Магний B6", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "price": 1200, "category": "vitamins", "sort_order": 40 }
+]

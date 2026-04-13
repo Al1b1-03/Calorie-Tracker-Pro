@@ -1,27 +1,42 @@
 import { request } from './client.js';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-const API_ORIGIN = API_BASE.startsWith('http') ? API_BASE.replace(/\/api\/?$/, '') : 'http://localhost:3001';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3003/api';
+const API_ORIGIN = API_BASE.startsWith('http') ? API_BASE.replace(/\/api\/?$/, '') : 'http://localhost:3003';
 
-/** Абсолютный URL бэкенда (без /api) для загрузки картинок. */
+/** Origin бэкенда: картинки грузятся напрямую с backend. */
 export const getApiOrigin = () =>
-  (typeof window !== 'undefined' && window.location.port === '5173')
-    ? window.location.origin.replace(/:\d+$/, ':3001')
-    : (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
+  (import.meta.env.VITE_API_URL || 'http://localhost:3003/api').replace(/\/api\/?$/, '') || 'http://localhost:3003';
 
-/** URL картинки. Возвращает абсолютный URL: статика бэкенда /uploads/products/... */
+/** URL картинки. Поддерживает: http(s)://..., /путь (фронт public), /api/uploads/products/xxx (бэкенд). */
 export const getImageUrl = (imageUrl, imageFullUrl = null) => {
   const origin = getApiOrigin();
   const path = imageFullUrl || imageUrl;
-  if (!path) return null;
-  if (typeof path === 'string' && path.startsWith('http')) return path;
-  let normalized = path.startsWith('/') ? path : `/${path}`;
-  if (normalized.startsWith('/api/uploads/products/')) {
-    normalized = normalized.slice(4);
-  } else if (!normalized.startsWith('/uploads/products/')) {
-    normalized = normalized.startsWith('/') ? normalized : `/${normalized}`;
+  if (!path || typeof path !== 'string') return null;
+  const trimmed = path.trim();
+  if (trimmed.startsWith('http')) return trimmed;
+  let normalized = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+  if (normalized.includes('uploads/products/') || normalized.includes('uploads\\products\\')) {
+    const filename = normalized.split(/[/\\]/).pop() || '';
+    if (filename) return `${origin}/api/uploads/products/${filename}`;
   }
-  return `${origin}${normalized}`;
+  if (/\.(png|jpe?g|gif|webp)$/i.test(normalized)) {
+    const filename = normalized.replace(/^\/+/, '');
+    if (filename.includes('uploads/') || filename.includes('products')) {
+      return `${origin}/api/uploads/products/${filename.split(/[/\\]/).pop() || filename}`;
+    }
+    return normalized;
+  }
+  return normalized.startsWith('/') ? normalized : `${origin}${normalized}`;
+};
+
+/** Для картинки товара: data URL, внешняя ссылка или путь к локальному файлу (/api/uploads/products/...). */
+export const getProductImageSrc = (product) => {
+  if (product?.imageDataUrl) return product.imageDataUrl;
+  const url = product?.imageFullUrl || product?.imageUrl;
+  if (url && typeof url === 'string' && url.trim()) {
+    return getImageUrl(product.imageUrl, product.imageFullUrl);
+  }
+  return null;
 };
 
 export const shopApi = {

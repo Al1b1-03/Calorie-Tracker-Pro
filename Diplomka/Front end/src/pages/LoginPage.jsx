@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { EmailIcon, LockIcon, CloseIcon, GoogleIcon, VkIcon, YandexIcon } from '../shared/icons';
 import { authApi } from '../api/auth';
+import { useLanguage } from '../i18n/LanguageContext';
 import './LoginPage.css';
 
 export default function LoginPage() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
 
@@ -33,7 +35,7 @@ export default function LoginPage() {
       window.dispatchEvent(new CustomEvent('userRoleUpdated'));
       navigate(role === 'admin' ? '/products' : '/', { replace: true });
     } catch (err) {
-      setError(err.message || 'Ошибка входа');
+      setError(err.message || t('auth.loginError'));
     } finally {
       setLoading(false);
     }
@@ -42,24 +44,24 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <button className="login-card__close" aria-label="Закрыть">
+        <button className="login-card__close" aria-label={t('common.close')}>
           <CloseIcon />
         </button>
         <h1 className="login-card__title">Calorie Tracker Pro</h1>
         <div className="login-card__tabs">
-          <span className="login-card__tab login-card__tab--active">Вход</span>
+          <span className="login-card__tab login-card__tab--active">{t('auth.loginTab')}</span>
           <Link to="/registration" className="login-card__tab login-card__tab--inactive">
-            Регистрация
+            {t('auth.registerTab')}
           </Link>
         </div>
         <form className="login-form" onSubmit={handleSubmit}>
           {error && <p className="login-form__error">{error}</p>}
           <div className="login-form__field">
-            <label className="login-form__label">Email</label>
+            <label className="login-form__label">{t('auth.email')}</label>
             <input
               type="email"
               name="email"
-              placeholder="Ваш email"
+              placeholder={t('auth.emailPlaceholder')}
               value={formData.email}
               onChange={handleChange}
               className="login-form__input login-form__input--with-icon"
@@ -67,11 +69,12 @@ export default function LoginPage() {
             <span className="login-form__icon"><EmailIcon /></span>
           </div>
           <div className="login-form__field">
-            <label className="login-form__label">Пароль</label>
+            <label className="login-form__label">{t('auth.password')}
+            </label>
             <input
               type="password"
               name="password"
-              placeholder="Ваш пароль"
+              placeholder={t('auth.passwordPlaceholder')}
               value={formData.password}
               onChange={handleChange}
               className="login-form__input login-form__input--with-icon"
@@ -79,28 +82,28 @@ export default function LoginPage() {
             <span className="login-form__icon"><LockIcon /></span>
           </div>
           <button type="submit" className="login-form__submit" disabled={loading}>
-            {loading ? 'Вход...' : 'Войти'}
+            {loading ? t('auth.loginLoading') : t('auth.loginButton')}
           </button>
           <div className="login-form__social">
             <div className="login-form__social-divider">
               <span className="login-form__social-line"></span>
-              <span className="login-form__social-text">Или войдите через</span>
+              <span className="login-form__social-text">{t('auth.loginWith')}</span>
               <span className="login-form__social-line"></span>
             </div>
             <div className="login-form__social-icons">
-              <button type="button" className="login-form__social-btn" aria-label="Войти через Google">
+              <button type="button" className="login-form__social-btn" aria-label={t('auth.googleLogin')}>
                 <GoogleIcon />
               </button>
-              <button type="button" className="login-form__social-btn" aria-label="Войти через Google">
+              <button type="button" className="login-form__social-btn" aria-label={t('auth.yandexLogin')}>
                 <YandexIcon />
               </button>
-              <button type="button" className="login-form__social-btn" aria-label="Войти через VK">
+              <button type="button" className="login-form__social-btn" aria-label={t('auth.vkLogin')}>
                 <VkIcon />
               </button>
             </div>
           </div>
           <p className="login-form__footer">
-            Нет аккаунта? <Link to="/registration">Зарегистрироваться</Link>
+            {t('auth.noAccount')} <Link to="/registration">{t('auth.registerLink')}</Link>
           </p>
         </form>
       </div>

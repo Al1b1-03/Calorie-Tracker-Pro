@@ -1,21 +1,44 @@
 import { useEffect, useState } from 'react';
 import { workoutsApi } from '../api/workouts';
+import { getApiOrigin } from '../api/products';
+import { useLanguage } from '../i18n/LanguageContext';
 import './AdminWorkoutsPage.css';
 
 const INITIAL_FORM = {
   title: '',
   shortDesc: '',
-  fullDescription: '',
+  benefits: '',
+  howTo: '',
+  regime: '',
+  important: '',
+  targetMuscles: '',
   duration: '30',
   calories: '0',
   difficulty: 'Средняя',
+  category: 'other',
   imageUrl: '',
   exercises: [{ name: '', sets: '', reps: '', rest: '' }],
 };
 
 const DIFFICULTY_OPTIONS = ['Лёгкая', 'Средняя', 'Высокая'];
+const CATEGORY_OPTIONS = [
+  { value: 'other', label: 'Без категории' },
+  { value: 'arms', label: '💪 Руки' },
+  { value: 'core', label: '🔥 Пресс / Кор' },
+  { value: 'chest', label: '🏋️ Грудь' },
+  { value: 'back', label: '🔙 Спина' },
+  { value: 'legs', label: '🦵 Ноги' },
+  { value: 'cardio', label: '🏃 Кардио' },
+  { value: 'fullbody', label: '⚡ Всё тело' },
+];
 
 export default function AdminWorkoutsPage() {
+  const { lang } = useLanguage();
+  const tr = lang === 'en'
+    ? { title: 'Workout database', loading: 'Loading...', addWorkout: '+ Add workout', loadErr: 'Failed to load workouts', needTitle: 'Enter workout title', saveErr: 'Save failed', delErr: 'Delete failed', edit: 'Edit', del: 'Delete', close: 'Close', editWorkout: 'Edit workout', addWorkoutModal: 'Add workout', cancel: 'Cancel', save: 'Save', add: 'Add' }
+    : lang === 'kk'
+      ? { title: 'Жаттығулар базасы', loading: 'Жүктелуде...', addWorkout: '+ Жаттығу қосу', loadErr: 'Жаттығуларды жүктеу қатесі', needTitle: 'Жаттығу атауын енгізіңіз', saveErr: 'Сақтау қатесі', delErr: 'Жою қатесі', edit: 'Өзгерту', del: 'Жою', close: 'Жабу', editWorkout: 'Жаттығуды өңдеу', addWorkoutModal: 'Жаттығу қосу', cancel: 'Бас тарту', save: 'Сақтау', add: 'Қосу' }
+      : { title: 'База тренировок', loading: 'Загрузка...', addWorkout: '+ Добавить тренировку', loadErr: 'Ошибка загрузки тренировок', needTitle: 'Введите название тренировки', saveErr: 'Ошибка сохранения', delErr: 'Ошибка удаления', edit: 'Изменить', del: 'Удалить', close: 'Закрыть', editWorkout: 'Редактировать тренировку', addWorkoutModal: 'Добавить тренировку', cancel: 'Отмена', save: 'Сохранить', add: 'Добавить' };
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -23,6 +46,27 @@ export default function AdminWorkoutsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState(INITIAL_FORM);
+  const [imageFile, setImageFile] = useState(null);
+  const apiOrigin = getApiOrigin();
+
+  const getWorkoutImageSrc = (workout) => {
+    const raw = workout?.imageUrl || workout?.image;
+    if (!raw || typeof raw !== 'string') return null;
+    const trimmed = raw.trim();
+    if (!trimmed) return null;
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    const filename = trimmed.split(/[/\\]/).pop();
+    if (!filename) return null;
+    return `${apiOrigin}/api/uploads/products/${filename}`;
+  };
+
+  const getTargetMusclesChips = (workout) => {
+    const raw = workout?.targetMuscles || '';
+    return raw
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+  };
 
   const loadWorkouts = async () => {
     try {
@@ -30,7 +74,7 @@ export default function AdminWorkoutsPage() {
       const { workouts: data } = await workoutsApi.admin.list();
       setWorkouts(data ?? []);
     } catch (err) {
-      setError(err.message || 'Ошибка загрузки тренировок');
+      setError(err.message || tr.loadErr);
     } finally {
       setLoading(false);
     }
@@ -38,6 +82,12 @@ export default function AdminWorkoutsPage() {
 
   useEffect(() => {
     loadWorkouts();
+  }, [tr.loadErr]);
+
+  useEffect(() => {
+    const prev = document.title;
+    document.title = 'Calorie Tracker Pro - База тренировок';
+    return () => { document.title = prev; };
   }, []);
 
   const handleChange = (e) => {
@@ -73,6 +123,7 @@ export default function AdminWorkoutsPage() {
   const openAdd = () => {
     setEditingId(null);
     setFormData(INITIAL_FORM);
+    setImageFile(null);
     setShowForm(true);
   };
 
@@ -81,10 +132,15 @@ export default function AdminWorkoutsPage() {
     setFormData({
       title: workout.title ?? '',
       shortDesc: workout.shortDesc ?? '',
-      fullDescription: workout.fullDescription ?? '',
+      benefits: workout.benefits ?? '',
+      howTo: workout.howTo ?? '',
+      regime: workout.regime ?? '',
+      important: workout.important ?? '',
+      targetMuscles: workout.targetMuscles ?? '',
       duration: String(workout.duration ?? 30),
       calories: String(workout.calories ?? 0),
       difficulty: workout.difficulty ?? 'Средняя',
+      category: workout.category || 'other',
       imageUrl: workout.imageUrl ?? workout.image ?? '',
       exercises:
         (workout.exercises?.length && workout.exercises.map((ex) => ({
@@ -95,6 +151,7 @@ export default function AdminWorkoutsPage() {
         }))) ||
         [{ name: '', sets: '', reps: '', rest: '' }],
     });
+    setImageFile(null);
     setShowForm(true);
   };
 
@@ -102,12 +159,13 @@ export default function AdminWorkoutsPage() {
     setShowForm(false);
     setEditingId(null);
     setFormData(INITIAL_FORM);
+    setImageFile(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title.trim()) {
-      setError('Введите название тренировки');
+      setError(tr.needTitle);
       return;
     }
     setActionLoading(editingId ?? 'new');
@@ -116,30 +174,39 @@ export default function AdminWorkoutsPage() {
       const payload = {
         title: formData.title.trim(),
         shortDesc: formData.shortDesc.trim() || undefined,
-        fullDescription: formData.fullDescription.trim() || undefined,
-        duration: parseInt(formData.duration, 10) || 0,
-        calories: parseInt(formData.calories, 10) || 0,
+        benefits: formData.benefits.trim() || undefined,
+        howTo: formData.howTo.trim() || undefined,
+        regime: formData.regime.trim() || undefined,
+        important: formData.important.trim() || undefined,
+        targetMuscles: formData.targetMuscles.trim() || undefined,
+        // duration и calories больше не редактируются в форме
         difficulty: formData.difficulty,
+        category: formData.category || 'other',
         imageUrl: formData.imageUrl.trim() || undefined,
-        exercises: formData.exercises
-          .filter((ex) => ex.name?.trim())
-          .map((ex) => ({
-            name: ex.name.trim(),
-            sets: ex.sets,
-            reps: ex.reps,
-            rest: ex.rest || '—',
-          })),
       };
       if (editingId) {
+        let updatedWorkout;
         const { workout } = await workoutsApi.admin.update(editingId, payload);
-        setWorkouts((prev) => prev.map((w) => (w.id === editingId ? workout : w)));
+        updatedWorkout = workout;
+        if (imageFile) {
+          const res = await workoutsApi.admin.uploadImage(editingId, imageFile);
+          updatedWorkout = res.workout;
+        }
+        setWorkouts((prev) => prev.map((w) => (w.id === editingId ? updatedWorkout : w)));
       } else {
+        let createdWorkout;
         const { workout } = await workoutsApi.admin.create(payload);
-        setWorkouts((prev) => [workout, ...prev]);
+        createdWorkout = workout;
+        if (imageFile) {
+          const res = await workoutsApi.admin.uploadImage(workout.id, imageFile);
+          createdWorkout = res.workout;
+        }
+        // Добавляем в конец списка, чтобы порядок совпадал с ORDER BY id ASC на сервере
+        setWorkouts((prev) => [...prev, createdWorkout]);
       }
       closeForm();
     } catch (err) {
-      setError(err.message || 'Ошибка сохранения');
+      setError(err.message || tr.saveErr);
     } finally {
       setActionLoading(null);
     }
@@ -152,7 +219,7 @@ export default function AdminWorkoutsPage() {
       await workoutsApi.admin.delete(workout.id);
       setWorkouts((prev) => prev.filter((w) => w.id !== workout.id));
     } catch (err) {
-      setError(err.message || 'Ошибка удаления');
+      setError(err.message || tr.delErr);
     } finally {
       setActionLoading(null);
     }
@@ -161,8 +228,8 @@ export default function AdminWorkoutsPage() {
   if (loading) {
     return (
       <div className="admin-workouts">
-        <h1 className="admin-workouts__title">База тренировок</h1>
-        <p className="admin-workouts__loading">Загрузка...</p>
+        <h1 className="admin-workouts__title">{tr.title}</h1>
+        <p className="admin-workouts__loading">{tr.loading}</p>
       </div>
     );
   }
@@ -170,9 +237,9 @@ export default function AdminWorkoutsPage() {
   return (
     <div className="admin-workouts">
       <div className="admin-workouts__header">
-        <h1 className="admin-workouts__title">База тренировок</h1>
+        <h1 className="admin-workouts__title">{tr.title}</h1>
         <button type="button" className="admin-workouts__add-btn" onClick={openAdd}>
-          + Добавить тренировку
+          {tr.addWorkout}
         </button>
       </div>
       {error && <p className="admin-workouts__error">{error}</p>}
@@ -180,29 +247,53 @@ export default function AdminWorkoutsPage() {
       <div className="admin-workouts__grid">
         {workouts.map((workout) => (
           <div key={workout.id} className="admin-workouts__card">
-            <div className="admin-workouts__card-content">
-              <h3 className="admin-workouts__card-name">{workout.title}</h3>
-              <p className="admin-workouts__card-meta">
-                {workout.duration} мин · {workout.calories} Ккал · {workout.difficulty}
-              </p>
+            <div className="admin-workouts__card-image">
+              {getWorkoutImageSrc(workout) ? (
+                <img
+                  src={getWorkoutImageSrc(workout)}
+                  alt={workout.title}
+                  className="admin-workouts__card-img"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : null}
             </div>
-            <div className="admin-workouts__card-actions">
-              <button
-                type="button"
-                className="admin-workouts__btn admin-workouts__btn--edit"
-                onClick={() => openEdit(workout)}
-                disabled={actionLoading !== null}
-              >
-                Изменить
-              </button>
-              <button
-                type="button"
-                className="admin-workouts__btn admin-workouts__btn--delete"
-                onClick={() => handleDelete(workout)}
-                disabled={actionLoading === workout.id}
-              >
-                {actionLoading === workout.id ? '...' : 'Удалить'}
-              </button>
+            <div className="admin-workouts__card-body">
+              <h3 className="admin-workouts__card-name">{workout.title}</h3>
+              {workout.shortDesc && (
+                <p className="admin-workouts__card-meta">
+                  {workout.shortDesc}
+                </p>
+              )}
+              <div className="admin-workouts__card-tags">
+                <span className="admin-workouts__tag admin-workouts__tag--difficulty">
+                  {workout.difficulty}
+                </span>
+                {getTargetMusclesChips(workout).map((muscle) => (
+                  <span key={muscle} className="admin-workouts__tag admin-workouts__tag--muscle">
+                    {muscle}
+                  </span>
+                ))}
+              </div>
+              <div className="admin-workouts__card-actions">
+                <button
+                  type="button"
+                  className="admin-workouts__btn admin-workouts__btn--edit"
+                  onClick={() => openEdit(workout)}
+                  disabled={actionLoading !== null}
+                >
+                  {tr.edit}
+                </button>
+                <button
+                  type="button"
+                  className="admin-workouts__btn admin-workouts__btn--delete"
+                  onClick={() => handleDelete(workout)}
+                  disabled={actionLoading === workout.id}
+                >
+                  {actionLoading === workout.id ? '...' : tr.del}
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -215,12 +306,12 @@ export default function AdminWorkoutsPage() {
               type="button"
               className="admin-workouts__modal-close"
               onClick={closeForm}
-              aria-label="Закрыть"
+              aria-label={tr.close}
             >
               ×
             </button>
             <h2 className="admin-workouts__modal-title">
-              {editingId ? 'Редактировать тренировку' : 'Добавить тренировку'}
+              {editingId ? tr.editWorkout : tr.addWorkoutModal}
             </h2>
             <form onSubmit={handleSubmit} className="admin-workouts__form">
               <label className="admin-workouts__label">
@@ -244,39 +335,60 @@ export default function AdminWorkoutsPage() {
                   className="admin-workouts__input"
                 />
               </label>
-              <label className="admin-workouts__label">
-                Полное описание
-                <textarea
-                  name="fullDescription"
-                  value={formData.fullDescription}
-                  onChange={handleChange}
-                  className="admin-workouts__input admin-workouts__textarea"
-                  rows={3}
-                />
-              </label>
+              <div className="admin-workouts__details-grid">
+                <label className="admin-workouts__label">
+                  Что развивает
+                  <textarea
+                    name="benefits"
+                    value={formData.benefits}
+                    onChange={handleChange}
+                    className="admin-workouts__input admin-workouts__textarea"
+                    rows={3}
+                  />
+                </label>
+                <label className="admin-workouts__label">
+                  Как выполнять
+                  <textarea
+                    name="howTo"
+                    value={formData.howTo}
+                    onChange={handleChange}
+                    className="admin-workouts__input admin-workouts__textarea"
+                    rows={3}
+                  />
+                </label>
+                <label className="admin-workouts__label">
+                  Режим
+                  <textarea
+                    name="regime"
+                    value={formData.regime}
+                    onChange={handleChange}
+                    className="admin-workouts__input admin-workouts__textarea"
+                    rows={2}
+                  />
+                </label>
+                <label className="admin-workouts__label">
+                  Важно
+                  <textarea
+                    name="important"
+                    value={formData.important}
+                    onChange={handleChange}
+                    className="admin-workouts__input admin-workouts__textarea"
+                    rows={2}
+                  />
+                </label>
+                <label className="admin-workouts__label">
+                  Целевые мышцы
+                  <input
+                    type="text"
+                    name="targetMuscles"
+                    value={formData.targetMuscles}
+                    onChange={handleChange}
+                    className="admin-workouts__input"
+                    placeholder="Например: Бицепс, Предплечья"
+                  />
+                </label>
+              </div>
               <div className="admin-workouts__row">
-                <label className="admin-workouts__label">
-                  Длительность (мин)
-                  <input
-                    type="number"
-                    name="duration"
-                    min="0"
-                    value={formData.duration}
-                    onChange={handleChange}
-                    className="admin-workouts__input"
-                  />
-                </label>
-                <label className="admin-workouts__label">
-                  Ккал
-                  <input
-                    type="number"
-                    name="calories"
-                    min="0"
-                    value={formData.calories}
-                    onChange={handleChange}
-                    className="admin-workouts__input"
-                  />
-                </label>
                 <label className="admin-workouts__label">
                   Сложность
                   <select
@@ -288,6 +400,21 @@ export default function AdminWorkoutsPage() {
                     {DIFFICULTY_OPTIONS.map((d) => (
                       <option key={d} value={d}>
                         {d}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="admin-workouts__label">
+                  Категория
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="admin-workouts__input"
+                  >
+                    {CATEGORY_OPTIONS.map((c) => (
+                      <option key={c.value} value={c.value}>
+                        {c.label}
                       </option>
                     ))}
                   </select>
@@ -304,67 +431,29 @@ export default function AdminWorkoutsPage() {
                   placeholder="https://..."
                 />
               </label>
-
-              <div className="admin-workouts__exercises">
-                <div className="admin-workouts__exercises-header">
-                  <span>Упражнения</span>
-                  <button type="button" className="admin-workouts__add-ex" onClick={addExercise}>
-                    + Упражнение
-                  </button>
-                </div>
-                {formData.exercises.map((ex, index) => (
-                  <div key={index} className="admin-workouts__exercise-row">
-                    <input
-                      type="text"
-                      placeholder="Название"
-                      value={ex.name}
-                      onChange={(e) => handleExerciseChange(index, 'name', e.target.value)}
-                      className="admin-workouts__input admin-workouts__ex-name"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Подходы"
-                      value={ex.sets}
-                      onChange={(e) => handleExerciseChange(index, 'sets', e.target.value)}
-                      className="admin-workouts__input admin-workouts__ex-small"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Повторения"
-                      value={ex.reps}
-                      onChange={(e) => handleExerciseChange(index, 'reps', e.target.value)}
-                      className="admin-workouts__input admin-workouts__ex-small"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Отдых"
-                      value={ex.rest}
-                      onChange={(e) => handleExerciseChange(index, 'rest', e.target.value)}
-                      className="admin-workouts__input admin-workouts__ex-small"
-                    />
-                    <button
-                      type="button"
-                      className="admin-workouts__remove-ex"
-                      onClick={() => removeExercise(index)}
-                      disabled={formData.exercises.length <= 1}
-                      aria-label="Удалить упражнение"
-                    >
-                      −
-                    </button>
-                  </div>
-                ))}
-              </div>
+              <label className="admin-workouts__label">
+                Или загрузить файл
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="admin-workouts__input"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setImageFile(file);
+                  }}
+                />
+              </label>
 
               <div className="admin-workouts__form-actions">
                 <button type="button" className="admin-workouts__btn admin-workouts__btn--secondary" onClick={closeForm}>
-                  Отмена
+                  {tr.cancel}
                 </button>
                 <button
                   type="submit"
                   className="admin-workouts__btn admin-workouts__btn--save"
                   disabled={actionLoading !== null}
                 >
-                  {actionLoading !== null ? '...' : editingId ? 'Сохранить' : 'Добавить'}
+                  {actionLoading !== null ? '...' : editingId ? tr.save : tr.add}
                 </button>
               </div>
             </form>

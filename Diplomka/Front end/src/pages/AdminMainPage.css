@@ -7,18 +7,17 @@
 
 .admin-main__title {
   font-family: Inter, system-ui, sans-serif;
-  font-size: 48px;
+  font-size: 1.5rem;
   font-weight: 600;
-  line-height: 1.2;
-  color: #1a1a2e;
-  margin: 0 0 12px;
+  color: #7b00ff;
+  margin: 0 0 16px;
 }
 
 .admin-main__subtitle {
   font-family: Inter, system-ui, sans-serif;
-  font-size: 18px;
+  font-size: 0.9375rem;
   color: #666;
-  margin: 0 0 40px;
+  margin: 0 0 28px;
 }
 
 .admin-main__error {
@@ -85,16 +84,49 @@
 }
 
 @media (max-width: 768px) {
+  .admin-main {
+    padding: 24px 14px 36px;
+  }
+
   .admin-main__title {
-    font-size: 36px;
+    font-size: 1.375rem;
   }
 
   .admin-main__subtitle {
-    font-size: 16px;
-    margin-bottom: 32px;
+    font-size: 0.875rem;
+    margin-bottom: 24px;
   }
 
   .admin-main__grid {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .admin-main__card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .admin-main__card-label {
+    font-size: 1rem;
+  }
+
+  .admin-main__card-count {
+    font-size: 1.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-main {
+    padding: 18px 10px 28px;
+  }
+
+  .admin-main__title {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+  }
+
+  .admin-main__subtitle {
+    margin-bottom: 16px;
   }
 }

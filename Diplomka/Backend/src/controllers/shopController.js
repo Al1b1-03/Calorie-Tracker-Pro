@@ -5,22 +5,28 @@ import { productsUploadsDir } from '../config/uploadsPath.js';
 
 function fullImageUrl(imageUrl) {
   if (!imageUrl || typeof imageUrl !== 'string') return null;
-  const filename = path.basename(imageUrl.replace(/\\/g, '/'));
+  const normalized = imageUrl.replace(/\\/g, '/').trim();
+  if (!normalized) return null;
+  // Внешние URL возвращаем как есть
+  if (/^https?:\/\//i.test(normalized)) return normalized;
+  const filename = path.basename(normalized);
   if (!filename) return null;
   return `/api/uploads/products/${filename}`;
 }
 
+/** Любой локальный путь (/uploads/products/xxx, uploads/products/xxx или только имя файла) → /api/uploads/products/имя_файла. */
 function displayImageUrl(imageUrl) {
   if (!imageUrl || typeof imageUrl !== 'string') return null;
-  const normalized = imageUrl.replace(/\\/g, '/');
-  if (normalized.startsWith('/uploads/products/')) return fullImageUrl(imageUrl);
-  return imageUrl;
+  const normalized = imageUrl.replace(/\\/g, '/').trim();
+  if (!normalized) return null;
+  if (/^https?:\/\//i.test(normalized)) return normalized;
+  return fullImageUrl(normalized);
 }
 
 const MIME = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.gif': 'image/gif', '.webp': 'image/webp' };
 
 function readImageDataUrl(imageUrl) {
-  if (!imageUrl || typeof imageUrl !== 'string' || !imageUrl.startsWith('/uploads/products/')) return null;
+  if (!imageUrl || typeof imageUrl !== 'string') return null;
   const filename = path.basename(imageUrl.replace(/\\/g, '/'));
   const filePath = path.join(productsUploadsDir, filename);
   try {
@@ -40,9 +46,14 @@ export const listProductsPublic = async (req, res) => {
       `SELECT id, name, calories, protein, fat, carbs, price, image_url, category, sort_order
        FROM products
        ORDER BY CASE category WHEN 'ration' THEN 1 WHEN 'vitamins' THEN 2 WHEN 'dishes' THEN 3 ELSE 4 END,
-                sort_order ASC NULLS LAST,
+                CASE WHEN sort_order <= 0 THEN 2147483647 ELSE sort_order END ASC,
                 name ASC`
     );
+
+    const normCategory = (c) => {
+      const s = (c && String(c).trim().toLowerCase()) || '';
+      return ['ration', 'vitamins', 'dishes'].includes(s) ? s : 'dishes';
+    };
 
     const products = result.rows.map((row) => {
       const imageDataUrl = readImageDataUrl(row.image_url);
@@ -57,7 +68,7 @@ export const listProductsPublic = async (req, res) => {
         imageUrl: displayImageUrl(row.image_url),
         imageFullUrl: fullImageUrl(row.image_url),
         imageDataUrl: imageDataUrl || undefined,
-        category: row.category || 'dishes',
+        category: normCategory(row.category),
         sortOrder: row.sort_order != null ? Number(row.sort_order) : 0,
       };
     });

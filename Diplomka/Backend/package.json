@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+    "dev": "node --watch src/index.js",
+    "stop": "powershell -ExecutionPolicy Bypass -File ./kill-port.ps1",
+    "seed": "node scripts/seed-products.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

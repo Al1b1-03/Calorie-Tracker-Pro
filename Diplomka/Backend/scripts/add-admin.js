@@ -6,7 +6,7 @@ import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import { query } from '../src/config/database.js';
 
-const ADMIN_EMAIL = 'alibiadmin@narxoz.kz';
+const ADMIN_EMAIL = 'alibi.maksat@narxoz.kz';
 const ADMIN_PASSWORD = '123456';
 const SALT_ROUNDS = 10;
 
@@ -26,7 +26,7 @@ async function addAdmin() {
       await query(
         `INSERT INTO users (first_name, last_name, phone, email, password_hash, role)
          VALUES ($1, $2, $3, $4, $5, 'admin')`,
-        ['Admin', 'Alibi', null, ADMIN_EMAIL, passwordHash]
+        ['Maksat', 'Alibi', null, ADMIN_EMAIL, passwordHash]
       );
       console.log('Админ добавлен:', ADMIN_EMAIL);
     }

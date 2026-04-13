@@ -1,15 +1,15 @@
 .shop-page {
-  padding: 39px 20px 60px;
+  padding: 28px 20px 48px;
   min-height: calc(100vh - 158px);
 }
 
 .shop-page__title {
   font-family: Inter, system-ui, sans-serif;
-  font-size: 48px;
-  font-weight: 400;
-  line-height: 1.21;
-  color: #000;
-  margin: 0 0 36px;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 28px;
+  letter-spacing: -0.02em;
 }
 
 .shop-page__loading,
@@ -31,7 +31,7 @@
 }
 
 .shop-section {
-  margin-bottom: 48px;
+  margin-bottom: 32px;
 }
 
 .shop-section:last-child {
@@ -40,33 +40,45 @@
 
 .shop-section__title {
   font-family: Inter, system-ui, sans-serif;
-  font-size: 28px;
+  font-size: 1.25rem;
   font-weight: 600;
-  color: #1a1a2e;
-  margin: 0 0 20px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #7b00ff;
+  color: #7b00ff;
+  margin: 0 0 16px;
+}
+
+.shop-section__empty {
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 0.9375rem;
+  color: #666;
+  margin: 0;
+  padding: 16px 0;
 }
 
 .shop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
 }
 
 .shop-card {
-  background: #e6e6e6;
-  border-radius: 25px;
-  box-shadow: 0 4px 4px 5px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(180deg, #f5f3fa 0%, #ede9f5 100%);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(123, 0, 255, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(123, 0, 255, 0.15);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transition: box-shadow 0.2s ease;
+}
+
+.shop-card:hover {
+  box-shadow: 0 8px 24px rgba(123, 0, 255, 0.14), 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .shop-card__image-wrap {
   width: 100%;
   aspect-ratio: 16 / 10;
-  background: #ddd;
+  background: #e8e4f0;
   overflow: hidden;
 }
 
@@ -86,15 +98,16 @@
 
 .shop-card__name {
   font-family: Inter, system-ui, sans-serif;
-  font-size: 20px;
+  font-size: 1.125rem;
   font-weight: 600;
-  color: #000;
+  color: #1a1a1a;
   margin: 0;
+  line-height: 1.35;
 }
 
 .shop-card__price {
   font-family: Inter, system-ui, sans-serif;
-  font-size: 22px;
+  font-size: 1.125rem;
   font-weight: 600;
   color: #7b00ff;
   margin: 0;
@@ -102,30 +115,37 @@
 
 .shop-card__calories {
   font-family: Inter, system-ui, sans-serif;
-  font-size: 16px;
-  color: #56c4ff;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #5b21b6;
   margin: 0;
 }
 
 .shop-card__macros {
   font-family: Inter, system-ui, sans-serif;
-  font-size: 14px;
-  color: #666;
+  font-size: 0.875rem;
+  color: #555;
   margin: 0;
 }
 
 .shop-card__add-btn {
   margin-top: auto;
   padding: 12px 20px;
-  font-family: Montserrat, Inter, system-ui, sans-serif;
-  font-size: 16px;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 0.9375rem;
   font-weight: 500;
   color: #fff;
-  background: #16a34a;
-  border: none;
-  border-radius: 15px;
+  background: linear-gradient(180deg, #0d9488 0%, #0f766e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.3);
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.shop-card__add-btn:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.4);
+  transform: translateY(-1px);
 }
 
 .shop-card__add-btn:disabled {
@@ -133,16 +153,19 @@
   cursor: not-allowed;
 }
 
-.shop-card__add-btn:hover:not(:disabled) {
-  opacity: 0.95;
-}
-
 @media (max-width: 768px) {
   .shop-page__title {
-    font-size: 36px;
+    font-size: 1.5rem;
   }
 
   .shop-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .shop-page__title {
+    font-size: 1.25rem;
   }
 }

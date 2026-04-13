@@ -21,6 +21,7 @@ const productValidation = [
   body('fat').optional().isFloat({ min: 0 }).withMessage('Некорректное значение жиров'),
   body('carbs').optional().isFloat({ min: 0 }).withMessage('Некорректное значение углеводов'),
   body('price').optional().isFloat({ min: 0 }).withMessage('Цена должна быть ≥ 0'),
+  body('category').optional().isIn(['ration', 'vitamins', 'dishes']).withMessage('Категория: ration, vitamins или dishes'),
 ];
 
 router.use(authenticateToken, requireAdmin);

@@ -14,12 +14,15 @@ function fullImageUrl(imageUrl) {
   return `/api/uploads/products/${filename}`;
 }
 
-/** Для отображения: локальный путь превращаем в полный URL (как картинка из интернета). */
+/** Для отображения: внешний URL или путь к uploads — как есть; путь вида /файл.png (статичный фронт) — как есть. */
 function displayImageUrl(imageUrl) {
   if (!imageUrl || typeof imageUrl !== 'string') return null;
-  const normalized = imageUrl.replace(/\\/g, '/');
-  if (normalized.startsWith('/uploads/products/')) return fullImageUrl(imageUrl);
-  return imageUrl;
+  const normalized = imageUrl.replace(/\\/g, '/').trim();
+  if (!normalized) return null;
+  if (/^https?:\/\//i.test(normalized)) return normalized;
+  // Путь от корня, не uploads — для статики фронта (например /vitamin-b1-fallback.png)
+  if (normalized.startsWith('/') && !normalized.includes('uploads')) return normalized;
+  return fullImageUrl(normalized);
 }
 
 /** При сохранении: полный URL нашего API превращаем обратно в путь /uploads/products/xxx. */
@@ -34,8 +37,9 @@ function normalizeStoredImageUrl(imageUrl) {
 const MIME = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.gif': 'image/gif', '.webp': 'image/webp' };
 
 function readImageDataUrl(imageUrl) {
-  if (!imageUrl || typeof imageUrl !== 'string' || !imageUrl.startsWith('/uploads/products/')) return null;
+  if (!imageUrl || typeof imageUrl !== 'string') return null;
   const filename = path.basename(imageUrl.replace(/\\/g, '/'));
+  if (!filename) return null;
   const filePath = path.join(productsUploadsDir, filename);
   try {
     if (!fs.existsSync(filePath)) return null;
@@ -54,7 +58,7 @@ export const listProducts = async (req, res) => {
       `SELECT id, name, calories, protein, fat, carbs, price, image_url, category, sort_order, created_at, updated_at
        FROM products
        ORDER BY CASE category WHEN 'ration' THEN 1 WHEN 'vitamins' THEN 2 WHEN 'dishes' THEN 3 ELSE 4 END,
-                sort_order ASC NULLS LAST,
+                CASE WHEN sort_order <= 0 THEN 2147483647 ELSE sort_order END ASC,
                 name ASC`
     );
 
@@ -69,9 +73,9 @@ export const listProducts = async (req, res) => {
         carbs: Number(row.carbs),
         price: Number(row.price ?? 0),
         imageUrl: displayImageUrl(row.image_url),
-        imageFullUrl: fullImageUrl(row.image_url),
+        imageFullUrl: displayImageUrl(row.image_url),
         imageDataUrl: imageDataUrl || undefined,
-        category: row.category || 'dishes',
+        category: normalizeCategory(row.category),
         sortOrder: row.sort_order != null ? Number(row.sort_order) : 0,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
@@ -135,7 +139,7 @@ export const createProduct = async (req, res) => {
         carbs: Number(row.carbs),
         price: Number(row.price ?? 0),
         imageUrl: displayImageUrl(row.image_url),
-        imageFullUrl: fullImageUrl(row.image_url),
+        imageFullUrl: displayImageUrl(row.image_url),
         imageDataUrl: readImageDataUrl(row.image_url) || undefined,
         category: row.category || 'dishes',
         sortOrder: row.sort_order != null ? Number(row.sort_order) : 0,
@@ -157,6 +161,11 @@ export const updateProduct = async (req, res) => {
     const id = parseInt(req.params.id, 10);
     const { name, calories, protein, fat, carbs, price, imageUrl, category, sortOrder } = req.body;
 
+    // Всегда сохраняем категорию: из запроса или по умолчанию dishes
+    const categoryValue = (category != null && String(category).trim() !== '')
+      ? normalizeCategory(category)
+      : 'dishes';
+
     const result = await query(
       `UPDATE products
        SET name = COALESCE(NULLIF(TRIM($1), ''), name),
@@ -166,7 +175,7 @@ export const updateProduct = async (req, res) => {
            carbs = COALESCE($5::decimal, carbs),
            price = COALESCE($6::decimal, price),
            image_url = COALESCE(NULLIF(TRIM($7), ''), image_url),
-           category = COALESCE($8, category),
+           category = $8,
            sort_order = COALESCE($9::integer, sort_order),
            updated_at = CURRENT_TIMESTAMP
        WHERE id = $10
@@ -179,7 +188,7 @@ export const updateProduct = async (req, res) => {
         carbs != null ? parseFloat(carbs) : null,
         price != null ? parseFloat(price) : null,
         imageUrl != null ? normalizeStoredImageUrl(imageUrl) : null,
-        category != null ? normalizeCategory(category) : null,
+        categoryValue,
         sortOrder != null ? toInt(sortOrder) : null,
         id,
       ]
@@ -200,9 +209,9 @@ export const updateProduct = async (req, res) => {
         carbs: Number(row.carbs),
         price: Number(row.price ?? 0),
         imageUrl: displayImageUrl(row.image_url),
-        imageFullUrl: fullImageUrl(row.image_url),
+        imageFullUrl: displayImageUrl(row.image_url),
         imageDataUrl: readImageDataUrl(row.image_url) || undefined,
-        category: row.category || 'dishes',
+        category: normalizeCategory(row.category),
         sortOrder: row.sort_order != null ? Number(row.sort_order) : 0,
         updatedAt: row.updated_at,
       },
@@ -236,7 +245,8 @@ export const uploadProductImage = async (req, res) => {
 
     const oldPath = selectResult.rows[0].image_url;
     if (oldPath && !oldPath.startsWith('http')) {
-      const fullPath = path.join(__dirname, '../..', oldPath.replace(/^\//, ''));
+      const oldFilename = path.basename(oldPath.replace(/\\/g, '/'));
+      const fullPath = path.join(productsUploadsDir, oldFilename);
       if (fs.existsSync(fullPath)) {
         try {
           fs.unlinkSync(fullPath);
@@ -248,9 +258,14 @@ export const uploadProductImage = async (req, res) => {
 
     const result = await query(
       `UPDATE products SET image_url = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2
-       RETURNING id, name, calories, protein, fat, carbs, price, image_url, updated_at`,
+       RETURNING id, name, calories, protein, fat, carbs, price, image_url, category, sort_order, updated_at`,
       [imageUrl, id]
     );
+
+    if (process.env.NODE_ENV !== 'production') {
+      const savedPath = path.join(productsUploadsDir, file.filename);
+      console.log('Фото сохранено:', file.filename, '→', savedPath, 'существует:', fs.existsSync(savedPath));
+    }
 
     const row = result.rows[0];
     res.json({
@@ -263,8 +278,10 @@ export const uploadProductImage = async (req, res) => {
         carbs: Number(row.carbs),
         price: Number(row.price ?? 0),
         imageUrl: displayImageUrl(row.image_url),
-        imageFullUrl: fullImageUrl(row.image_url),
+        imageFullUrl: displayImageUrl(row.image_url),
         imageDataUrl: readImageDataUrl(row.image_url) || undefined,
+        category: normalizeCategory(row.category),
+        sortOrder: row.sort_order != null ? Number(row.sort_order) : 0,
         updatedAt: row.updated_at,
       },
     });
@@ -294,7 +311,8 @@ export const deleteProduct = async (req, res) => {
 
     const imgPath = selectResult.rows[0]?.image_url;
     if (imgPath && !imgPath.startsWith('http')) {
-      const fullPath = path.join(__dirname, '../..', imgPath.replace(/^\//, ''));
+      const filename = path.basename(imgPath.replace(/\\/g, '/'));
+      const fullPath = path.join(productsUploadsDir, filename);
       if (fs.existsSync(fullPath)) {
         try {
           fs.unlinkSync(fullPath);

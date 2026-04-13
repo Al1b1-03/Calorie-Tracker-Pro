@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { authApi } from '../api/auth';
+import { LANGS } from '../i18n/translations';
+import { useLanguage } from '../i18n/LanguageContext';
 import './Header.css';
 
 const CartIcon = () => (
@@ -60,6 +62,11 @@ function CartBadge() {
 export default function Header() {
   const isLoggedIn = !!localStorage.getItem('token');
   const [userRole, setUserRole] = useState(() => localStorage.getItem('userRole'));
+  const { lang, setLang, t } = useLanguage();
+  const [isLangOpen, setIsLangOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const langRef = useRef(null);
 
   useEffect(() => {
     if (isLoggedIn && !userRole) {
@@ -78,7 +85,60 @@ export default function Header() {
     return () => window.removeEventListener('userRoleUpdated', onRoleUpdate);
   }, []);
 
+  useEffect(() => {
+    const onDocClick = (event) => {
+      if (!langRef.current) return;
+      if (!langRef.current.contains(event.target)) {
+        setIsLangOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, []);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth > 768) setIsMobileMenuOpen(false);
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
   const isAdmin = userRole === 'admin';
+  const languageDropdown = (
+    <div className="header__lang-select-wrap header__lang-select-wrap--in-actions" ref={langRef}>
+      <button
+        type="button"
+        className="header__lang-select"
+        aria-label={t('header.language')}
+        aria-expanded={isLangOpen}
+        onClick={() => setIsLangOpen((prev) => !prev)}
+      >
+        {t(`lang.${lang}`)}
+      </button>
+      {isLangOpen && (
+        <div className="header__lang-menu" role="listbox" aria-label={t('header.language')}>
+          {LANGS.map((code) => (
+            <button
+              key={code}
+              type="button"
+              className={`header__lang-menu-item ${lang === code ? 'header__lang-menu-item--active' : ''}`}
+              onClick={() => {
+                setLang(code);
+                setIsLangOpen(false);
+              }}
+            >
+              {t(`lang.${code}`)}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <header className="header">
@@ -86,35 +146,57 @@ export default function Header() {
         <Link to="/" className="header__logo">
           <img src="/logo.png" alt="" className="header__logo-img" />
           <span className="header__brand">
-            {isAdmin ? 'CTP Admin' : <>Calorie <span className="header__brand-tracker">Tracker</span> Pro</>}
+            {isAdmin ? t('header.brandAdmin') : <>{t('header.brandUser')}</>}
           </span>
         </Link>
-        <nav className="header__nav">
+        <button
+          type="button"
+          className={`header__burger ${isMobileMenuOpen ? 'header__burger--open' : ''}`}
+          aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="main-navigation"
+          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
+        <nav
+          id="main-navigation"
+          className={`header__nav ${isMobileMenuOpen ? 'header__nav--open' : ''}`}
+        >
           <NavLink to="/" className={({ isActive }) => `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
-            Главная
+            {t('nav.home')}
+          </NavLink>
+          <NavLink to="/about" className={({ isActive }) => `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
+            {t('nav.about')}
           </NavLink>
           {isAdmin ? (
             <>
               <NavLink to="/products" className={({ isActive }) => `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
-                Товары
+                {t('nav.products')}
               </NavLink>
               <NavLink to="/orders" className={({ isActive }) => `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
-                Заказы
+                {t('nav.orders')}
+              </NavLink>
+              <NavLink to="/support" className={({ isActive }) => `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
+                {t('nav.support')}
               </NavLink>
               <NavLink to="/users" className={({ isActive }) => `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
-                Пользователи
+                {t('nav.users')}
               </NavLink>
               <NavLink to="/workouts" className={({ isActive }) => `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
-                Тренировки
+                {t('nav.workouts')}
               </NavLink>
             </>
           ) : (
             <>
               <NavLink to="/shop" className={({ isActive }) => `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
-                Покупка продуктов
+                {t('nav.shop')}
               </NavLink>
               <NavLink to="/workouts" className={({ isActive }) => `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
-                Тренировки
+                {t('nav.workouts')}
               </NavLink>
             </>
           )}
@@ -123,7 +205,7 @@ export default function Header() {
           {isLoggedIn ? (
             <>
               {!isAdmin && (
-                <NavLink to="/cart" className="header__cart" aria-label="Корзина">
+                <NavLink to="/cart" className="header__cart" aria-label={t('nav.cart')}>
                   <CartIcon />
                   <CartBadge />
                 </NavLink>
@@ -132,13 +214,17 @@ export default function Header() {
                 to="/profile"
                 className={({ isActive }) => `header__profile-btn ${isActive ? 'header__profile-btn--active' : ''}`}
               >
-                Профиль
+                {t('nav.profile')}
               </NavLink>
+              {languageDropdown}
             </>
           ) : (
-            <Link to="/login" className="header__profile-btn">
-              Войти
-            </Link>
+            <>
+              <Link to="/login" className="header__profile-btn">
+                {t('nav.login')}
+              </Link>
+              {languageDropdown}
+            </>
           )}
         </div>
       </div>

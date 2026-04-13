@@ -1,4 +1,4 @@
--- База тренировок (админ добавляет, пользователи просматривают)
+-- Новая таблица тренировок: админ создаёт/редактирует, пользователи видят список
 CREATE TABLE IF NOT EXISTS workouts (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS workouts (
   calories INTEGER NOT NULL DEFAULT 0,
   difficulty VARCHAR(50) DEFAULT 'Средняя',
   image_url VARCHAR(500),
-  exercises JSONB NOT NULL DEFAULT '[]',
+  exercises JSONB NOT NULL DEFAULT '[]'::jsonb,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

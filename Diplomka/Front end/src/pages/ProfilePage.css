@@ -2,60 +2,66 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 39px 20px 60px;
+  padding: 28px 20px 48px;
   min-height: calc(100vh - 158px);
 }
 
 .profile-card {
   width: 100%;
-  max-width: 500px;
-  background: #e6e6e6;
-  border-radius: 25px;
-  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
-  padding: 24px 24px 50px;
+  max-width: 520px;
+  background: #f0eef5;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(123, 0, 255, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 28px 28px 32px;
+  border: 1px solid rgba(123, 0, 255, 0.1);
 }
 
 .profile-card__header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .profile-card__header svg {
-  color: #5500ff;
+  color: #7b00ff;
 }
 
 .profile-card__title {
   font-family: Inter, system-ui, sans-serif;
-  font-size: 20px;
-  font-weight: 400;
-  color: #5500ff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #7b00ff;
   margin: 0;
 }
 
 .profile-form__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(123, 0, 255, 0.15);
 }
 
 .profile-form__logout {
-  padding: 10px 18px;
+  padding: 14px 28px;
   font-family: Inter, system-ui, sans-serif;
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 500;
   color: #fff;
   background: #dc2626;
   border: none;
   border-radius: 15px;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s ease, background 0.2s ease;
 }
 
 .profile-form__logout:hover {
-  opacity: 0.9;
+  opacity: 0.95;
+  background: #b91c1c;
 }
 
 .profile-page__loading {
@@ -69,7 +75,17 @@
 .profile-form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
+}
+
+.profile-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.profile-form__row--calorie {
+  grid-template-columns: 1fr;
 }
 
 .profile-form__error {
@@ -95,20 +111,20 @@
 
 .profile-form__label {
   font-family: Inter, system-ui, sans-serif;
-  font-size: 20px;
-  font-weight: 400;
-  color: #000;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #333;
 }
 
 .profile-form__input {
   width: 100%;
-  padding: 16px 20px;
+  padding: 12px 16px;
   font-family: Inter, system-ui, sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   color: #000;
   background: #fff;
-  border: none;
-  border-radius: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
   box-sizing: border-box;
 }
 
@@ -132,22 +148,23 @@
 }
 
 .profile-form__section {
-  padding-top: 16px;
-  border-top: 1px solid #d9d9d9;
+  padding-top: 18px;
+  margin-top: 4px;
+  border-top: 1px solid rgba(123, 0, 255, 0.15);
 }
 
 .profile-form__section-title {
   font-family: Inter, system-ui, sans-serif;
-  font-size: 18px;
-  font-weight: 500;
-  color: #000;
-  margin: 0 0 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #7b00ff;
+  margin: 0 0 12px;
 }
 
 .profile-form__macros-inputs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 14px;
 }
 
 .profile-form__field--inline {
@@ -155,18 +172,16 @@
 }
 
 .profile-form__submit {
-  align-self: flex-start;
   padding: 14px 28px;
   font-family: Inter, system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 400;
+  font-size: 16px;
+  font-weight: 500;
   color: #fff;
   background: #7B00FF;
   border: none;
   border-radius: 15px;
   cursor: pointer;
-  margin-top: 8px;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .profile-form__submit:hover {
@@ -178,23 +193,25 @@
   cursor: not-allowed;
 }
 
+
 /* Responsive */
 @media (max-width: 768px) {
   .profile-page {
-    padding: 24px 16px 40px;
+    padding: 20px 16px 32px;
   }
 
   .profile-card {
-    padding: 20px 20px 40px;
+    padding: 22px 20px 28px;
     border-radius: 20px;
   }
 
   .profile-card__title {
-    font-size: 18px;
+    font-size: 1.125rem;
   }
 
-  .profile-form__label {
-    font-size: 18px;
+  .profile-form__row {
+    grid-template-columns: 1fr;
+    gap: 14px;
   }
 
   .profile-form__macros-inputs {
@@ -204,6 +221,16 @@
 
 @media (max-width: 480px) {
   .profile-card {
-    padding: 16px 16px 32px;
+    padding: 18px 16px 24px;
+  }
+
+  .profile-form__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .profile-form__submit,
+  .profile-form__logout {
+    width: 100%;
   }
 }

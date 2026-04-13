@@ -1,11 +1,26 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { shopApi, getImageUrl } from '../api/shop';
+import { shopApi, getProductImageSrc } from '../api/shop';
+import { useLanguage } from '../i18n/LanguageContext';
+import { translateProductText } from '../i18n/dynamicContent';
 import './CartPage.css';
+
+const FALLBACK_IMAGE =
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect fill="#e8e8e8" width="120" height="120"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#888" font-size="12">Нет фото</text></svg>'
+  );
 
 const TEST_CARD = '4242 4242 4242 4242';
 
 export default function CartPage() {
+  const { lang } = useLanguage();
+  const tr = lang === 'en'
+    ? { title: 'Cart', loading: 'Loading...', loadErr: 'Failed to load cart', updateErr: 'Update failed', delErr: 'Delete failed', cardReq: 'Enter card number', addrReq: 'Enter delivery address', payErr: 'Payment failed', success: 'Payment successful! Thanks for your order.', empty: 'Cart is empty', toShop: 'Go shopping', total: 'Total:', continue: 'Continue shopping', pay: 'Pay', payCard: 'Card payment', toPay: 'To pay:', address: 'Delivery address', addressPh: 'City, street, house, apartment', card: 'Card number', testCard: 'Test card:', cancel: 'Cancel', payNow: 'Pay', paying: 'Paying...', del: 'Delete' }
+    : lang === 'kk'
+      ? { title: 'Себет', loading: 'Жүктелуде...', loadErr: 'Себетті жүктеу қатесі', updateErr: 'Жаңарту қатесі', delErr: 'Жою қатесі', cardReq: 'Карта нөмірін енгізіңіз', addrReq: 'Жеткізу мекенжайын енгізіңіз', payErr: 'Төлем қатесі', success: 'Төлем сәтті өтті! Тапсырысыңызға рақмет.', empty: 'Себет бос', toShop: 'Сатып алуға өту', total: 'Жалпы:', continue: 'Сатып алуды жалғастыру', pay: 'Төлеу', payCard: 'Картамен төлеу', toPay: 'Төлеуге:', address: 'Жеткізу мекенжайы', addressPh: 'Қала, көше, үй, пәтер', card: 'Карта нөмірі', testCard: 'Тест картасы:', cancel: 'Бас тарту', payNow: 'Төлеу', paying: 'Төленуде...', del: 'Жою' }
+      : { title: 'Корзина', loading: 'Загрузка...', loadErr: 'Ошибка загрузки корзины', updateErr: 'Ошибка обновления', delErr: 'Ошибка удаления', cardReq: 'Введите номер карты', addrReq: 'Укажите адрес доставки', payErr: 'Ошибка оплаты', success: 'Оплата прошла успешно! Спасибо за заказ.', empty: 'Корзина пуста', toShop: 'Перейти к покупкам', total: 'Итого:', continue: 'Продолжить покупки', pay: 'Оплатить', payCard: 'Оплата картой', toPay: 'К оплате:', address: 'Адрес доставки', addressPh: 'Город, улица, дом, квартира', card: 'Номер карты', testCard: 'Тестовая карта:', cancel: 'Отмена', payNow: 'Оплатить', paying: 'Оплата...', del: 'Удалить' };
+
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -24,7 +39,7 @@ export default function CartPage() {
       setItems(data);
       setTotal(cartTotal);
     } catch (err) {
-      setError(err.message || 'Ошибка загрузки корзины');
+      setError(err.message || tr.loadErr);
     } finally {
       setLoading(false);
     }
@@ -32,7 +47,7 @@ export default function CartPage() {
 
   useEffect(() => {
     loadCart();
-  }, []);
+  }, [tr.loadErr]);
 
   useEffect(() => {
     const onCartUpdate = () => loadCart();
@@ -51,7 +66,7 @@ export default function CartPage() {
       setTotal((prev) => prev - item.subtotal + updated.subtotal);
       window.dispatchEvent(new CustomEvent('cartUpdated'));
     } catch (err) {
-      setError(err.message || 'Ошибка обновления');
+      setError(err.message || tr.updateErr);
     } finally {
       setActionLoading(null);
     }
@@ -65,7 +80,7 @@ export default function CartPage() {
       setTotal((prev) => prev - item.subtotal);
       window.dispatchEvent(new CustomEvent('cartUpdated'));
     } catch (err) {
-      setError(err.message || 'Ошибка удаления');
+      setError(err.message || tr.delErr);
     } finally {
       setActionLoading(null);
     }
@@ -78,11 +93,11 @@ export default function CartPage() {
     const card = cardNumber.replace(/\s/g, '');
     const addr = address.trim();
     if (!card) {
-      setError('Введите номер карты');
+      setError(tr.cardReq);
       return;
     }
     if (!addr) {
-      setError('Укажите адрес доставки');
+      setError(tr.addrReq);
       return;
     }
     setCheckoutLoading(true);
@@ -96,7 +111,7 @@ export default function CartPage() {
       loadCart();
       window.dispatchEvent(new CustomEvent('cartUpdated'));
     } catch (err) {
-      setError(err.message || 'Ошибка оплаты');
+      setError(err.message || tr.payErr);
     } finally {
       setCheckoutLoading(false);
     }
@@ -110,25 +125,25 @@ export default function CartPage() {
   if (loading) {
     return (
       <div className="cart-page">
-        <h1 className="cart-page__title">Корзина</h1>
-        <p className="cart-page__loading">Загрузка...</p>
+        <h1 className="cart-page__title">{tr.title}</h1>
+        <p className="cart-page__loading">{tr.loading}</p>
       </div>
     );
   }
 
   return (
     <div className="cart-page">
-      <h1 className="cart-page__title">Корзина</h1>
+      <h1 className="cart-page__title">{tr.title}</h1>
       {checkoutSuccess && (
-        <p className="cart-page__success">Оплата прошла успешно! Спасибо за заказ.</p>
+        <p className="cart-page__success">{tr.success}</p>
       )}
       {error && <p className="cart-page__error">{error}</p>}
 
       {items.length === 0 ? (
         <div className="cart-page__empty">
-          <p className="cart-page__empty-text">Корзина пуста</p>
+          <p className="cart-page__empty-text">{tr.empty}</p>
           <Link to="/shop" className="cart-page__empty-link">
-            Перейти к покупкам
+            {tr.toShop}
           </Link>
         </div>
       ) : (
@@ -137,18 +152,18 @@ export default function CartPage() {
             {items.map((item) => (
               <li key={item.id} className="cart-item">
                 <div className="cart-item__image">
-                  {item.imageUrl ? (
-                    <img
-                      src={getImageUrl(item.imageUrl)}
-                      alt={item.name}
-                      className="cart-item__img"
-                    />
-                  ) : (
-                    <div className="cart-item__placeholder" />
-                  )}
+                  <img
+                    src={getProductImageSrc(item) || FALLBACK_IMAGE}
+                    alt={translateProductText(lang, item.name)}
+                    className="cart-item__img"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = FALLBACK_IMAGE;
+                    }}
+                  />
                 </div>
                 <div className="cart-item__info">
-                  <h3 className="cart-item__name">{item.name}</h3>
+                  <h3 className="cart-item__name">{translateProductText(lang, item.name)}</h3>
                   <p className="cart-item__price">{formatPrice(item.price)} ₸</p>
                 </div>
                 <div className="cart-item__quantity">
@@ -178,7 +193,7 @@ export default function CartPage() {
                   className="cart-item__remove"
                   onClick={() => handleRemove(item)}
                   disabled={actionLoading === item.id}
-                  aria-label="Удалить"
+                  aria-label={tr.del}
                 >
                   ×
                 </button>
@@ -188,18 +203,18 @@ export default function CartPage() {
 
           <div className="cart-page__footer">
             <p className="cart-page__total">
-              Итого: <strong>{formatPrice(total)} ₸</strong>
+              {tr.total} <strong>{formatPrice(total)} ₸</strong>
             </p>
             <div className="cart-page__footer-actions">
               <Link to="/shop" className="cart-page__continue">
-                Продолжить покупки
+                {tr.continue}
               </Link>
               <button
                 type="button"
                 className="cart-page__pay-btn"
                 onClick={() => setShowCheckout(true)}
               >
-                Оплатить
+                {tr.pay}
               </button>
             </div>
           </div>
@@ -212,23 +227,23 @@ export default function CartPage() {
             className="cart-checkout__modal"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="cart-checkout__title">Оплата картой</h2>
+            <h2 className="cart-checkout__title">{tr.payCard}</h2>
             <p className="cart-checkout__total">
-              К оплате: <strong>{formatPrice(total)} ₸</strong>
+              {tr.toPay} <strong>{formatPrice(total)} ₸</strong>
             </p>
             <form className="cart-checkout__form" onSubmit={handleCheckout}>
               <div className="cart-checkout__field">
-                <label className="cart-checkout__label">Адрес доставки</label>
+                <label className="cart-checkout__label">{tr.address}</label>
                 <input
                   type="text"
-                  placeholder="Город, улица, дом, квартира"
+                  placeholder={tr.addressPh}
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   className="cart-checkout__input"
                 />
               </div>
               <div className="cart-checkout__field">
-                <label className="cart-checkout__label">Номер карты</label>
+                <label className="cart-checkout__label">{tr.card}</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -239,7 +254,7 @@ export default function CartPage() {
                   maxLength={19}
                 />
                 <p className="cart-checkout__hint">
-                  Тестовая карта:{' '}
+                  {tr.testCard}{' '}
                   <button
                     type="button"
                     className="cart-checkout__test-card"
@@ -255,14 +270,14 @@ export default function CartPage() {
                   className="cart-checkout__btn cart-checkout__btn--cancel"
                   onClick={() => setShowCheckout(false)}
                 >
-                  Отмена
+                  {tr.cancel}
                 </button>
                 <button
                   type="submit"
                   className="cart-checkout__btn cart-checkout__btn--pay"
                   disabled={checkoutLoading}
                 >
-                  {checkoutLoading ? 'Оплата...' : `Оплатить ${formatPrice(total)} ₸`}
+                  {checkoutLoading ? tr.paying : `${tr.payNow} ${formatPrice(total)} ₸`}
                 </button>
               </div>
             </form>
