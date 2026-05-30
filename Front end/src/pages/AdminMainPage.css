@@ -1,0 +1,64 @@
+.admin-main {
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-bottom: var(--space-page-y);
+}
+
+.admin-main__error {
+  margin: 0 0 16px;
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+.admin-main__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-section);
+}
+
+.admin-main__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 24px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.admin-main__card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.admin-main__card-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.admin-main__card-label {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.admin-main__card-count {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.admin-main__card-link {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-top: auto;
+}
+
+@media (max-width: 480px) {
+  .admin-main__grid {
+    grid-template-columns: 1fr;
+  }
+}

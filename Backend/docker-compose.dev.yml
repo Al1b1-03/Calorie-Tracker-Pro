@@ -1,0 +1,13 @@
+# Dev overlay: hot reload (node --watch), исходники с диска
+services:
+  backend:
+    build:
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./src:/app/src
+      - ./database:/app/database
+      - ./scripts:/app/scripts
+      - backend_uploads:/app/uploads
+      - transformers_cache:/root/.cache/huggingface

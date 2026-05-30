@@ -1,0 +1,197 @@
+.profile-page {
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-bottom: var(--space-page-y);
+}
+
+.profile-card {
+  padding: 24px;
+  animation: fade-in 0.4s var(--ease-out) both;
+}
+
+.profile-card__hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.profile-card__avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: #fff;
+  background: var(--gradient-brand);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  flex-shrink: 0;
+}
+
+.profile-card__name {
+  margin: 0 0 4px;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.profile-card__email {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.profile-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-form__label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.profile-form__input {
+  width: 100%;
+  min-height: var(--input-height);
+  padding: 0 14px;
+  font-size: max(16px, var(--text-base));
+  color: var(--color-text);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.profile-form__input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+.profile-form__input--readonly {
+  opacity: 0.85;
+  cursor: default;
+}
+
+.profile-form__section {
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
+}
+
+.profile-form__section-title {
+  margin: 0 0 12px;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.profile-form__macros-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.profile-form__calc-btn {
+  align-self: flex-start;
+  min-height: var(--touch-target);
+  padding: 0 18px;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-muted);
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.profile-form__calc-btn:hover {
+  background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.profile-form__calc-summary {
+  padding: 14px 16px;
+  background: var(--color-primary-muted);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+}
+
+.profile-form__calc-summary p {
+  margin: 4px 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.profile-form__error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+.profile-form__success {
+  margin: 0;
+  color: var(--color-success);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.profile-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.profile-form__submit,
+.profile-form__logout {
+  min-height: var(--touch-target);
+  padding: 0 24px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.profile-form__logout {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+}
+
+@media (max-width: 768px) {
+  .profile-form__row,
+  .profile-form__macros-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-form__actions {
+    flex-direction: column;
+  }
+
+  .profile-form__submit,
+  .profile-form__logout,
+  .profile-form__calc-btn {
+    width: 100%;
+  }
+}

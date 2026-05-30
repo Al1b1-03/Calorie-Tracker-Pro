@@ -1,0 +1,83 @@
+/* Admin pages — design tokens for dark/light theme */
+
+.admin-main,
+.products-page,
+.orders-page,
+.users-page,
+.support-page,
+.admin-workouts,
+.admin-profile-page {
+  color: var(--color-text);
+}
+
+.orders-page__title,
+.users-page__title,
+.support-page__title,
+.admin-workouts__title {
+  color: var(--color-primary) !important;
+}
+
+.orders-page__loading {
+  color: var(--color-text-secondary) !important;
+}
+
+.admin-main__card,
+.products-card,
+.orders-card,
+.users-card,
+.admin-workouts__card {
+  background: var(--glass-bg, var(--color-surface)) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-text) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.admin-main__card-label,
+.admin-main__card-count {
+  color: var(--color-text) !important;
+}
+
+.admin-main__card-count {
+  color: var(--color-primary) !important;
+}
+
+.products-form,
+.admin-profile-form,
+.admin-workouts__form {
+  background: var(--color-surface) !important;
+  border-color: var(--color-border) !important;
+}
+
+.products-form__input,
+.admin-profile-form__input,
+.admin-workouts__input,
+.orders-page__table,
+.users-page__table {
+  background: var(--color-bg-elevated) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text) !important;
+}
+
+.products-form__label,
+.admin-profile-form__label,
+.admin-workouts__label {
+  color: var(--color-text-secondary) !important;
+}
+
+.admin-profile-form,
+.admin-profile-page .profile-card {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.admin-profile-form__title {
+  color: var(--color-text) !important;
+  font-size: var(--text-2xl) !important;
+}
+
+@media (max-width: 768px) {
+  .admin-main__grid {
+    grid-template-columns: 1fr !important;
+  }
+}

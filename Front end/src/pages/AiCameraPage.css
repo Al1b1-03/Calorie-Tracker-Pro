@@ -1,0 +1,350 @@
+.ai-camera {
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-bottom: calc(var(--space-page-y) + env(safe-area-inset-bottom, 0px));
+}
+
+.ai-camera__tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: var(--space-section);
+}
+
+.ai-camera__tab {
+  flex: 1;
+  min-height: var(--touch-target);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.ai-camera__tab--active {
+  background: var(--color-primary-muted);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.ai-camera__scan,
+.ai-camera__history {
+  padding: 16px;
+  margin-bottom: var(--space-section);
+}
+
+.ai-camera__viewfinder {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  margin-bottom: 16px;
+}
+
+.ai-camera__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ai-camera__video--live {
+  opacity: 1;
+  z-index: 3;
+}
+
+.ai-camera__preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+}
+
+.ai-camera__placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.ai-camera__placeholder-icon {
+  font-size: 3rem;
+}
+
+.ai-camera__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ai-camera__btn {
+  min-height: var(--touch-target);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.ai-camera__btn--primary {
+  background: var(--gradient-brand);
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+}
+
+.ai-camera__btn--ghost {
+  background: transparent;
+}
+
+.ai-camera__btn:active {
+  transform: scale(0.98);
+}
+
+.ai-camera__btn--file {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0;
+}
+
+.ai-camera__file-input-native {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.ai-camera__analyzing-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(9, 9, 11, 0.55);
+  color: #fff;
+  text-align: center;
+  padding: 16px;
+}
+
+.ai-camera__mock-badge {
+  margin: 16px 0 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.ai-camera__error {
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+  margin: 0 0 12px;
+}
+
+.ai-camera__analyzing {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.ai-camera__shimmer {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    var(--color-border) 25%,
+    var(--color-primary-muted) 50%,
+    var(--color-border) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.ai-camera__result-img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+}
+
+.ai-camera__result-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ai-camera__result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-camera__provider {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-primary);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-muted);
+}
+
+.ai-camera__dish {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 700;
+}
+
+.ai-camera__confidence {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-success);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-success-bg);
+}
+
+.ai-camera__ingredients h3 {
+  margin: 0 0 8px;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.ai-camera__ingredients ul {
+  margin: 0 0 16px;
+  padding-left: 1.2rem;
+  color: var(--color-text);
+}
+
+.ai-camera__nutrition {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.ai-camera__nutri-card {
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ai-camera__nutri-card span {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.ai-camera__result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ai-camera__history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-camera__history-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+}
+
+.ai-camera__history-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.ai-camera__history-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ai-camera__history-body time {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.ai-camera__empty {
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.ai-camera__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+  min-height: var(--touch-target);
+}
+
+@media (min-width: 768px) {
+  .ai-camera__nutrition {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ai-camera__result-actions {
+    flex-direction: row;
+  }
+
+  .ai-camera__result-actions .ai-camera__btn {
+    flex: 1;
+  }
+}

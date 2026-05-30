@@ -1,0 +1,155 @@
+/* Mobile-first layout overrides for feature pages */
+
+.app__main {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.app .main-page__grid,
+.app .workouts-grid,
+.app .shop-grid,
+.app .products-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-section);
+}
+
+.app .main-page__fields-row,
+.app .main-page__calc-grid,
+.app .profile-form__row,
+.app .profile-form__macros-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.app .main-page__insights-grid,
+.app .about-page__hero {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.app .main-page__filter-controls {
+  flex-direction: column;
+  width: 100%;
+}
+
+.app .main-page__filter-input {
+  width: 100%;
+}
+
+.app .main-page__section-header--row {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+@media (min-width: 768px) {
+  .app .main-page__fields-row,
+  .app .main-page__calc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .app .profile-form__row:not(.profile-form__row--calorie) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .app .workouts-grid,
+  .app .shop-grid,
+  .app .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app .main-page__insights-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app .main-page__filter-controls {
+    flex-direction: row;
+    width: auto;
+  }
+
+  .app .main-page__section-header--row {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app .main-page__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .app .admin-main__grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+
+  .app .users-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+
+  .app .admin-workouts__grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+
+  .app .workouts-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .app .shop-grid,
+  .app .products-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .app .about-page__hero {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+  }
+}
+
+@media (min-width: 1440px) {
+  .app .shop-grid,
+  .app .products-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .app .main-page__submit,
+  .app .login-form__submit,
+  .app .registration-form__submit,
+  .app .profile-form__submit,
+  .app .profile-form__logout,
+  .app .products-page__add-btn,
+  .app .shop-card__add-btn,
+  .app .cart-page__pay-btn,
+  .app .workout-card__btn {
+    width: 100%;
+    min-height: var(--touch-target);
+  }
+
+  .app .profile-form__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .app .main-page__entry {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .app .main-page__entry-delete {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (hover: none) {
+  .workout-card:hover {
+    transform: none;
+  }
+}

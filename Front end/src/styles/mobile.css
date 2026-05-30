@@ -1,0 +1,364 @@
+/**
+ * Mobile adaptation layer — 320px → 767px phones, 768px+ tablets/desktop
+ */
+
+@media (max-width: 767.98px) {
+  .page {
+    padding-left: max(var(--space-page-x), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--space-page-x), env(safe-area-inset-right, 0px));
+    max-width: 100%;
+    overflow-x: clip;
+  }
+}
+
+/* ─── Grids: force single column on phones ─── */
+@media (max-width: 767.98px) {
+  .products-grid,
+  .users-grid,
+  .admin-workouts__grid,
+  .admin-main__grid,
+  .orders-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  .products-grid,
+  .users-grid,
+  .admin-workouts__grid {
+    display: grid;
+    gap: var(--space-section);
+  }
+}
+
+/* ─── Touch targets (min 44×44) ─── */
+@media (max-width: 767.98px) {
+  .header__profile-btn {
+    min-height: var(--touch-target);
+  }
+
+  .main-page__add-btn,
+  .cart-item__remove,
+  .cart-item__qty-btn,
+  .dashboard__chart-tab,
+  .workouts-filter,
+  .orders-card__toggle,
+  .orders-card__delete,
+  .users-card__btn,
+  .support-card__btn,
+  .ai-assistant__close,
+  .products-card__btn,
+  .admin-workouts__btn {
+    min-height: var(--touch-target);
+    min-width: var(--touch-target);
+  }
+
+  .orders-card__toggle,
+  .orders-card__delete {
+    min-width: auto;
+    width: 100%;
+  }
+}
+
+/* ─── Press feedback ─── */
+@media (max-width: 767.98px) {
+  button:not(:disabled):active,
+  .ui-btn:active,
+  .header__nav-link:active,
+  .shop-card__add-btn:active,
+  .workout-card__btn:active {
+    transform: scale(0.97);
+    opacity: 0.92;
+  }
+}
+
+/* ─── Forms: full width inputs ─── */
+@media (max-width: 767.98px) {
+  .profile-form__row,
+  .profile-form__macros-inputs,
+  .main-page__fields-row,
+  .main-page__calc-grid,
+  .products-form__body,
+  .admin-workouts__details-grid,
+  .admin-workouts__row,
+  .admin-workouts__exercise-row {
+    grid-template-columns: 1fr !important;
+    display: grid !important;
+  }
+
+  .profile-form__input,
+  .profile-form__select,
+  .main-page__input,
+  .products-form__input,
+  .admin-workouts__input,
+  .login-form__input,
+  .registration-form__input {
+    width: 100%;
+    max-width: 100%;
+    font-size: max(16px, var(--text-base));
+  }
+
+  .products-form__actions,
+  .admin-workouts__form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .products-form__actions .products-form__btn,
+  .admin-workouts__form-actions .admin-workouts__btn {
+    width: 100%;
+    min-height: var(--touch-target);
+  }
+}
+
+/* ─── Modals: fullscreen on mobile ─── */
+@media (max-width: 767.98px) {
+  .products-modal,
+  .admin-workouts__modal {
+    align-items: stretch;
+    justify-content: stretch;
+    padding: 0;
+  }
+
+  .products-modal__content,
+  .admin-workouts__modal-content {
+    width: 100%;
+    max-width: none;
+    min-height: 100dvh;
+    max-height: none;
+    margin: 0;
+    border-radius: 0;
+    border-left-width: 2px;
+    padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  }
+
+  body.modal-open {
+    overflow: hidden;
+    touch-action: none;
+  }
+}
+
+/* ─── Cart: keep designed wrap layout (override layout.css column rule) ─── */
+@media (max-width: 767.98px) {
+  .cart-item {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    grid-template-areas:
+      'image info remove'
+      'image qty subtotal';
+    align-items: center;
+    gap: 8px 10px;
+    padding: 12px;
+  }
+
+  .cart-item__image {
+    grid-area: image;
+    width: 64px;
+    height: 64px;
+  }
+
+  .cart-item__info {
+    grid-area: info;
+    min-width: 0;
+  }
+
+  .cart-item__name {
+    word-break: break-word;
+  }
+
+  .cart-item__remove {
+    grid-area: remove;
+    align-self: start;
+    justify-self: end;
+  }
+
+  .cart-item__quantity {
+    grid-area: qty;
+  }
+
+  .cart-item__subtotal {
+    grid-area: subtotal;
+    text-align: right;
+    min-width: 0;
+  }
+}
+
+/* ─── Orders: table → cards on mobile ─── */
+.orders-items-cards {
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  gap: 8px;
+}
+
+.orders-item-card {
+  padding: 10px 12px;
+  background: var(--color-bg-elevated, #f8f9fa);
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
+  border-radius: var(--radius-md, 10px);
+}
+
+.orders-item-card__name {
+  margin: 0 0 6px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.orders-item-card__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary, #666);
+}
+
+@media (max-width: 767.98px) {
+  .orders-items-table {
+    display: none;
+  }
+
+  .orders-items-cards {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .orders-card__items {
+    overflow-x: visible;
+  }
+}
+
+/* ─── Images ─── */
+@media (max-width: 767.98px) {
+  .shop-card__image,
+  .products-card__image,
+  .workout-card__image,
+  .cart-item__img,
+  .admin-workouts__card-img {
+    object-fit: cover;
+    width: 100%;
+  }
+}
+
+/* ─── Admin page titles ─── */
+@media (max-width: 767.98px) {
+  .users-page__title,
+  .orders-page__title,
+  .products-page__catalog-title {
+    font-size: var(--text-xl) !important;
+  }
+}
+
+/* ─── Remove redundant extra bottom padding ─── */
+@media (max-width: 767.98px) {
+  .profile-page,
+  .ai-camera-page {
+    padding-bottom: var(--space-page-y);
+  }
+}
+
+/* ─── Main page entries ─── */
+@media (max-width: 767.98px) {
+  .main-page__entry {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .main-page__entry-delete {
+    width: 100%;
+    min-height: var(--touch-target);
+    justify-content: center;
+  }
+
+  .main-page__entry-meta {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+
+/* ─── Support cards ─── */
+@media (max-width: 767.98px) {
+  .support-card__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .support-card__btn {
+    width: 100%;
+    min-height: var(--touch-target);
+  }
+}
+
+/* ─── Header drawer polish ─── */
+@media (max-width: 767.98px) {
+  .header__nav--drawer {
+    width: min(100%, 320px);
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+  }
+
+  .header__brand {
+    max-width: calc(100vw - 160px);
+  }
+}
+
+/* ─── AI assistant position on mobile ─── */
+@media (max-width: 767.98px) {
+  .ai-assistant {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ─── Checkout & workout modals: full viewport on phones ─── */
+@media (max-width: 767.98px) {
+  .cart-checkout {
+    align-items: stretch;
+  }
+
+  .cart-checkout__modal {
+    max-width: none;
+    min-height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+    overflow-y: auto;
+    padding: max(20px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  }
+
+  .workout-modal {
+    align-items: stretch;
+  }
+
+  .workout-modal__content {
+    max-height: none;
+    min-height: 100dvh;
+    border-radius: 0;
+    padding: max(20px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  }
+
+  .orders-card__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .orders-card__details {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .orders-card__detail {
+    word-break: break-word;
+  }
+}
+
+/* ─── Tablet (768px): comfortable spacing, 2-col grids where useful ─── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .products-grid,
+  .users-grid,
+  .admin-workouts__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .admin-main__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
