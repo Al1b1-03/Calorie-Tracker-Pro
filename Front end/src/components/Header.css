@@ -374,6 +374,15 @@
   font-weight: 600;
 }
 
+.header__lang-select-wrap--mobile .header__lang-menu {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+
+.header__lang-select-wrap--mobile .header__lang-select::after {
+  transform: translateY(-35%) rotate(-135deg);
+}
+
 .header__cart {
   display: flex;
   align-items: center;
