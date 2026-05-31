@@ -135,6 +135,11 @@ const startServer = async () => {
     } else {
       console.warn('DATABASE_URL not set. Create .env from .env.example');
     }
+
+    const { warmupVision } = await import('./services/vision/warmup.js');
+    warmupVision().catch((err) => {
+      console.warn('[vision] Startup warmup failed (will retry on first scan):', err.message);
+    });
   } catch (err) {
     console.error('Startup failed:', err.message);
     process.exit(1);

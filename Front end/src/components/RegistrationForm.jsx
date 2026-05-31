@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { EmailIcon, PhoneIcon, LockIcon, CloseIcon } from '../shared/icons';
+import { EmailIcon, PhoneIcon, LockIcon } from '../shared/icons';
 import { authApi } from '../api/auth';
 import { useLanguage } from '../i18n/LanguageContext';
 import './RegistrationForm.css';
@@ -60,9 +60,6 @@ export default function RegistrationForm() {
   return (
     <div className="registration-page">
       <div className="registration-card">
-        <button className="registration-card__close" aria-label={t('common.close')}>
-          <CloseIcon />
-        </button>
         <h1 className="registration-card__title">Calorie Tracker Pro</h1>
 
         <div className="registration-card__tabs">

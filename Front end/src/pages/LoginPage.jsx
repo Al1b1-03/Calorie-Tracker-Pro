@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { EmailIcon, LockIcon, CloseIcon, GoogleIcon, VkIcon, YandexIcon } from '../shared/icons';
+import { EmailIcon, LockIcon, GoogleIcon, VkIcon, YandexIcon } from '../shared/icons';
 import { authApi } from '../api/auth';
 import { useLanguage } from '../i18n/LanguageContext';
 import { getLoginRedirectPath, normalizeRole } from '../utils/roles';
@@ -45,9 +45,6 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <button className="login-card__close" aria-label={t('common.close')}>
-          <CloseIcon />
-        </button>
         <h1 className="login-card__title">Calorie Tracker Pro</h1>
         <div className="login-card__tabs">
           <span className="login-card__tab login-card__tab--active">{t('auth.loginTab')}</span>

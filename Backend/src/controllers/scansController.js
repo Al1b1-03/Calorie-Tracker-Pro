@@ -1,5 +1,6 @@
 import { query } from '../config/database.js';
 import { analyzeFoodImage } from '../services/vision/index.js';
+import { mapVisionError } from '../services/vision/visionErrors.js';
 
 const mapScanRow = (row) => ({
   id: row.id,
@@ -29,6 +30,7 @@ export const analyzeScan = async (req, res) => {
     const analysis = await analyzeFoodImage({
       buffer: req.file.buffer,
       filename: req.file.filename,
+      filePath: req.file.path,
       mimeType: req.file.mimetype || 'image/jpeg',
       lang: req.body?.lang || 'ru',
     });
@@ -63,7 +65,7 @@ export const analyzeScan = async (req, res) => {
         error: 'Таблица сканирований не создана. Перезапустите backend для применения миграций.',
       });
     }
-    res.status(500).json({ error: err.message || 'Ошибка анализа изображения' });
+    res.status(500).json({ error: mapVisionError(err) });
   }
 };
 

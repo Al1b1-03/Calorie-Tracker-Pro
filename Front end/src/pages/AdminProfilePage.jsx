@@ -87,8 +87,8 @@ export default function AdminProfilePage() {
 
   if (loading && !email) {
     return (
-      <div className="admin-profile-page">
-        <div className="admin-profile-card">
+      <div className="page admin-profile-page">
+        <div className="admin-profile-card glass-card">
           <p className="admin-profile-page__loading">{tr.loading}</p>
         </div>
       </div>
@@ -96,11 +96,11 @@ export default function AdminProfilePage() {
   }
 
   return (
-    <div className="admin-profile-page">
+    <div className="page admin-profile-page">
       <div className="admin-profile-page__header">
         <h1 className="admin-profile-page__title">{tr.title}</h1>
       </div>
-      <div className="admin-profile-card">
+      <div className="admin-profile-card glass-card">
         <form className="admin-profile-form" onSubmit={handleSubmit}>
           {error && <p className="admin-profile-form__error">{error}</p>}
           {success && <p className="admin-profile-form__success">{tr.success}</p>}

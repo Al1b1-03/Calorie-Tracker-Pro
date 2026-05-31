@@ -1,16 +1,76 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { pipeline, RawImage } from '@xenova/transformers';
+import { pipeline, RawImage, env } from '@xenova/transformers';
 import { FOOD_CATALOG, getCatalogLabels, resolveCatalogEntry } from './foodCatalog.js';
 import { loadImageInput } from './loadImageInput.js';
 
+const DEFAULT_CACHE = path.join(process.cwd(), '.cache', 'huggingface');
+const cacheDir = process.env.HF_HOME || process.env.TRANSFORMERS_CACHE || DEFAULT_CACHE;
+
+env.cacheDir = cacheDir;
+env.allowLocalModels = true;
+
 let classifierPromise = null;
+
+function getModelId() {
+  return process.env.VISION_LOCAL_MODEL || 'Xenova/clip-vit-base-patch32';
+}
+
+function modelHubCachePath(modelId) {
+  return path.join(cacheDir, 'hub', `models--${modelId.replace(/\//g, '--')}`);
+}
+
+function clearModelCache(modelId) {
+  const hubPath = modelHubCachePath(modelId);
+  if (fs.existsSync(hubPath)) {
+    fs.rmSync(hubPath, { recursive: true, force: true });
+    console.warn(`[vision] Cleared incomplete model cache: ${hubPath}`);
+  }
+}
+
+function isRetriableLoadError(err) {
+  const msg = String(err?.message || err?.cause?.message || '');
+  const code = err?.code || err?.cause?.code || '';
+  return (
+    msg.includes('terminated') ||
+    msg.includes('other side closed') ||
+    code === 'UND_ERR_SOCKET' ||
+    msg.includes('ECONNRESET')
+  );
+}
+
+async function loadClassifier(maxAttempts = 3) {
+  const modelId = getModelId();
+  let lastErr;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await pipeline('zero-shot-image-classification', modelId);
+    } catch (err) {
+      lastErr = err;
+      console.warn(
+        `[vision] Model load attempt ${attempt}/${maxAttempts} failed:`,
+        err.message
+      );
+      if (attempt < maxAttempts && isRetriableLoadError(err)) {
+        clearModelCache(modelId);
+        await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
+      } else {
+        break;
+      }
+    }
+  }
+
+  throw lastErr;
+}
 
 function getClassifier() {
   if (!classifierPromise) {
-    const model = process.env.VISION_LOCAL_MODEL || 'Xenova/clip-vit-base-patch32';
-    classifierPromise = pipeline('zero-shot-image-classification', model);
+    classifierPromise = loadClassifier().catch((err) => {
+      classifierPromise = null;
+      throw err;
+    });
   }
   return classifierPromise;
 }
@@ -32,8 +92,14 @@ async function bufferToRawImage(buffer, mimeType) {
   }
 }
 
+export async function warmupLocalVision() {
+  console.info('[vision] Loading local CLIP model…');
+  await getClassifier();
+  console.info('[vision] Local CLIP model ready');
+}
+
 /**
- * @param {{ buffer?: Buffer, filename?: string, mimeType?: string, lang?: string }} input
+ * @param {{ buffer?: Buffer, filename?: string, filePath?: string, mimeType?: string, lang?: string }} input
  */
 export async function analyzeFoodImage(input = {}) {
   const lang = input.lang || 'ru';
@@ -74,5 +140,5 @@ export async function analyzeFoodImage(input = {}) {
 }
 
 export function isLocalVisionReady() {
-  return true;
+  return Boolean(classifierPromise);
 }
