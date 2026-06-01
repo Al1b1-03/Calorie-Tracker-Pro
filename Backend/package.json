@@ -10,8 +10,10 @@
     "stop": "powershell -ExecutionPolicy Bypass -File ./kill-port.ps1",
     "seed": "node scripts/seed-products.js",
     "add-admin": "node scripts/add-admin.js",
+    "check-deploy": "node scripts/check-deploy.js",
+    "docker:add-admin": "docker compose --profile local-db -f docker-compose.yml -f docker-compose.local.yml exec backend node scripts/add-admin.js",
     "docker:up": "docker compose up --build -d",
-    "docker:local": "docker compose --profile local-db up --build -d",
+    "docker:local": "docker compose --profile local-db -f docker-compose.yml -f docker-compose.local.yml up --build -d",
     "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build",
     "docker:dev:local": "docker compose --profile local-db -f docker-compose.yml -f docker-compose.dev.yml up --build",
     "docker:down": "docker compose down",
@@ -27,6 +29,7 @@
     "express-validator": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.1.0",
-    "pg": "^8.12.0"
+    "pg": "^8.12.0",
+    "pg-connection-string": "^2.11.0"
   }
 }

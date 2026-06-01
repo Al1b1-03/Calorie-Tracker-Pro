@@ -1,7 +1,7 @@
 # Render: сборка из корня репозитория. CACHE_BUST меняйте при деплое, если слои закешировались.
 FROM node:20-bookworm-slim
 
-ARG CACHE_BUST=4
+ARG CACHE_BUST=5
 WORKDIR /app
 
 RUN apt-get update \

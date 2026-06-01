@@ -1,30 +1,40 @@
 /**
- * Безопасный разбор DATABASE_URL для логов и проверки (без пароля).
+ * Безопасный разбор DATABASE_URL (pg-connection-string — как в node-pg).
  */
+import parse from 'pg-connection-string';
+
 const PLACEHOLDER_PATTERN =
   /user:password|USER:PASSWORD|@HOST\/|@base\/|@db:5432|your-super-secret/i;
 
 const INVALID_HOSTS = new Set(['host', 'base', 'db', 'localhost', '127.0.0.1']);
 
-function parseDbUrl(connectionString) {
-  const raw = String(connectionString || '').trim();
+export function normalizeDatabaseUrl(connectionString) {
+  return String(connectionString || '')
+    .trim()
+    .replace(/^["']+|["']+$/g, '');
+}
+
+function parseConfig(connectionString) {
+  const raw = normalizeDatabaseUrl(connectionString);
   if (!raw) return null;
+  if (!/^postgres(?:ql)?:\/\//i.test(raw)) {
+    return null;
+  }
   try {
-    const normalized = raw.replace(/^postgres(ql)?:/i, 'http:');
-    return new URL(normalized);
+    return parse(raw);
   } catch {
     return null;
   }
 }
 
 export function getDatabaseHostLabel(connectionString) {
-  const parsed = parseDbUrl(connectionString);
-  if (!parsed?.hostname) return '(invalid DATABASE_URL)';
-  return parsed.hostname;
+  const config = parseConfig(connectionString);
+  if (!config?.host) return '(invalid DATABASE_URL)';
+  return config.host;
 }
 
 export function validateDatabaseUrl(connectionString) {
-  const raw = String(connectionString || '').trim();
+  const raw = normalizeDatabaseUrl(connectionString);
   if (!raw) {
     return { ok: false, message: 'DATABASE_URL is empty' };
   }
@@ -35,28 +45,36 @@ export function validateDatabaseUrl(connectionString) {
         'DATABASE_URL looks like a template (HOST/base/user:password). Paste Internal Database URL from Render PostgreSQL.',
     };
   }
-
-  const parsed = parseDbUrl(raw);
-  if (!parsed?.hostname) {
+  if (!/^postgres(?:ql)?:\/\//i.test(raw)) {
     return {
       ok: false,
       message:
-        'DATABASE_URL is not a valid URL. Use postgres:// or postgresql:// from Render (Internal Database URL).',
+        'DATABASE_URL must start with postgres:// or postgresql:// (Internal Database URL from Render).',
     };
   }
 
-  if (INVALID_HOSTS.has(parsed.hostname.toLowerCase())) {
+  const config = parseConfig(raw);
+  if (!config?.host) {
     return {
       ok: false,
-      message: `DATABASE_URL host "${parsed.hostname}" is not a real server. Use Internal Database URL from Render PostgreSQL (host like dpg-xxxxx-a).`,
+      message:
+        'Cannot parse DATABASE_URL. Copy the full Internal Database URL from Render (one line, no quotes).',
     };
   }
 
-  return { ok: true, host: parsed.hostname };
+  const host = String(config.host).toLowerCase();
+  if (INVALID_HOSTS.has(host)) {
+    return {
+      ok: false,
+      message: `DATABASE_URL host "${config.host}" is not a real server. Use Internal URL (host like dpg-xxxxx-a).`,
+    };
+  }
+
+  return { ok: true, host: config.host };
 }
 
 export function resolveConnectionString() {
-  const url = process.env.DATABASE_URL?.trim();
+  const url = normalizeDatabaseUrl(process.env.DATABASE_URL);
   if (!url || PLACEHOLDER_PATTERN.test(url)) {
     return null;
   }
