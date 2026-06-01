@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: MainPage.jsx
+ * ЧТО ЭТО: Страница: дневник USER.
+ * ЗА ЧТО ОТВЕЧАЕТ: калории, записи, график, вода.
+ */
 import { useEffect, useState, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { entriesApi } from '../api/entries';

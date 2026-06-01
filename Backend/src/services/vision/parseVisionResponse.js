@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: parseVisionResponse.js
+ * ЧТО ЭТО: Разбор ответа LLM.
+ * ЗА ЧТО ОТВЕЧАЕТ: JSON → название, калории, уверенность.
+ */
 function stripMarkdownFence(text) {
   if (!text || typeof text !== 'string') return '';
   return text

@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: scansRoutes.js
+ * ЧТО ЭТО: Маршруты AI-камеры.
+ * ЗА ЧТО ОТВЕЧАЕТ: /api/scans — распознать фото, история.
+ */
 import { Router } from 'express';
 import { param } from 'express-validator';
 import {

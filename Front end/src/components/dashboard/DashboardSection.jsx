@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: DashboardSection.jsx
+ * ЧТО ЭТО: Блок дашборда.
+ * ЗА ЧТО ОТВЕЧАЕТ: секции на главной USER.
+ */
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { entriesApi } from '../../api/entries';

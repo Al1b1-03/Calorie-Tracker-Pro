@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: workouts.js
+ * ЧТО ЭТО: API: тренировки.
+ * ЗА ЧТО ОТВЕЧАЕТ: каталог и админ CRUD.
+ */
 import { request, getApiUrl } from './client.js';
 
 export const workoutsApi = {

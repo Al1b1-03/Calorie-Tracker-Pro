@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: entries.js
+ * ЧТО ЭТО: API: дневник питания.
+ * ЗА ЧТО ОТВЕЧАЕТ: записи калорий, график.
+ */
 import { request } from './client.js';
 
 export const entriesApi = {

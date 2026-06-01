@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: ordersController.js
+ * ЧТО ЭТО: Контроллер: заказы (админ).
+ * ЗА ЧТО ОТВЕЧАЕТ: все заказы с позициями.
+ */
 import { query } from '../config/database.js';
 
 export const listOrders = async (req, res) => {

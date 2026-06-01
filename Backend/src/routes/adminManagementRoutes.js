@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: adminManagementRoutes.js
+ * ЧТО ЭТО: Супер-админ.
+ * ЗА ЧТО ОТВЕЧАЕТ: /api/admin — создание и удаление админов.
+ */
 import { Router } from 'express';
 import { body, param } from 'express-validator';
 import {

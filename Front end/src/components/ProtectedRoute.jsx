@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: ProtectedRoute.jsx
+ * ЧТО ЭТО: Защита маршрута.
+ * ЗА ЧТО ОТВЕЧАЕТ: редирект на /login без токена.
+ */
 import { Navigate, useLocation } from 'react-router-dom';
 
 export default function ProtectedRoute({ children }) {

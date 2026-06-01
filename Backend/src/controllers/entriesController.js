@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: entriesController.js
+ * ЧТО ЭТО: Контроллер: дневник калорий.
+ * ЗА ЧТО ОТВЕЧАЕТ: CRUD записей еды, stats, chart.
+ */
 import { query } from '../config/database.js';
 
 export const createEntry = async (req, res) => {

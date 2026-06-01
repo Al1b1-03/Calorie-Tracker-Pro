@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: auth.js
+ * ЧТО ЭТО: API: авторизация.
+ * ЗА ЧТО ОТВЕЧАЕТ: login, register, profile.
+ */
 import { request } from './client.js';
 
 function numOrUndef(value) {

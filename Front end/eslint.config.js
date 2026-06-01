@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: eslint.config.js
+ * ЧТО ЭТО: Конфигурация ESLint.
+ * ЗА ЧТО ОТВЕЧАЕТ: правила линтера для React.
+ */
 import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'

@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: uploadScan.js
+ * ЧТО ЭТО: Загрузка фото для AI-камеры.
+ * ЗА ЧТО ОТВЕЧАЕТ: временные файлы сканов в uploads/scans.
+ */
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';

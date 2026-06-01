@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: shopRoutes.js
+ * ЧТО ЭТО: Публичный магазин.
+ * ЗА ЧТО ОТВЕЧАЕТ: GET /api/products — витрина для пользователя.
+ */
 import { Router } from 'express';
 import { listProductsPublic } from '../controllers/shopController.js';
 

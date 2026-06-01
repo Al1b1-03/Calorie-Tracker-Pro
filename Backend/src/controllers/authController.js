@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: authController.js
+ * ЧТО ЭТО: Контроллер: авторизация.
+ * ЗА ЧТО ОТВЕЧАЕТ: регистрация, вход, JWT, профиль.
+ */
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { query } from '../config/database.js';

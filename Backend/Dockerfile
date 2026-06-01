@@ -24,7 +24,7 @@ ENV NODE_OPTIONS=--max-old-space-size=2048
 RUN node --input-type=module -e "\
 import { pipeline, env } from '@xenova/transformers'; \
 env.cacheDir = '/app/.cache/huggingface'; \
-const model = process.env.VISION_LOCAL_MODEL || 'Xenova/clip-vit-base-patch32'; \
+const model = process.env.VISION_LOCAL_MODEL || 'Xenova/clip-vit-base-patch16'; \
 console.log('[vision] Caching model:', model); \
 await pipeline('zero-shot-image-classification', model); \
 console.log('[vision] Model cached');"

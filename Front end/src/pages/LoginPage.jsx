@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: LoginPage.jsx
+ * ЧТО ЭТО: Страница: вход (/login).
+ * ЗА ЧТО ОТВЕЧАЕТ: авторизация, JWT в localStorage.
+ */
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { EmailIcon, LockIcon, GoogleIcon, VkIcon, YandexIcon } from '../shared/icons';

@@ -258,6 +258,43 @@
   background: var(--color-primary-muted);
 }
 
+.header__nav-link--with-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  overflow: visible;
+}
+
+.header__nav-link-text {
+  min-width: 0;
+}
+
+.header__admin-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff !important;
+  background: #dc2626 !important;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px var(--color-surface);
+}
+
+.header__nav--drawer .header__nav-link--with-badge {
+  justify-content: space-between;
+  width: 100%;
+}
+
+.header__nav--drawer .header__admin-badge {
+  margin-left: auto;
+}
+
 .header__nav-link--cart {
   gap: 10px;
   position: relative;

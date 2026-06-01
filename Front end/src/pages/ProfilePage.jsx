@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: ProfilePage.jsx
+ * ЧТО ЭТО: Страница: профиль.
+ * ЗА ЧТО ОТВЕЧАЕТ: данные user/admin, нормы КБЖУ.
+ */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../api/auth';

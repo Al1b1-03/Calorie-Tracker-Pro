@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: shop.js
+ * ЧТО ЭТО: API: магазин и корзина.
+ * ЗА ЧТО ОТВЕЧАЕТ: товары, cart, checkout.
+ */
 import { request } from './client.js';
 
 /** Origin бэкенда: картинки грузятся напрямую с backend. */

@@ -1,5 +1,7 @@
 /**
- * Centralized API error handler — production-ready responses
+ * ФАЙЛ: errorHandler.js
+ * ЧТО ЭТО: Обработка ошибок API.
+ * ЗА ЧТО ОТВЕЧАЕТ: 404 notFound и общий errorHandler.
  */
 export function notFoundHandler(req, res) {
   res.status(404).json({

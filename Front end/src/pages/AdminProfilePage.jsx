@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: AdminProfilePage.jsx
+ * ЧТО ЭТО: Страница: профиль админа.
+ * ЗА ЧТО ОТВЕЧАЕТ: отдельный UI для ADMIN.
+ */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../api/auth';

@@ -35,11 +35,6 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: linear-gradient(180deg, #f5f3fa 0%, #ede9f5 100%);
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(123, 0, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(123, 0, 255, 0.12);
-  padding: 18px 20px 20px;
 }
 
 .orders-card {
@@ -248,11 +243,6 @@
   .orders-page__title {
     font-size: 1.5rem;
     margin-bottom: 16px;
-  }
-
-  .orders-list {
-    padding: 12px;
-    border-radius: 14px;
   }
 
   .orders-card {

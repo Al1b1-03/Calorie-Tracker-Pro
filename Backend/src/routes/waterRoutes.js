@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: waterRoutes.js
+ * ЧТО ЭТО: Маршруты учёта воды.
+ * ЗА ЧТО ОТВЕЧАЕТ: /api/water — вода за сегодня.
+ */
 import { Router } from 'express';
 import { body } from 'express-validator';
 import { getWaterToday, addWater } from '../controllers/waterController.js';

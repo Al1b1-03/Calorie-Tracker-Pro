@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: authRoutes.js
+ * ЧТО ЭТО: Маршруты авторизации.
+ * ЗА ЧТО ОТВЕЧАЕТ: /api/auth — register, login, profile.
+ */
 import { Router } from 'express';
 import { body } from 'express-validator';
 import { register, login, getProfile, updateProfile } from '../controllers/authController.js';

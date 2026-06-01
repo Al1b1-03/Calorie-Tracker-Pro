@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: migrate.js
+ * ЧТО ЭТО: Миграции базы данных.
+ * ЗА ЧТО ОТВЕЧАЕТ: при старте сервера выполняет SQL из database/migrations/.
+ */
 import { readFileSync, readdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';

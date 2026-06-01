@@ -1,4 +1,10 @@
+/**
+ * ФАЙЛ: WorkoutsPage.jsx
+ * ЧТО ЭТО: Страница: тренировки USER.
+ * ЗА ЧТО ОТВЕЧАЕТ: список тренировок.
+ */
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { workoutsApi } from '../api/workouts';
 import { getApiOrigin } from '../api/products';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -214,9 +220,16 @@ export default function WorkoutsPage() {
       </div>
       )}
 
-      {selectedWorkout && (
-        <div className="workout-modal" onClick={closeDetails}>
-          <div className="workout-modal__content" onClick={(e) => e.stopPropagation()}>
+      {selectedWorkout &&
+        createPortal(
+        <div className="workout-modal" onClick={closeDetails} role="presentation">
+          <div
+            className="workout-modal__content"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="workout-modal-title"
+          >
             <button
               type="button"
               className="workout-modal__close"
@@ -244,7 +257,7 @@ export default function WorkoutsPage() {
                 <div className="workout-modal__left-title">{translateWorkoutText(lang, selectedWorkout, 'title')}</div>
               </div>
               <div className="workout-modal__right">
-                <h2 className="workout-modal__title">{translateWorkoutText(lang, selectedWorkout, 'title')}</h2>
+                <h2 className="workout-modal__title" id="workout-modal-title">{translateWorkoutText(lang, selectedWorkout, 'title')}</h2>
                 <div className="workout-modal__chips">
                   {selectedWorkout.difficulty && (
                     <span
@@ -309,7 +322,8 @@ export default function WorkoutsPage() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

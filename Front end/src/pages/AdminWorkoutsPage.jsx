@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: AdminWorkoutsPage.jsx
+ * ЧТО ЭТО: Страница: тренировки ADMIN.
+ * ЗА ЧТО ОТВЕЧАЕТ: CRUD тренировок.
+ */
 import { useEffect, useState } from 'react';
 import { workoutsApi } from '../api/workouts';
 import { getApiOrigin } from '../api/products';

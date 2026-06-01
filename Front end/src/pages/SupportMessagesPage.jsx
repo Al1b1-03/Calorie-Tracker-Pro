@@ -1,5 +1,11 @@
-import { useEffect, useState } from 'react';
+/**
+ * ФАЙЛ: SupportMessagesPage.jsx
+ * ЧТО ЭТО: Страница: обращения ADMIN.
+ * ЗА ЧТО ОТВЕЧАЕТ: поддержка, статусы, ответ.
+ */
+import { useEffect, useRef, useState } from 'react';
 import { supportApi } from '../api/support';
+import { markSupportSeen, notifyAdminCountsChanged } from '../utils/adminNotifications';
 import './SupportMessagesPage.css';
 
 const STATUS_LABELS = {
@@ -10,6 +16,7 @@ const STATUS_LABELS = {
 
 export default function SupportMessagesPage() {
   const [messages, setMessages] = useState([]);
+  const messagesRef = useRef([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updatingId, setUpdatingId] = useState(null);
@@ -20,7 +27,10 @@ export default function SupportMessagesPage() {
       if (!silent) setLoading(true);
       setError('');
       const { messages: data } = await supportApi.listMessages();
-      setMessages(Array.isArray(data) ? data : []);
+      const list = Array.isArray(data) ? data : [];
+      messagesRef.current = list;
+      setMessages(list);
+      notifyAdminCountsChanged();
     } catch (err) {
       setError(err.message || 'Ошибка загрузки обращений');
     } finally {
@@ -30,6 +40,16 @@ export default function SupportMessagesPage() {
 
   useEffect(() => {
     load();
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      const maxId = messagesRef.current.reduce(
+        (max, msg) => Math.max(max, Number(msg.id) || 0),
+        0
+      );
+      if (maxId > 0) markSupportSeen(maxId);
+    };
   }, []);
 
   useEffect(() => {
@@ -44,6 +64,7 @@ export default function SupportMessagesPage() {
     try {
       await supportApi.updateStatus(id, status);
       setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, status } : m)));
+      notifyAdminCountsChanged();
     } catch (err) {
       setError(err.message || 'Ошибка обновления статуса');
     } finally {
@@ -57,6 +78,7 @@ export default function SupportMessagesPage() {
     try {
       await supportApi.deleteMessage(id);
       setMessages((prev) => prev.filter((m) => m.id !== id));
+      notifyAdminCountsChanged();
     } catch (err) {
       setError(err.message || 'Ошибка удаления обращения');
     } finally {
@@ -82,6 +104,7 @@ export default function SupportMessagesPage() {
         )
       );
       setReplyById((prev) => ({ ...prev, [id]: '' }));
+      notifyAdminCountsChanged();
     } catch (err) {
       setError(err.message || 'Ошибка отправки ответа');
     } finally {

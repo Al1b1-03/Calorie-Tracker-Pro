@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: Skeleton.jsx
+ * ЧТО ЭТО: UI: скелетон загрузки.
+ * ЗА ЧТО ОТВЕЧАЕТ: placeholder при lazy routes.
+ */
 export function Skeleton({ className = '', variant = 'text', style }) {
   return (
     <div

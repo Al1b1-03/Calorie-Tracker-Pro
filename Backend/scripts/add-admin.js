@@ -1,6 +1,7 @@
 /**
- * Создаёт или обновляет супер-администратора в БД.
- * Запуск из папки Backend: node scripts/add-admin.js
+ * ФАЙЛ: add-admin.js
+ * ЧТО ЭТО: CLI-скрипт.
+ * ЗА ЧТО ОТВЕЧАЕТ: создать SUPER_ADMIN в БД.
  */
 import 'dotenv/config';
 import bcrypt from 'bcryptjs';

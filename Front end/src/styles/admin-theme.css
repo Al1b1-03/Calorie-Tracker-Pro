@@ -42,6 +42,29 @@
   color: var(--color-primary) !important;
 }
 
+.products-modal .products-form,
+.admin-workouts__modal .admin-workouts__form {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.admin-workouts__modal-content {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.admin-workouts__exercises {
+  background: var(--color-bg-elevated) !important;
+  border-color: var(--color-border) !important;
+}
+
+.admin-workouts__exercises-header {
+  color: var(--color-text) !important;
+}
+
 .products-form,
 .admin-workouts__form {
   background: var(--color-surface) !important;

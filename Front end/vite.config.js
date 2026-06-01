@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: vite.config.js
+ * ЧТО ЭТО: Конфигурация Vite.
+ * ЗА ЧТО ОТВЕЧАЕТ: dev-сервер :5173, proxy /api на backend :3003.
+ */
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 

@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: usersController.js
+ * ЧТО ЭТО: Контроллер: пользователи (админ).
+ * ЗА ЧТО ОТВЕЧАЕТ: список, ban, delete.
+ */
 import { ROLES, isAdminRole, normalizeRole } from '../constants/roles.js';
 import { query } from '../config/database.js';
 

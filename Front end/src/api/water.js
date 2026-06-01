@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: water.js
+ * ЧТО ЭТО: API: вода.
+ * ЗА ЧТО ОТВЕЧАЕТ: учёт воды за день.
+ */
 import { request } from './client.js';
 
 export const waterApi = {

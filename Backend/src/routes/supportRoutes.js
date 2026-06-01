@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: supportRoutes.js
+ * ЧТО ЭТО: Поддержка.
+ * ЗА ЧТО ОТВЕЧАЕТ: /api/support — обращения user и admin.
+ */
 import { Router } from 'express';
 import {
   createSupportMessage,

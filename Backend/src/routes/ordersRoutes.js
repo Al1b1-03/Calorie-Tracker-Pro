@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: ordersRoutes.js
+ * ЧТО ЭТО: Админ: заказы.
+ * ЗА ЧТО ОТВЕЧАЕТ: /api/admin/orders — список и удаление.
+ */
 import { Router } from 'express';
 import { listOrders, deleteOrder } from '../controllers/ordersController.js';
 import { authenticateToken } from '../middleware/auth.js';

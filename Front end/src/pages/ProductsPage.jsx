@@ -1,4 +1,10 @@
+/**
+ * ФАЙЛ: ProductsPage.jsx
+ * ЧТО ЭТО: Страница: товары ADMIN.
+ * ЗА ЧТО ОТВЕЧАЕТ: управление продуктами.
+ */
 import { useEffect, useState, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { productsApi, getImageUrl, getProductImageSrc } from '../api/products';
 import { useLanguage } from '../i18n/LanguageContext';
 import { translateProductText } from '../i18n/dynamicContent';
@@ -251,7 +257,9 @@ export default function ProductsPage() {
   if (loading) {
     return (
       <div className="products-page page">
-        <PageHero eyebrow="Admin" title={adminTitle} subtitle={adminSubtitle} />
+        <div className="products-page__top">
+          <PageHero eyebrow="Admin" title={adminTitle} subtitle={adminSubtitle} />
+        </div>
         <SkeletonCardList count={6} />
       </div>
     );
@@ -259,8 +267,8 @@ export default function ProductsPage() {
 
   return (
     <div className="products-page page">
-      <PageHero eyebrow="Admin" title={adminTitle} subtitle={adminSubtitle} />
-      <div className="products-page__header">
+      <div className="products-page__top">
+        <PageHero eyebrow="Admin" title={adminTitle} subtitle={adminSubtitle} />
         <button
           type="button"
           className="products-page__add-btn"
@@ -272,13 +280,17 @@ export default function ProductsPage() {
 
       {error && <p className="products-page__error">{error}</p>}
 
-      {showForm && (
-        <div className="products-modal" onClick={closeForm}>
+      {showForm &&
+        createPortal(
+        <div className="products-modal" onClick={closeForm} role="presentation">
           <div
             className="products-modal__content"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="products-modal-title"
           >
-            <h2 className="products-modal__title">
+            <h2 className="products-modal__title" id="products-modal-title">
               {editingId ? tr.editProduct : tr.newProduct}
             </h2>
             <form className="products-form" onSubmit={handleSubmit} onPaste={handlePaste}>
@@ -457,7 +469,8 @@ export default function ProductsPage() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {byCategory.map((section) => (

@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: entriesRoutes.js
+ * ЧТО ЭТО: Маршруты дневника питания.
+ * ЗА ЧТО ОТВЕЧАЕТ: /api/entries — записи, статистика, график.
+ */
 import { Router } from 'express';
 import { body, param } from 'express-validator';
 import {

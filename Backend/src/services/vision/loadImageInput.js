@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: loadImageInput.js
+ * ЧТО ЭТО: Подготовка изображения.
+ * ЗА ЧТО ОТВЕЧАЕТ: буфер/путь для моделей.
+ */
 import fs from 'fs';
 import path from 'path';
 import { scansUploadsDir } from '../../config/uploadsPath.js';

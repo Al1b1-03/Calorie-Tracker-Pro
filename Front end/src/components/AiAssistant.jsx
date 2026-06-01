@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: AiAssistant.jsx
+ * ЧТО ЭТО: Чат-помощник.
+ * ЗА ЧТО ОТВЕЧАЕТ: подсказки + отправка в поддержку.
+ */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { supportApi } from '../api/support';
@@ -260,6 +265,7 @@ export default function AiAssistant() {
     setSupportSending(true);
     try {
       await supportApi.createMessage({ subject: 'Chat support', message: text });
+      window.dispatchEvent(new CustomEvent('adminNotificationsUpdated'));
       appendMessage({ from: 'user', text });
       appendMessage({ from: 'bot', text: t('assistant.supportSent') });
       setSupportText('');

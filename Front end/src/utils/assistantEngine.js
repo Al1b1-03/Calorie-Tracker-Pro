@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: assistantEngine.js
+ * ЧТО ЭТО: Логика AI-чата.
+ * ЗА ЧТО ОТВЕЧАЕТ: ответы помощника на клиенте.
+ */
 const FOOD_KEYS = [
   'banana', 'apple', 'orange', 'chicken', 'rice', 'egg', 'oatmeal', 'cottage',
   'bread', 'potato', 'salmon', 'avocado',

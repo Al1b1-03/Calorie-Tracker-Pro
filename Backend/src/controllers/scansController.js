@@ -1,23 +1,52 @@
+/**
+ * ФАЙЛ: scansController.js
+ * ЧТО ЭТО: Контроллер: AI-камера.
+ * ЗА ЧТО ОТВЕЧАЕТ: recognize, история сканов, в дневник.
+ */
 import { query } from '../config/database.js';
 import { analyzeFoodImage } from '../services/vision/index.js';
 import { mapVisionError } from '../services/vision/visionErrors.js';
 
-const mapScanRow = (row) => ({
-  id: row.id,
-  imageUrl: row.image_url,
-  dishName: row.dish_name,
-  ingredients: row.ingredients || [],
-  estimatedWeightG: row.estimated_weight_g,
-  calories: row.calories,
-  protein: parseFloat(row.protein),
-  fat: parseFloat(row.fat),
-  carbs: parseFloat(row.carbs),
-  confidence: parseFloat(row.confidence),
-  provider: row.provider,
-  status: row.status,
-  entryId: row.entry_id,
-  createdAt: row.created_at,
-});
+function parseRawResponse(raw) {
+  if (!raw) return {};
+  if (typeof raw === 'object') return raw;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
+
+const mapScanRow = (row) => {
+  const raw = parseRawResponse(row.raw_response);
+  const alternatives = Array.isArray(raw.alternatives)
+    ? raw.alternatives
+        .map((item) => ({
+          dishName: item?.dishName || '',
+          catalogId: item?.catalogId || null,
+          score: typeof item?.score === 'number' ? item.score : null,
+        }))
+        .filter((item) => item.dishName)
+    : [];
+
+  return {
+    id: row.id,
+    imageUrl: row.image_url,
+    dishName: row.dish_name,
+    ingredients: row.ingredients || [],
+    estimatedWeightG: row.estimated_weight_g,
+    calories: row.calories,
+    protein: parseFloat(row.protein),
+    fat: parseFloat(row.fat),
+    carbs: parseFloat(row.carbs),
+    confidence: parseFloat(row.confidence),
+    provider: row.provider,
+    status: row.status,
+    entryId: row.entry_id,
+    createdAt: row.created_at,
+    alternatives,
+  };
+};
 
 export const analyzeScan = async (req, res) => {
   try {

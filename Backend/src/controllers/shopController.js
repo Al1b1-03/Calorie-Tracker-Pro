@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: shopController.js
+ * ЧТО ЭТО: Контроллер: витрина.
+ * ЗА ЧТО ОТВЕЧАЕТ: публичный список товаров.
+ */
 import path from 'path';
 import fs from 'fs';
 import { query } from '../config/database.js';

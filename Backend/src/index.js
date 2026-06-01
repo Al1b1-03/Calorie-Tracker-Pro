@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: index.js
+ * ЧТО ЭТО: Точка входа сервера Express.
+ * ЗА ЧТО ОТВЕЧАЕТ: запуск API на :3003, CORS, статика uploads, подключение всех маршрутов, миграции БД.
+ */
 import 'dotenv/config';
 import path from 'path';
 import express from 'express';
@@ -16,6 +21,7 @@ import supportRoutes from './routes/supportRoutes.js';
 import { listWorkouts } from './controllers/workoutsController.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 import adminManagementRoutes from './routes/adminManagementRoutes.js';
+import adminNotificationsRoutes from './routes/adminNotificationsRoutes.js';
 import { authenticateToken } from './middleware/auth.js';
 import { requireAdmin } from './middleware/requireAdmin.js';
 import fs from 'fs';
@@ -86,6 +92,7 @@ app.options('/api/admin/workouts/:id', (_, res) => res.sendStatus(204));
 app.options('/api/admin/workouts/:id/image', (_, res) => res.sendStatus(204));
 app.options('/api/admin/orders', (_, res) => res.sendStatus(204));
 app.options('/api/admin/orders/:id', (_, res) => res.sendStatus(204));
+app.options('/api/admin/notifications/counts', (_, res) => res.sendStatus(204));
 app.options('/api/admin/products/:id/image', (_, res) => res.sendStatus(204));
 
 app.use(
@@ -102,6 +109,7 @@ app.use('/api/water', waterRoutes);
 app.use('/api/admin/users', usersRoutes);
 app.use('/api/admin/products', productsRoutes);
 app.use('/api/admin/orders', ordersRoutes);
+app.use('/api/admin/notifications', adminNotificationsRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api', shopRoutes);
@@ -134,10 +142,10 @@ const startServer = async () => {
       console.warn('DATABASE_URL not set. Create .env from .env.example');
     }
 
-    const { warmupVision } = await import('./services/vision/warmup.js');
-    warmupVision().catch((err) => {
-      console.warn('[vision] Startup warmup failed (will retry on first scan):', err.message);
-    });
+    // const { warmupVision } = await import('./services/vision/warmup.js');
+// warmupVision().catch((err) => {
+//   console.warn('[vision] Startup warmup failed (will retry on first scan):', err.message);
+// });
   } catch (err) {
     console.error('Startup failed:', err.message);
     process.exit(1);

@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: ThemeContext.jsx
+ * ЧТО ЭТО: Контекст темы.
+ * ЗА ЧТО ОТВЕЧАЕТ: светлая/тёмная тема.
+ */
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 const ThemeContext = createContext(null);

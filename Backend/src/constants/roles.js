@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: roles.js
+ * ЧТО ЭТО: Роли пользователей.
+ * ЗА ЧТО ОТВЕЧАЕТ: USER, ADMIN, SUPER_ADMIN и проверки isAdminRole.
+ */
 export const ROLES = {
   USER: 'USER',
   ADMIN: 'ADMIN',

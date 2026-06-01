@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: productsRoutes.js
+ * ЧТО ЭТО: Админ: товары.
+ * ЗА ЧТО ОТВЕЧАЕТ: /api/admin/products — CRUD и фото.
+ */
 import { Router } from 'express';
 import { body } from 'express-validator';
 import {

@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: UsersPage.jsx
+ * ЧТО ЭТО: Страница: пользователи ADMIN.
+ * ЗА ЧТО ОТВЕЧАЕТ: список, бан.
+ */
 import { useEffect, useState } from 'react';
 import { usersApi } from '../api/users';
 import { authApi } from '../api/auth';

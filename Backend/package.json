@@ -11,7 +11,9 @@
     "seed": "node scripts/seed-products.js",
     "add-admin": "node scripts/add-admin.js",
     "docker:up": "docker compose up --build -d",
+    "docker:local": "docker compose --profile local-db up --build -d",
     "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build",
+    "docker:dev:local": "docker compose --profile local-db -f docker-compose.yml -f docker-compose.dev.yml up --build",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f backend",
     "docker:reset": "docker compose down -v"

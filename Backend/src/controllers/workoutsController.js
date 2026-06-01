@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: workoutsController.js
+ * ЧТО ЭТО: Контроллер: тренировки.
+ * ЗА ЧТО ОТВЕЧАЕТ: список для всех + админ CRUD.
+ */
 import fs from 'fs';
 import path from 'path';
 import { query } from '../config/database.js';

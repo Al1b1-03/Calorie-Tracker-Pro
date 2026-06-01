@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: HomePage.jsx
+ * ЧТО ЭТО: Страница: главная (/).
+ * ЗА ЧТО ОТВЕЧАЕТ: MainPage или AdminMainPage по роли.
+ */
 import { useState, useEffect } from 'react';
 import MainPage from './MainPage';
 import AdminMainPage from './AdminMainPage';

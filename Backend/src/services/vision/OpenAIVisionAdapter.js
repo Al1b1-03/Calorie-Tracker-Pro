@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: OpenAIVisionAdapter.js
+ * ЧТО ЭТО: OpenAI Vision.
+ * ЗА ЧТО ОТВЕЧАЕТ: анализ фото через GPT-4o.
+ */
 import { buildVisionPrompt } from './visionPrompt.js';
 import { loadImageInput } from './loadImageInput.js';
 import { parseVisionJson } from './parseVisionResponse.js';
@@ -29,7 +34,8 @@ export async function analyzeFoodImage(input = {}) {
       messages: [
         {
           role: 'system',
-          content: 'You analyze food photos and return strict JSON only.',
+          content:
+            'You are a precise food vision expert. Identify the exact dish from the image. Never guess soup unless broth is visible. Return strict JSON only.',
         },
         {
           role: 'user',

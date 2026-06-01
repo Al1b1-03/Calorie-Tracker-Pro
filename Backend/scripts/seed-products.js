@@ -1,9 +1,7 @@
 /**
- * Загрузка тестовых продуктов из seed-products.json в БД.
- * Запуск из папки Backend: node scripts/seed-products.js
- * Или с указанием файла: node scripts/seed-products.js путь/к/products.json
- *
- * По умолчанию добавляет только те товары, которых ещё нет по имени (по имени не дублирует).
+ * ФАЙЛ: seed-products.js
+ * ЧТО ЭТО: CLI-скрипт.
+ * ЗА ЧТО ОТВЕЧАЕТ: заполнить магазин товарами из JSON.
  */
 import 'dotenv/config';
 import fs from 'fs';

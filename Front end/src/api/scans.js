@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: scans.js
+ * ЧТО ЭТО: API: AI-камера.
+ * ЗА ЧТО ОТВЕЧАЕТ: recognize, история, в дневник.
+ */
 import { getApiUrl, getStaticUrl, request } from './client.js';
 
 export const scansApi = {

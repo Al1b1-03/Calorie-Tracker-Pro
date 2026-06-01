@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: AdminManagementPage.jsx
+ * ЧТО ЭТО: Страница: супер-админ.
+ * ЗА ЧТО ОТВЕЧАЕТ: создание/удаление админов.
+ */
 import { useEffect, useState } from 'react';
 import { adminManagementApi } from '../api/adminManagement';
 import { useLanguage } from '../i18n/LanguageContext';

@@ -42,7 +42,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-body.menu-open {
+body.menu-open,
+body.modal-open {
   overflow: hidden;
   touch-action: none;
 }

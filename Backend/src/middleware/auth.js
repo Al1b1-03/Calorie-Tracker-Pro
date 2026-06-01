@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: auth.js
+ * ЧТО ЭТО: Middleware JWT.
+ * ЗА ЧТО ОТВЕЧАЕТ: чтение Bearer-токена, req.user.userId.
+ */
 import jwt from 'jsonwebtoken';
 
 export const requireAuth = (req, res, next) => {

@@ -1,5 +1,7 @@
 /**
- * Map low-level vision/ML errors to user-facing messages.
+ * ФАЙЛ: visionErrors.js
+ * ЧТО ЭТО: Ошибки vision.
+ * ЗА ЧТО ОТВЕЧАЕТ: коды и сообщения ошибок AI.
  */
 export function mapVisionError(err) {
   const msg = String(err?.message || err?.cause?.message || '');

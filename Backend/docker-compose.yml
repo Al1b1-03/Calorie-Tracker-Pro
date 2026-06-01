@@ -1,16 +1,19 @@
 # Backend + PostgreSQL
 #
+# По умолчанию backend берёт DATABASE_URL из Backend/.env
+# (можно указать Render — тогда Docker и прод используют одну БД).
+#
 # Запуск (из папки Backend):
-#   docker compose up -d --build
+#   docker compose up -d --build          # общая БД из .env (часто Render)
+#   docker compose --profile local-db up -d --build   # + локальный Postgres
 #
 # API: http://localhost:3003/api/health
-# Postgres с хоста: localhost:5433 (user/pass: postgres/postgres, DB: calorie_tracker)
-#
-# Разработка с автоперезагрузкой (аналог npm run dev):
-#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+# Локальный Postgres (профиль local-db): localhost:5433
 
 services:
   db:
+    profiles:
+      - local-db
     image: postgres:16-alpine
     container_name: ctp-postgres
     environment:
@@ -43,10 +46,11 @@ services:
       NODE_OPTIONS: --max-old-space-size=2048
       HF_HOME: /app/.cache/huggingface
       TRANSFORMERS_CACHE: /app/.cache/huggingface
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/calorie_tracker
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@db:5432/calorie_tracker}
+      DATABASE_SSL: ${DATABASE_SSL:-auto}
       JWT_SECRET: ${JWT_SECRET:-calorie-tracker-dev-secret}
       VISION_PROVIDER: ${VISION_PROVIDER:-auto}
-      VISION_LOCAL_MODEL: ${VISION_LOCAL_MODEL:-Xenova/clip-vit-base-patch32}
+      VISION_LOCAL_MODEL: ${VISION_LOCAL_MODEL:-Xenova/clip-vit-base-patch16}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       OPENAI_VISION_MODEL: ${OPENAI_VISION_MODEL:-gpt-4o}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
@@ -57,6 +61,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+        required: false
     restart: unless-stopped
 
 volumes:

@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: SuperAdminRoute.jsx
+ * ЧТО ЭТО: Защита маршрута.
+ * ЗА ЧТО ОТВЕЧАЕТ: только SUPER_ADMIN.
+ */
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { authApi } from '../api/auth';

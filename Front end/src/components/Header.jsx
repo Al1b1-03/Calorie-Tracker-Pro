@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: Header.jsx
+ * ЧТО ЭТО: Шапка сайта.
+ * ЗА ЧТО ОТВЕЧАЕТ: меню, язык, тема, бейджи админа.
+ */
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, NavLink, useLocation } from 'react-router-dom';
@@ -5,8 +10,35 @@ import { authApi } from '../api/auth';
 import { LANGS } from '../i18n/translations';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { adminNotificationsApi } from '../api/adminNotifications';
+import { ordersApi } from '../api/orders';
+import { supportApi } from '../api/support';
+import { getOrdersSeenId, getSupportSeenId } from '../utils/adminNotifications';
 import { isAdmin, isSuperAdmin, normalizeRole } from '../utils/roles';
 import './Header.css';
+
+function AdminNavLink({ to, children, badge }) {
+  const count = Math.max(0, Number(badge) || 0);
+  return (
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `header__nav-link header__nav-link--with-badge ${isActive ? 'header__nav-link--active' : ''}`
+      }
+    >
+      <span className="header__nav-link-text">{children}</span>
+      {count > 0 ? (
+        <span
+          className="header__admin-badge"
+          role="status"
+          aria-label={String(count)}
+        >
+          {count > 99 ? '99+' : count}
+        </span>
+      ) : null}
+    </NavLink>
+  );
+}
 
 const CartIcon = () => (
   <svg
@@ -197,7 +229,7 @@ function AuthActions({ isLoggedIn, isAdmin, t, variant = 'desktop' }) {
 }
 
 export default function Header() {
-  const isLoggedIn = !!localStorage.getItem('token');
+  const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('token'));
   const [userRole, setUserRole] = useState(() => normalizeRole(localStorage.getItem('userRole')));
   const [user, setUser] = useState(null);
   const { t } = useLanguage();
@@ -217,15 +249,23 @@ export default function Header() {
           const role = normalizeRole(profileUser.role);
           localStorage.setItem('userRole', role);
           setUserRole(role);
+          window.dispatchEvent(new CustomEvent('userRoleUpdated'));
         }
       }
     }).catch(() => {});
   }, [isLoggedIn]);
 
   useEffect(() => {
-    const onRoleUpdate = () => setUserRole(normalizeRole(localStorage.getItem('userRole')));
-    window.addEventListener('userRoleUpdated', onRoleUpdate);
-    return () => window.removeEventListener('userRoleUpdated', onRoleUpdate);
+    const syncAuth = () => {
+      setIsLoggedIn(!!localStorage.getItem('token'));
+      setUserRole(normalizeRole(localStorage.getItem('userRole')));
+    };
+    window.addEventListener('userRoleUpdated', syncAuth);
+    window.addEventListener('storage', syncAuth);
+    return () => {
+      window.removeEventListener('userRoleUpdated', syncAuth);
+      window.removeEventListener('storage', syncAuth);
+    };
   }, []);
 
   useEffect(() => {
@@ -247,18 +287,76 @@ export default function Header() {
 
   const isAdminUser = isAdmin(userRole);
   const isSuperAdminUser = isSuperAdmin(userRole);
+  const [adminCounts, setAdminCounts] = useState({ orders: 0, support: 0 });
+
+  useEffect(() => {
+    if (!isLoggedIn || !isAdminUser) {
+      setAdminCounts({ orders: 0, support: 0 });
+      return undefined;
+    }
+
+    let cancelled = false;
+
+    const loadCounts = async () => {
+      const ordersSeen = getOrdersSeenId();
+      const supportSeen = getSupportSeenId();
+
+      try {
+        const data = await adminNotificationsApi.getCounts(ordersSeen, supportSeen);
+        if (cancelled) return;
+        setAdminCounts({
+          orders: Math.max(0, Number(data?.orders) || 0),
+          support: Math.max(0, Number(data?.support) || 0),
+        });
+        return;
+      } catch {
+        /* fallback ниже */
+      }
+
+      try {
+        const [{ orders: orderList }, { messages: messageList }] = await Promise.all([
+          ordersApi.list(),
+          supportApi.listMessages(),
+        ]);
+        if (cancelled) return;
+        const orders = (Array.isArray(orderList) ? orderList : []).filter(
+          (o) => Number(o.id) > ordersSeen
+        ).length;
+        const support = (Array.isArray(messageList) ? messageList : []).filter((m) => {
+          const status = String(m.status || '').toLowerCase();
+          return Number(m.id) > supportSeen && (status === 'new' || status === 'in_progress');
+        }).length;
+        setAdminCounts({ orders, support });
+      } catch {
+        if (!cancelled) setAdminCounts({ orders: 0, support: 0 });
+      }
+    };
+
+    loadCounts();
+    const timer = window.setInterval(loadCounts, 20000);
+    const onUpdate = () => loadCounts();
+    window.addEventListener('adminNotificationsUpdated', onUpdate);
+    window.addEventListener('focus', onUpdate);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+      window.removeEventListener('adminNotificationsUpdated', onUpdate);
+      window.removeEventListener('focus', onUpdate);
+    };
+  }, [isLoggedIn, isAdminUser, location.pathname, userRole]);
 
   const navLinks = isAdminUser ? (
     <>
       <NavLink to="/products" className={({ isActive }) => `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
         {t('nav.products')}
       </NavLink>
-      <NavLink to="/orders" className={({ isActive }) => `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
+      <AdminNavLink to="/orders" badge={adminCounts.orders}>
         {t('nav.orders')}
-      </NavLink>
-      <NavLink to="/support" className={({ isActive }) => `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
+      </AdminNavLink>
+      <AdminNavLink to="/support" badge={adminCounts.support}>
         {t('nav.support')}
-      </NavLink>
+      </AdminNavLink>
       <NavLink to="/users" className={({ isActive }) => `header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
         {t('nav.users')}
       </NavLink>

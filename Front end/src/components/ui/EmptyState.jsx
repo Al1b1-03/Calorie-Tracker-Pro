@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: EmptyState.jsx
+ * ЧТО ЭТО: UI: пустой список.
+ * ЗА ЧТО ОТВЕЧАЕТ: заглушка «нет данных».
+ */
 export default function EmptyState({ icon = '📭', title, description, action }) {
   return (
     <div className="ui-empty" role="status">

@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: support.js
+ * ЧТО ЭТО: API: поддержка.
+ * ЗА ЧТО ОТВЕЧАЕТ: обращения и ответы.
+ */
 import { request } from './client.js';
 
 export const supportApi = {

@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: usersRoutes.js
+ * ЧТО ЭТО: Админ: пользователи.
+ * ЗА ЧТО ОТВЕЧАЕТ: /api/admin/users — список, бан, удаление.
+ */
 import { Router } from 'express';
 import { listUsers, banUser, deleteUser } from '../controllers/usersController.js';
 import { authenticateToken } from '../middleware/auth.js';

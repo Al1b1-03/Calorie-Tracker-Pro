@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: roles.js
+ * ЧТО ЭТО: Роли на клиенте.
+ * ЗА ЧТО ОТВЕЧАЕТ: isAdmin, редирект после login.
+ */
 export const ROLES = {
   USER: 'USER',
   ADMIN: 'ADMIN',

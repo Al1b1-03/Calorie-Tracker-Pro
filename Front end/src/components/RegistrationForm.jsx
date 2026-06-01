@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: RegistrationForm.jsx
+ * ЧТО ЭТО: Форма регистрации.
+ * ЗА ЧТО ОТВЕЧАЕТ: создание аккаунта USER.
+ */
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { EmailIcon, PhoneIcon, LockIcon } from '../shared/icons';

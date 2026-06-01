@@ -439,17 +439,23 @@
 }
 
 .about-page__review-avatar {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 40px;
   height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: 50%;
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: #fff;
-  background: var(--gradient-brand);
+  overflow: hidden;
   flex-shrink: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  color: #ffffff;
+  background: var(--gradient-brand);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
 }
 
 .about-page__review-author strong {
@@ -459,7 +465,7 @@
   color: var(--color-text);
 }
 
-.about-page__review-author span {
+.about-page__review-author > div span {
   display: block;
   font-size: var(--text-xs);
   color: var(--color-text-muted);

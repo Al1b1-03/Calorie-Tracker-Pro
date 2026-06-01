@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: GeminiVisionAdapter.js
+ * ЧТО ЭТО: Google Gemini Vision.
+ * ЗА ЧТО ОТВЕЧАЕТ: анализ фото через Gemini API.
+ */
 import { buildVisionPrompt } from './visionPrompt.js';
 import { loadImageInput } from './loadImageInput.js';
 import { parseVisionJson } from './parseVisionResponse.js';

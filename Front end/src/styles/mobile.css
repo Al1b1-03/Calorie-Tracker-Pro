@@ -126,14 +126,11 @@
     max-height: none;
     margin: 0;
     border-radius: 0;
-    border-left-width: 2px;
+    border: none;
+    box-shadow: none;
     padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
   }
 
-  body.modal-open {
-    overflow: hidden;
-    touch-action: none;
-  }
 }
 
 /* ─── Cart: keep designed wrap layout (override layout.css column rule) ─── */
@@ -325,12 +322,17 @@
 
   .workout-modal {
     align-items: stretch;
+    justify-content: stretch;
+    padding: 0;
   }
 
   .workout-modal__content {
+    max-width: none;
     max-height: none;
     min-height: 100dvh;
     border-radius: 0;
+    border: none;
+    box-shadow: none;
     padding: max(20px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
   }
 

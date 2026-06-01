@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: CartPage.jsx
+ * ЧТО ЭТО: Страница: корзина (/cart).
+ * ЗА ЧТО ОТВЕЧАЕТ: оформление заказа.
+ */
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { shopApi, getProductImageSrc } from '../api/shop';
@@ -116,6 +121,7 @@ export default function CartPage() {
       setAddress('');
       loadCart();
       window.dispatchEvent(new CustomEvent('cartUpdated'));
+      window.dispatchEvent(new CustomEvent('adminNotificationsUpdated'));
     } catch (err) {
       setError(err.message || tr.payErr);
     } finally {

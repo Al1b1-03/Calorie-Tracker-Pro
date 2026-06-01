@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: WorkoutsPageRouter.jsx
+ * ЧТО ЭТО: Роутер тренировок.
+ * ЗА ЧТО ОТВЕЧАЕТ: USER vs AdminWorkoutsPage.
+ */
 import { useState, useEffect } from 'react';
 import WorkoutsPage from './WorkoutsPage';
 import AdminWorkoutsPage from './AdminWorkoutsPage';

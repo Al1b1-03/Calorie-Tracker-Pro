@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: rbac.js
+ * ЧТО ЭТО: Middleware ролей (RBAC).
+ * ЗА ЧТО ОТВЕЧАЕТ: requireAdmin, requireSuperAdmin, loadUserRole из БД.
+ */
 import { query } from '../config/database.js';
 import { isAdminRole, isSuperAdminRole, normalizeRole } from '../constants/roles.js';
 export { requireAuth } from './auth.js';

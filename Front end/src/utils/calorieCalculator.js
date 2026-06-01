@@ -1,4 +1,8 @@
-/** Activity multipliers (TDEE). */
+/**
+ * ФАЙЛ: calorieCalculator.js
+ * ЧТО ЭТО: Расчёт калорий.
+ * ЗА ЧТО ОТВЕЧАЕТ: норма по росту/весу/активности.
+ */
 export const ACTIVITY_MULTIPLIERS = {
   sedentary: 1.2,
   light: 1.375,

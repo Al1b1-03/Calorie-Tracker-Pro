@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: supportController.js
+ * ЧТО ЭТО: Контроллер: поддержка.
+ * ЗА ЧТО ОТВЕЧАЕТ: создать обращение, статус, ответ админа.
+ */
 import { query } from '../config/database.js';
 
 export const createSupportMessage = async (req, res) => {

@@ -1,6 +1,7 @@
 /**
- * Pre-download local CLIP model (same as server startup warmup).
- * Usage: node scripts/warmup-vision.js
+ * ФАЙЛ: warmup-vision.js
+ * ЧТО ЭТО: CLI-скрипт.
+ * ЗА ЧТО ОТВЕЧАЕТ: прогреть модель vision вручную.
  */
 import { warmupVision } from '../src/services/vision/warmup.js';
 

@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: adminWorkoutsRoutes.js
+ * ЧТО ЭТО: Админ: тренировки.
+ * ЗА ЧТО ОТВЕЧАЕТ: /api/admin/workouts — CRUD + картинки.
+ */
 import { Router } from 'express';
 import { body } from 'express-validator';
 import {

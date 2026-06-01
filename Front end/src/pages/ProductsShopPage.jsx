@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: ProductsShopPage.jsx
+ * ЧТО ЭТО: Страница: магазин (/shop).
+ * ЗА ЧТО ОТВЕЧАЕТ: каталог товаров, в корзину.
+ */
 import { useEffect, useState, useMemo } from 'react';
 import { shopApi, getProductImageSrc } from '../api/shop';
 import { useLanguage } from '../i18n/LanguageContext';

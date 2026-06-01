@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: AboutPage.jsx
+ * ЧТО ЭТО: Страница: о проекте (/about).
+ * ЗА ЧТО ОТВЕЧАЕТ: описание приложения.
+ */
 import { Link } from 'react-router-dom';
 import './AboutPage.css';
 import { useLanguage } from '../i18n/LanguageContext';

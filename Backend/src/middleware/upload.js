@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: upload.js
+ * ЧТО ЭТО: Загрузка файлов (Multer).
+ * ЗА ЧТО ОТВЕЧАЕТ: изображения товаров в uploads/products.
+ */
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';

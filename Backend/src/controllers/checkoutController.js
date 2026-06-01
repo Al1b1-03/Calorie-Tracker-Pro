@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: checkoutController.js
+ * ЧТО ЭТО: Контроллер: оформление заказа.
+ * ЗА ЧТО ОТВЕЧАЕТ: checkout — orders + order_items.
+ */
 import { query } from '../config/database.js';
 
 const TEST_CARD = '4242424242424242';

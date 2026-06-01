@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: products.js
+ * ЧТО ЭТО: API: админ товары.
+ * ЗА ЧТО ОТВЕЧАЕТ: CRUD продуктов.
+ */
 import { request, getApiUrl } from './client.js';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3003/api';

@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: main.jsx
+ * ЧТО ЭТО: Точка входа React.
+ * ЗА ЧТО ОТВЕЧАЕТ: монтирование App, тема, язык ru/kk/en.
+ */
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'

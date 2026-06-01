@@ -1,7 +1,13 @@
-import { useEffect, useState } from 'react';
+/**
+ * ФАЙЛ: OrdersPage.jsx
+ * ЧТО ЭТО: Страница: заказы ADMIN.
+ * ЗА ЧТО ОТВЕЧАЕТ: список заказов клиентов.
+ */
+import { useEffect, useRef, useState } from 'react';
 import { ordersApi } from '../api/orders';
 import { useLanguage } from '../i18n/LanguageContext';
 import { translateProductText } from '../i18n/dynamicContent';
+import { markOrdersSeen, notifyAdminCountsChanged } from '../utils/adminNotifications';
 import './OrdersPage.css';
 
 const formatDate = (dateStr) => {
@@ -47,6 +53,7 @@ export default function OrdersPage() {
           delConfirm: 'Удалить заказ',
         };
   const [orders, setOrders] = useState([]);
+  const ordersRef = useRef([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [expandedId, setExpandedId] = useState(null);
@@ -56,7 +63,9 @@ export default function OrdersPage() {
     try {
       setError('');
       const { orders: data } = await ordersApi.list();
-      setOrders(Array.isArray(data) ? data : []);
+      const list = Array.isArray(data) ? data : [];
+      ordersRef.current = list;
+      setOrders(list);
     } catch (err) {
       setError(err?.message || tr.loadErr);
     } finally {
@@ -67,6 +76,16 @@ export default function OrdersPage() {
   useEffect(() => {
     loadOrders();
   }, [tr.loadErr]);
+
+  useEffect(() => {
+    return () => {
+      const maxId = ordersRef.current.reduce(
+        (max, order) => Math.max(max, Number(order.id) || 0),
+        0
+      );
+      if (maxId > 0) markOrdersSeen(maxId);
+    };
+  }, []);
 
   const toggleExpand = (id) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -80,7 +99,12 @@ export default function OrdersPage() {
     setError('');
     try {
       await ordersApi.delete(id);
-      setOrders((prev) => prev.filter((o) => Number(o.id) !== id));
+      setOrders((prev) => {
+        const next = prev.filter((o) => Number(o.id) !== id);
+        ordersRef.current = next;
+        return next;
+      });
+      notifyAdminCountsChanged();
     } catch (err) {
       setError(err?.message || tr.delErr);
     } finally {
@@ -102,6 +126,7 @@ export default function OrdersPage() {
       <h1 className="orders-page__title">{tr.title}</h1>
       {error && <p className="orders-page__error">{error}</p>}
 
+      {orders.length > 0 && (
       <div className="orders-list">
         {orders.map((order) => (
           <div key={order.id} className="orders-card">
@@ -193,6 +218,7 @@ export default function OrdersPage() {
           </div>
         ))}
       </div>
+      )}
 
       {orders.length === 0 && !loading && (
         <p className="orders-page__empty">{tr.empty}</p>

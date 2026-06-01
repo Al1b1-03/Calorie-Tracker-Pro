@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: cartController.js
+ * ЧТО ЭТО: Контроллер: корзина.
+ * ЗА ЧТО ОТВЕЧАЕТ: список, add/update/remove позиций.
+ */
 import { query } from '../config/database.js';
 
 export const getCart = async (req, res) => {

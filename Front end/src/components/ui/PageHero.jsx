@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: PageHero.jsx
+ * ЧТО ЭТО: UI: заголовок страницы.
+ * ЗА ЧТО ОТВЕЧАЕТ: eyebrow, title, subtitle.
+ */
 export default function PageHero({ eyebrow, title, subtitle }) {
   return (
     <header className="page__hero">

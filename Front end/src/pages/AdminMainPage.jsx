@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: AdminMainPage.jsx
+ * ЧТО ЭТО: Страница: главная ADMIN.
+ * ЗА ЧТО ОТВЕЧАЕТ: плитки разделов админки.
+ */
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usersApi } from '../api/users';

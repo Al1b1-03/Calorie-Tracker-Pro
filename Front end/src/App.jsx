@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: App.jsx
+ * ЧТО ЭТО: Маршрутизация SPA.
+ * ЗА ЧТО ОТВЕЧАЕТ: URL → страницы, ProtectedRoute, AdminRoute.
+ */
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';

@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: LanguageContext.jsx
+ * ЧТО ЭТО: Контекст языка.
+ * ЗА ЧТО ОТВЕЧАЕТ: ru, kk, en.
+ */
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { DEFAULT_LANG, LANGS, translations } from './translations';
 

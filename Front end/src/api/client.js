@@ -1,10 +1,29 @@
-// Базовый URL API: всегда ходим напрямую на backend, без proxy.
-const RAW_API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3003/api').replace(/\/$/, '');
-const API_BASE = RAW_API_BASE.endsWith('/api') ? RAW_API_BASE : `${RAW_API_BASE}/api`;
+/**
+ * ФАЙЛ: client.js
+ * ЧТО ЭТО: HTTP-клиент API.
+ * ЗА ЧТО ОТВЕЧАЕТ: fetch + JWT, базовый URL /api.
+ */
+function resolveApiBase() {
+  if (import.meta.env.VITE_API_URL) {
+    const raw = String(import.meta.env.VITE_API_URL).replace(/\/$/, '');
+    return raw.endsWith('/api') ? raw : `${raw}/api`;
+  }
+  if (typeof window !== 'undefined') {
+    return `${window.location.origin}/api`;
+  }
+  return import.meta.env.DEV ? '/api' : 'http://localhost:3003/api';
+}
+
+const API_BASE = resolveApiBase();
+
+/** Статика (/uploads) всегда с backend :3003, если не задан свой VITE_API_URL */
+const API_ORIGIN = import.meta.env.VITE_API_URL
+  ? API_BASE.replace(/\/api\/?$/, '')
+  : 'http://localhost:3003';
 
 /** URL для статики backend (/uploads/...) */
 export const getStaticUrl = (relativePath) => {
-  const origin = API_BASE.replace(/\/api\/?$/, '');
+  const origin = API_ORIGIN;
   const path = relativePath.startsWith('/') ? relativePath : `/${relativePath}`;
   return `${origin}${path}`;
 };
@@ -45,19 +64,17 @@ export const request = async (endpoint, options = {}) => {
         : await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      // Недействительный или истёкший токен — сбрасываем сессию и отправляем на вход
+      const message =
+        data?.error ||
+        (typeof data?.message === 'string' ? data.message : null) ||
+        `Ошибка запроса (${response.status})`;
       if ((response.status === 401 || response.status === 403) && token) {
         localStorage.removeItem('token');
         localStorage.removeItem('userRole');
         if (!window.location.pathname.startsWith('/login')) {
           window.location.href = '/login';
-          return;
         }
       }
-      const message =
-        data?.error ||
-        (typeof data?.message === 'string' ? data.message : null) ||
-        `Ошибка запроса (${response.status})`;
       throw new Error(message);
     }
 

@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: adminManagement.js
+ * ЧТО ЭТО: API: супер-админ.
+ * ЗА ЧТО ОТВЕЧАЕТ: управление администраторами.
+ */
 import { request } from './client.js';
 
 export const adminManagementApi = {

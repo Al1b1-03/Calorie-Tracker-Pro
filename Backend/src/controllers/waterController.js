@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: waterController.js
+ * ЧТО ЭТО: Контроллер: вода.
+ * ЗА ЧТО ОТВЕЧАЕТ: сколько выпито сегодня, добавить порцию.
+ */
 import { query } from '../config/database.js';
 
 const todayDate = () => new Date().toISOString().split('T')[0];

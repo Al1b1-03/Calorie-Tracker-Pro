@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: cartRoutes.js
+ * ЧТО ЭТО: Маршруты корзины.
+ * ЗА ЧТО ОТВЕЧАЕТ: /api/cart — добавить, изменить, удалить, checkout.
+ */
 import { Router } from 'express';
 import { body } from 'express-validator';
 import {

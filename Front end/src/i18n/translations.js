@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: translations.js
+ * ЧТО ЭТО: Переводы UI.
+ * ЗА ЧТО ОТВЕЧАЕТ: все строки интерфейса.
+ */
 export const LANGS = ['ru', 'kk', 'en'];
 
 export const DEFAULT_LANG = 'ru';
@@ -85,11 +90,19 @@ export const translations = {
       weight: 'Вес',
       calories: 'Калории',
       confidence: 'точность',
+      alternatives: 'Возможные варианты',
+      lowConfidenceHint: 'Название может быть неточным — сверьте с вариантами ниже или переснимите блюдо крупнее.',
       confirm: 'Добавить в дневник',
       confirming: 'Сохранение…',
       confirmError: 'Ошибка сохранения',
       scanAgain: 'Сканировать снова',
       historyEmpty: 'История сканирований пуста',
+      tipsTitle: 'Советы для точного результата',
+      tip1: 'Снимайте блюдо сверху, чтобы было видно всё содержимое тарелки.',
+      tip2: 'Используйте хорошее освещение без сильных теней.',
+      tip3: 'В кадре — одно блюдо, без лишних предметов на столе.',
+      resultTitle: 'Результат анализа',
+      yourPhoto: 'Ваше фото',
     },
     profile: {
       title: 'Настройки профиля',
@@ -507,11 +520,19 @@ export const translations = {
       weight: 'Салмақ',
       calories: 'Калория',
       confidence: 'дәлдік',
+      alternatives: 'Мүмкін нұсқалар',
+      lowConfidenceHint: 'Атауы дәл емес болуы мүмкін — төмендегі нұсқалармен салыстырыңыз немесе тамақты жақыннан түсіріңіз.',
       confirm: 'Күнделікке қосу',
       confirming: 'Сақталуда…',
       confirmError: 'Сақтау қатесі',
       scanAgain: 'Қайта сканерлеу',
       historyEmpty: 'Сканерлеу тарихы бос',
+      tipsTitle: 'Дәл нәтиже үшін кеңестер',
+      tip1: 'Тағамды жоғарыдан түсіріңіз — табақтағы барлық бөлігі көрінсін.',
+      tip2: 'Күшті көлеңкесіз жақсы жарық қолданыңыз.',
+      tip3: 'Кадрда бір тағам болсын, үстелдегі артық заттарсыз.',
+      resultTitle: 'Талдау нәтижесі',
+      yourPhoto: 'Сіздің фото',
     },
     profile: {
       title: 'Профиль баптаулары',
@@ -924,11 +945,19 @@ export const translations = {
       weight: 'Weight',
       calories: 'Calories',
       confidence: 'confidence',
+      alternatives: 'Other possibilities',
+      lowConfidenceHint: 'The name may be wrong — check the options below or retake a closer photo.',
       confirm: 'Add to diary',
       confirming: 'Saving…',
       confirmError: 'Save failed',
       scanAgain: 'Scan again',
       historyEmpty: 'No scans yet',
+      tipsTitle: 'Tips for better accuracy',
+      tip1: 'Shoot from above so the full plate is visible.',
+      tip2: 'Use good lighting without harsh shadows.',
+      tip3: 'Keep one dish in frame — avoid clutter on the table.',
+      resultTitle: 'Analysis result',
+      yourPhoto: 'Your photo',
     },
     profile: {
       title: 'Profile settings',

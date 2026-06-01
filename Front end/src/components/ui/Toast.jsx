@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: Toast.jsx
+ * ЧТО ЭТО: UI: уведомления.
+ * ЗА ЧТО ОТВЕЧАЕТ: всплывающие сообщения.
+ */
 import { useEffect } from 'react';
 import './Toast.css';
 

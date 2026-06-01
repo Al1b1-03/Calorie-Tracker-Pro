@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: prepareImageFile.js
+ * ЧТО ЭТО: Подготовка фото.
+ * ЗА ЧТО ОТВЕЧАЕТ: сжатие перед upload на сервер.
+ */
 const MAX_BYTES = 8 * 1024 * 1024;
 const OK_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 

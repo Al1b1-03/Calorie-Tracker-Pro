@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: validation.js
+ * ЧТО ЭТО: Валидация запросов.
+ * ЗА ЧТО ОТВЕЧАЕТ: ответ 400 при ошибках express-validator.
+ */
 import { validationResult } from 'express-validator';
 
 export const handleValidationErrors = (req, res, next) => {

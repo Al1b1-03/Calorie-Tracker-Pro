@@ -1,5 +1,10 @@
+/**
+ * ФАЙЛ: AiCameraPage.jsx
+ * ЧТО ЭТО: Страница: AI-камера.
+ * ЗА ЧТО ОТВЕЧАЕТ: фото еды → распознавание → дневник.
+ */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { scansApi } from '../api/scans';
 import { useLanguage } from '../i18n/LanguageContext';
 import { prepareImageFile } from '../utils/prepareImageFile';
@@ -268,36 +273,56 @@ export default function AiCameraPage() {
       </div>
 
       {tab === 'scan' && (
-        <div className="ai-camera__scan glass-card">
-          <div className="ai-camera__viewfinder">
-            <video
-              ref={videoRef}
-              className={`ai-camera__video ${cameraOn ? 'ai-camera__video--live' : ''}`}
-              playsInline
-              muted
-              autoPlay
-            />
-            {previewUrl && !cameraOn && (
-              <img src={previewUrl} alt="" className="ai-camera__preview" />
-            )}
-            {!cameraOn && !previewUrl && showCaptureUi && (
-              <div className="ai-camera__placeholder">
-                <span className="ai-camera__placeholder-icon">📷</span>
-                <p>{t('aiCamera.hint')}</p>
+        <div className="ai-camera__workspace glass-card">
+          <div className="ai-camera__media">
+            <p className="ai-camera__media-label">
+              {result && !analyzing ? t('aiCamera.yourPhoto') : t('aiCamera.tabScan')}
+            </p>
+
+            {result && !analyzing ? (
+              <div className="ai-camera__thumb-frame">
+                <img
+                  src={previewUrl || scansApi.imageUrl(result.imageUrl)}
+                  alt=""
+                  className="ai-camera__thumb"
+                />
+              </div>
+            ) : (
+              <div className="ai-camera__viewfinder">
+                <video
+                  ref={videoRef}
+                  className={`ai-camera__video ${cameraOn ? 'ai-camera__video--live' : ''}`}
+                  playsInline
+                  muted
+                  autoPlay
+                />
+                {previewUrl && !cameraOn && (
+                  <img src={previewUrl} alt="" className="ai-camera__preview" />
+                )}
+                {!cameraOn && !previewUrl && showCaptureUi && (
+                  <div className="ai-camera__placeholder">
+                    <span className="ai-camera__placeholder-icon" aria-hidden>
+                      📷
+                    </span>
+                    <p>{t('aiCamera.hint')}</p>
+                  </div>
+                )}
+                {analyzing && (
+                  <div className="ai-camera__analyzing-overlay">
+                    <div className="ai-camera__shimmer" />
+                    <p>{t('aiCamera.analyzing')}</p>
+                  </div>
+                )}
               </div>
             )}
-            {analyzing && (
-              <div className="ai-camera__analyzing-overlay">
-                <div className="ai-camera__shimmer" />
-                <p>{t('aiCamera.analyzing')}</p>
-              </div>
+
+            {error && (
+              <p className="ai-camera__error" role="alert">
+                {error}
+              </p>
             )}
-          </div>
 
-          {error && <p className="ai-camera__error" role="alert">{error}</p>}
-
-          {showCaptureUi && (
-            <>
+            {showCaptureUi && (
               <div className="ai-camera__controls">
                 {!cameraOn ? (
                   <>
@@ -308,7 +333,6 @@ export default function AiCameraPage() {
                     >
                       {t('aiCamera.openCamera')}
                     </button>
-
                     <label className="ai-camera__btn ai-camera__btn--file">
                       {t('aiCamera.fromGallery')}
                       <input
@@ -329,7 +353,6 @@ export default function AiCameraPage() {
                     {t('aiCamera.capture')}
                   </button>
                 )}
-
                 {(cameraOn || previewUrl) && (
                   <button
                     type="button"
@@ -340,95 +363,134 @@ export default function AiCameraPage() {
                   </button>
                 )}
               </div>
-            </>
-          )}
+            )}
 
-          {analyzing && !previewUrl && (
-            <div className="ai-camera__analyzing">
-              <SkeletonCardList count={1} />
-            </div>
-          )}
+            {result && !analyzing && (
+              <button
+                type="button"
+                className="ai-camera__btn ai-camera__btn--ghost ai-camera__media-reset"
+                onClick={resetScan}
+              >
+                {t('aiCamera.scanAgain')}
+              </button>
+            )}
+          </div>
 
-          {result && !analyzing && (
-            <div className="ai-camera__result">
-              {result.imageUrl && (
-                <img
-                  src={scansApi.imageUrl(result.imageUrl)}
-                  alt=""
-                  className="ai-camera__result-img"
-                />
-              )}
-              <div className="ai-camera__result-head">
-                <h2 className="ai-camera__dish">{result.dishName}</h2>
-                <div className="ai-camera__result-meta">
-                  <span className="ai-camera__confidence">
-                    {Math.round((result.confidence || 0) * 100)}% {t('aiCamera.confidence')}
-                  </span>
-                  {result.provider && result.provider !== 'mock' && (
-                    <span className="ai-camera__provider">
-                      {result.provider === 'openai'
-                        ? t('aiCamera.providerOpenai')
-                        : result.provider === 'gemini'
-                          ? t('aiCamera.providerGemini')
-                          : result.provider === 'local'
-                            ? t('aiCamera.providerLocal')
-                            : result.provider}
+          <div className="ai-camera__panel">
+            {analyzing && (
+              <div className="ai-camera__panel-block ai-camera__panel-block--loading">
+                <h2 className="ai-camera__panel-title">{t('aiCamera.analyzing')}</h2>
+                <SkeletonCardList count={2} />
+              </div>
+            )}
+
+            {!analyzing && result && (
+              <div className="ai-camera__panel-block ai-camera__result">
+                <h2 className="ai-camera__panel-title">{t('aiCamera.resultTitle')}</h2>
+                <div className="ai-camera__result-head">
+                  <p className="ai-camera__dish">{result.dishName}</p>
+                  <div className="ai-camera__result-meta">
+                    <span className="ai-camera__confidence">
+                      {Math.round((result.confidence || 0) * 100)}% {t('aiCamera.confidence')}
                     </span>
-                  )}
+                    {result.provider && result.provider !== 'mock' && (
+                      <span className="ai-camera__provider">
+                        {result.provider === 'openai'
+                          ? t('aiCamera.providerOpenai')
+                          : result.provider === 'gemini'
+                            ? t('aiCamera.providerGemini')
+                            : result.provider === 'local'
+                              ? t('aiCamera.providerLocal')
+                              : result.provider}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {(result.confidence ?? 1) < 0.65 && (
+                  <p className="ai-camera__low-confidence">{t('aiCamera.lowConfidenceHint')}</p>
+                )}
+
+                {result.alternatives?.length > 0 && (result.confidence ?? 1) < 0.72 && (
+                  <div className="ai-camera__alternatives">
+                    <h3>{t('aiCamera.alternatives')}</h3>
+                    <ul>
+                      {result.alternatives.map((alt) => (
+                        <li key={alt.catalogId || alt.dishName}>{alt.dishName}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="ai-camera__nutrition">
+                  <div className="ai-camera__nutri-card">
+                    <span>{t('aiCamera.weight')}</span>
+                    <strong>{result.estimatedWeightG} g</strong>
+                  </div>
+                  <div className="ai-camera__nutri-card ai-camera__nutri-card--accent">
+                    <span>{t('aiCamera.calories')}</span>
+                    <strong>
+                      {result.calories} {t('dashboard.kcal')}
+                    </strong>
+                  </div>
+                  <div className="ai-camera__nutri-card">
+                    <span>{t('dashboard.protein')}</span>
+                    <strong>{result.protein} g</strong>
+                  </div>
+                  <div className="ai-camera__nutri-card">
+                    <span>{t('dashboard.fat')}</span>
+                    <strong>{result.fat} g</strong>
+                  </div>
+                  <div className="ai-camera__nutri-card">
+                    <span>{t('dashboard.carbs')}</span>
+                    <strong>{result.carbs} g</strong>
+                  </div>
+                </div>
+
+                {result.ingredients?.length > 0 && (
+                  <div className="ai-camera__ingredients">
+                    <h3>{t('aiCamera.ingredients')}</h3>
+                    <ul>
+                      {result.ingredients.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="ai-camera__result-actions">
+                  <button
+                    type="button"
+                    className="ai-camera__btn ai-camera__btn--primary"
+                    disabled={confirming}
+                    onClick={handleConfirm}
+                  >
+                    {confirming ? t('aiCamera.confirming') : t('aiCamera.confirm')}
+                  </button>
+                  <button type="button" className="ai-camera__btn" onClick={resetScan}>
+                    {t('aiCamera.scanAgain')}
+                  </button>
                 </div>
               </div>
+            )}
 
-              {result.ingredients?.length > 0 && (
-                <div className="ai-camera__ingredients">
-                  <h3>{t('aiCamera.ingredients')}</h3>
-                  <ul>
-                    {result.ingredients.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <div className="ai-camera__nutrition">
-                <div className="ai-camera__nutri-card">
-                  <span>{t('aiCamera.weight')}</span>
-                  <strong>{result.estimatedWeightG} g</strong>
-                </div>
-                <div className="ai-camera__nutri-card">
-                  <span>{t('aiCamera.calories')}</span>
-                  <strong>
-                    {result.calories} {t('dashboard.kcal')}
-                  </strong>
-                </div>
-                <div className="ai-camera__nutri-card">
-                  <span>{t('dashboard.protein')}</span>
-                  <strong>{result.protein} g</strong>
-                </div>
-                <div className="ai-camera__nutri-card">
-                  <span>{t('dashboard.fat')}</span>
-                  <strong>{result.fat} g</strong>
-                </div>
-                <div className="ai-camera__nutri-card">
-                  <span>{t('dashboard.carbs')}</span>
-                  <strong>{result.carbs} g</strong>
+            {!analyzing && !result && (
+              <div className="ai-camera__panel-block ai-camera__tips">
+                <h2 className="ai-camera__panel-title">{t('aiCamera.tipsTitle')}</h2>
+                <ol className="ai-camera__tips-list">
+                  <li>{t('aiCamera.tip1')}</li>
+                  <li>{t('aiCamera.tip2')}</li>
+                  <li>{t('aiCamera.tip3')}</li>
+                </ol>
+                <div className="ai-camera__tips-note">
+                  <span className="ai-camera__tips-icon" aria-hidden>
+                    ✨
+                  </span>
+                  <p>{t('aiCamera.subtitle')}</p>
                 </div>
               </div>
-
-              <div className="ai-camera__result-actions">
-                <button
-                  type="button"
-                  className="ai-camera__btn ai-camera__btn--primary"
-                  disabled={confirming}
-                  onClick={handleConfirm}
-                >
-                  {confirming ? t('aiCamera.confirming') : t('aiCamera.confirm')}
-                </button>
-                <button type="button" className="ai-camera__btn" onClick={resetScan}>
-                  {t('aiCamera.scanAgain')}
-                </button>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
 
@@ -463,9 +525,6 @@ export default function AiCameraPage() {
         </div>
       )}
 
-      <Link to="/" className="ai-camera__back">
-        ← {t('nav.home')}
-      </Link>
     </div>
   );
 }

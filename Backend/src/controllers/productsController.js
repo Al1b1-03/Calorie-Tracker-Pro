@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: productsController.js
+ * ЧТО ЭТО: Контроллер: товары (админ).
+ * ЗА ЧТО ОТВЕЧАЕТ: создание, правка, удаление, upload фото.
+ */
 import fs from 'fs';
 import path from 'path';
 import { query } from '../config/database.js';

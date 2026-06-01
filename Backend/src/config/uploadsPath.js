@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: uploadsPath.js
+ * ЧТО ЭТО: Пути к папкам загрузок.
+ * ЗА ЧТО ОТВЕЧАЕТ: uploads/products, uploads/scans для картинок.
+ */
 import path from 'path';
 import { fileURLToPath } from 'url';
 

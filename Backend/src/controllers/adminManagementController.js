@@ -1,3 +1,8 @@
+/**
+ * ФАЙЛ: adminManagementController.js
+ * ЧТО ЭТО: Контроллер: управление админами.
+ * ЗА ЧТО ОТВЕЧАЕТ: create/list/delete admin (SUPER_ADMIN).
+ */
 import bcrypt from 'bcryptjs';
 import { query } from '../config/database.js';
 import { ROLES, isAdminRole, normalizeRole } from '../constants/roles.js';
