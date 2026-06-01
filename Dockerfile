@@ -1,7 +1,7 @@
-# Render деплоит из корня монорепозитория (GitHub root).
-# Исходники бэкенда: Backend/
+# Render: сборка из корня репозитория. CACHE_BUST меняйте при деплое, если слои закешировались.
 FROM node:20-bookworm-slim
 
+ARG CACHE_BUST=4
 WORKDIR /app
 
 RUN apt-get update \
@@ -15,20 +15,12 @@ COPY Backend/src ./src
 COPY Backend/database ./database
 COPY Backend/scripts ./scripts
 
+RUN echo "cache_bust=${CACHE_BUST}" > /app/.build-id
+
 RUN mkdir -p /app/uploads/products /app/uploads/scans
 
 ENV NODE_ENV=production
-ENV HF_HOME=/app/.cache/huggingface
-ENV TRANSFORMERS_CACHE=/app/.cache/huggingface
-ENV NODE_OPTIONS=--max-old-space-size=2048
-
-RUN node --input-type=module -e "\
-import { pipeline, env } from '@xenova/transformers'; \
-env.cacheDir = '/app/.cache/huggingface'; \
-const model = process.env.VISION_LOCAL_MODEL || 'Xenova/clip-vit-base-patch16'; \
-console.log('[vision] Caching model:', model); \
-await pipeline('zero-shot-image-classification', model); \
-console.log('[vision] Model cached');"
+ENV NODE_OPTIONS=--max-old-space-size=512
 
 EXPOSE 3003
 

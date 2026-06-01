@@ -4,6 +4,9 @@
  * ЗА ЧТО ОТВЕЧАЕТ: запуск API на :3003, CORS, статика uploads, подключение всех маршрутов, миграции БД.
  */
 import 'dotenv/config';
+
+const BOOT_VERSION = '2026-06-01-render-v4';
+console.info(`[boot] Calorie Tracker API ${BOOT_VERSION}`);
 import path from 'path';
 import express from 'express';
 import cors from 'cors';
@@ -152,10 +155,14 @@ const startServer = () => {
 
   setupDatabase().catch((err) => {
     console.error('[db] setup failed:', err.message);
-    if (process.env.NODE_ENV !== 'production') {
-      process.exit(1);
-    }
   });
 };
+
+process.on('uncaughtException', (err) => {
+  console.error('[fatal] uncaughtException:', err);
+});
+process.on('unhandledRejection', (err) => {
+  console.error('[fatal] unhandledRejection:', err);
+});
 
 startServer();

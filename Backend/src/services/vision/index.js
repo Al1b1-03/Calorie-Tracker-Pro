@@ -6,10 +6,12 @@
 import { analyzeFoodImage as mockAnalyze } from './MockVisionAdapter.js';
 import { analyzeFoodImage as openaiAnalyze } from './OpenAIVisionAdapter.js';
 import { analyzeFoodImage as geminiAnalyze } from './GeminiVisionAdapter.js';
-import { analyzeFoodImage as localAnalyze } from './LocalVisionAdapter.js';
 import { getVisionProviderName } from './resolveProvider.js';
 
-console.info(`[vision] Active provider: ${getVisionProviderName()}`);
+async function localAnalyze(input) {
+  const { analyzeFoodImage } = await import('./LocalVisionAdapter.js');
+  return analyzeFoodImage(input);
+}
 
 async function analyzeWithAuto(input) {
   const errors = [];

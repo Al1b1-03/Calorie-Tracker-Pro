@@ -10,7 +10,14 @@ function resolveProvider() {
   if (configured === 'openai') return 'openai';
   if (configured === 'gemini') return 'gemini';
   if (configured === 'local') return 'local';
-  if (configured === 'auto') return 'auto';
+  if (configured === 'auto') {
+    if (process.env.NODE_ENV === 'production') {
+      if (process.env.GEMINI_API_KEY) return 'gemini';
+      if (process.env.OPENAI_API_KEY) return 'openai';
+      return 'mock';
+    }
+    return 'auto';
+  }
 
   if (process.env.OPENAI_API_KEY) return 'openai';
   if (process.env.GEMINI_API_KEY) return 'gemini';

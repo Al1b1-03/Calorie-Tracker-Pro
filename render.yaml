@@ -13,6 +13,8 @@ services:
         value: production
       - key: DATABASE_SSL
         value: "true"
+      - key: VISION_PROVIDER
+        value: mock
       - key: JWT_SECRET
         sync: false
       - key: DATABASE_URL

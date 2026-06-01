@@ -144,7 +144,9 @@ npm run docker:add-admin
 | 401 после входа | Разный `JWT_SECRET` | Один секрет на Render и в локальном Backend |
 | Старый API `food-backend-...` | Устаревший `VITE_API_URL` | Заменить на `calorie-tracker-pro.onrender.com` |
 | Пустые картинки на Render | Диск эфемерный | Загрузки пропадают после рестарта — для диплома нормально |
-| `Exited with status 1` после Deploy | Нет `DATABASE_URL` или БД недоступна | PostgreSQL → Connect → Web Service; в Environment вставить Internal URL |
+| `Exited with status 1` после Deploy | Старый Docker-кэш или нет `DATABASE_URL` | **Clear build cache** + redeploy; в логах должно быть `[boot] ... render-v4` |
+| В логах нет `[boot] render-v4` | Деплой старого образа | `git push` + Render → **Clear build cache & deploy** |
+| `Exited with status 1` (~20 сек) | Старая версия: падение до старта HTTP | Обновите код и сбросьте кэш сборки |
 | Health `database: false` | БД ещё подключается или URL неверный | Логи: `[db] connecting to...`; проверить Internal Database URL |
 
 ---
