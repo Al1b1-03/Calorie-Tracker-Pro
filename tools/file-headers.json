@@ -107,6 +107,7 @@
   "Front end/src/utils/calorieCalculator.js": "Расчёт калорий.\nЗа что отвечает: норма по росту/весу/активности.",
   "Front end/src/utils/assistantEngine.js": "Логика AI-чата.\nЗа что отвечает: ответы помощника на клиенте.",
   "Front end/src/utils/prepareImageFile.js": "Подготовка фото.\nЗа что отвечает: сжатие перед upload на сервер.",
+  "Front end/src/utils/validateRegistration.js": "Валидация формы регистрации.\nЗа что отвечает: проверка обязательных полей и телефона на клиенте.",
   "Front end/src/hooks/useAdminNotificationCounts.js": "Хук счётчиков админа.\nЗа что отвечает: запасной вариант (основное в Header).",
   "Front end/src/hooks/useBodyClass.js": "Хук CSS-класса body.\nЗа что отвечает: класс на document.body.",
   "Front end/src/context/ThemeContext.jsx": "Контекст темы.\nЗа что отвечает: светлая/тёмная тема.",

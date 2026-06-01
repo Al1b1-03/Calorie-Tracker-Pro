@@ -29,7 +29,7 @@ export const register = async (req, res) => {
       `INSERT INTO users (first_name, last_name, phone, email, password_hash, role)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING id, first_name, last_name, phone, email, role, created_at`,
-      [firstName, lastName, phone || null, email, passwordHash, ROLES.USER]
+      [firstName, lastName, phone, email, passwordHash, ROLES.USER]
     );
 
     const user = result.rows[0];

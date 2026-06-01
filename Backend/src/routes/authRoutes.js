@@ -25,10 +25,16 @@ const registerValidation = [
     .isLength({ max: 100 })
     .withMessage('Фамилия слишком длинная'),
   body('phone')
-    .optional({ values: 'falsy' })
     .trim()
-    .isLength({ max: 20 })
-    .withMessage('Некорректный номер телефона'),
+    .notEmpty()
+    .withMessage('Номер телефона обязателен')
+    .custom((value) => {
+      const digits = String(value).replace(/\D/g, '');
+      if (digits.length < 10 || digits.length > 15) {
+        throw new Error('Введите корректный номер (от 10 до 15 цифр)');
+      }
+      return true;
+    }),
   body('email')
     .trim()
     .notEmpty()
