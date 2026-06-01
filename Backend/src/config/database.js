@@ -7,13 +7,13 @@ import pg from 'pg';
 
 const { Pool } = pg;
 
-const DEFAULT_URL = 'postgresql://postgres:postgres@localhost:5433/calorie_tracker';
-const url = process.env.DATABASE_URL;
+import { resolveConnectionString } from './databaseUrl.js';
 
-const connectionString =
-  url && !url.includes('user:password')
-    ? url
-    : DEFAULT_URL;
+const DEFAULT_URL = 'postgresql://postgres:postgres@localhost:5433/calorie_tracker';
+const resolved = resolveConnectionString();
+
+const connectionString = resolved || DEFAULT_URL;
+export const usingExplicitDatabaseUrl = Boolean(resolved);
 
 function needsSsl(connStr) {
   const flag = process.env.DATABASE_SSL;
@@ -32,6 +32,7 @@ const pool = new Pool({
     : false,
   max: 10,
   idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 15000,
 });
 
 export const query = (text, params) => pool.query(text, params);

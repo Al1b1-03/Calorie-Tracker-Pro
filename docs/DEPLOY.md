@@ -37,8 +37,8 @@ PostgreSQL: привязать к Web Service (Internal/External `DATABASE_URL`)
 | Переменная | Значение |
 |------------|----------|
 | `NODE_ENV` | `production` |
-| `PORT` | `3003` |
-| `DATABASE_URL` | из вкладки PostgreSQL → **External Database URL** |
+| `DATABASE_URL` | **Internal Database URL** из PostgreSQL (тот же регион, что Web Service) |
+| `PORT` | **не задавайте вручную** — Render подставляет сам |
 | `DATABASE_SSL` | `true` |
 | `JWT_SECRET` | одна длинная случайная строка (сохраните!) |
 | `FRONTEND_URL` | см. ниже |
@@ -144,6 +144,8 @@ npm run docker:add-admin
 | 401 после входа | Разный `JWT_SECRET` | Один секрет на Render и в локальном Backend |
 | Старый API `food-backend-...` | Устаревший `VITE_API_URL` | Заменить на `calorie-tracker-pro.onrender.com` |
 | Пустые картинки на Render | Диск эфемерный | Загрузки пропадают после рестарта — для диплома нормально |
+| `Exited with status 1` после Deploy | Нет `DATABASE_URL` или БД недоступна | PostgreSQL → Connect → Web Service; в Environment вставить Internal URL |
+| Health `database: false` | БД ещё подключается или URL неверный | Логи: `[db] connecting to...`; проверить Internal Database URL |
 
 ---
 

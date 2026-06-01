@@ -7,7 +7,9 @@ import 'dotenv/config';
 import path from 'path';
 import express from 'express';
 import cors from 'cors';
-import pool from './config/database.js';
+import { corsOptions } from './config/cors.js';
+import pool, { usingExplicitDatabaseUrl } from './config/database.js';
+import { getDatabaseHostLabel } from './config/databaseUrl.js';
 import { runMigrations } from './database/migrate.js';
 import authRoutes from './routes/authRoutes.js';
 import entriesRoutes from './routes/entriesRoutes.js';
@@ -31,23 +33,9 @@ import waterRoutes from './routes/waterRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3003;
+let databaseReady = false;
 
-const defaultDevOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:5174',
-];
-const allowedOrigins = new Set(defaultDevOrigins);
-if (process.env.FRONTEND_URL) {
-  process.env.FRONTEND_URL.split(',').forEach((s) => allowedOrigins.add(s.trim()));
-}
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
 app.use(express.json());
 
 if (!fs.existsSync(productsUploadsDir)) {
@@ -83,7 +71,13 @@ app.get('/api/uploads/products/:filename', (req, res) => {
 });
 
 app.get('/api/health', (_, res) => {
-  res.json({ status: 'ok', message: 'Calorie Tracker API' });
+  res.json({
+    status: databaseReady ? 'ok' : 'degraded',
+    message: 'Calorie Tracker API',
+    env: process.env.NODE_ENV || 'development',
+    database: databaseReady,
+    databaseHost: getDatabaseHostLabel(process.env.DATABASE_URL),
+  });
 });
 
 app.get(['/api/workouts', '/api/workouts/'], listWorkouts);
@@ -118,41 +112,49 @@ app.use('/api/admin', adminManagementRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-const waitForDb = async (maxAttempts = 10) => {
+const waitForDb = async (maxAttempts = 30) => {
+  const host = getDatabaseHostLabel(process.env.DATABASE_URL);
+  console.log(`[db] connecting to ${host} (up to ${maxAttempts} attempts)...`);
+
   for (let i = 0; i < maxAttempts; i++) {
     try {
       await pool.query('SELECT 1');
       return true;
     } catch (err) {
+      console.warn(`[db] attempt ${i + 1}/${maxAttempts}: ${err.message}`);
       if (i === maxAttempts - 1) {
-        throw new Error(`Database connection failed: ${err.message}`);
+        throw new Error(`Database connection failed (${host}): ${err.message}`);
       }
       await new Promise((r) => setTimeout(r, 2000));
     }
   }
 };
 
-const startServer = async () => {
-  try {
-    if (process.env.DATABASE_URL) {
-      await waitForDb();
-      console.log('Database connected');
-      await runMigrations();
-    } else {
-      console.warn('DATABASE_URL not set. Create .env from .env.example');
-    }
-
-    // const { warmupVision } = await import('./services/vision/warmup.js');
-// warmupVision().catch((err) => {
-//   console.warn('[vision] Startup warmup failed (will retry on first scan):', err.message);
-// });
-  } catch (err) {
-    console.error('Startup failed:', err.message);
-    process.exit(1);
+const setupDatabase = async () => {
+  if (!usingExplicitDatabaseUrl) {
+    console.warn(
+      '[db] DATABASE_URL not set — using local default. On Render: Environment → add DATABASE_URL from PostgreSQL.'
+    );
+    return;
   }
 
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+  await waitForDb();
+  console.log('[db] connected');
+  await runMigrations();
+  databaseReady = true;
+  console.log('[db] migrations complete');
+};
+
+const startServer = () => {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT} (NODE_ENV=${process.env.NODE_ENV || 'development'})`);
+  });
+
+  setupDatabase().catch((err) => {
+    console.error('[db] setup failed:', err.message);
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
   });
 };
 
