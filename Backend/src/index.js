@@ -12,7 +12,7 @@ import express from 'express';
 import cors from 'cors';
 import { corsOptions } from './config/cors.js';
 import pool, { usingExplicitDatabaseUrl } from './config/database.js';
-import { getDatabaseHostLabel } from './config/databaseUrl.js';
+import { getDatabaseHostLabel, validateDatabaseUrl } from './config/databaseUrl.js';
 import { runMigrations } from './database/migrate.js';
 import authRoutes from './routes/authRoutes.js';
 import entriesRoutes from './routes/entriesRoutes.js';
@@ -134,10 +134,22 @@ const waitForDb = async (maxAttempts = 30) => {
 };
 
 const setupDatabase = async () => {
+  const configuredUrl = process.env.DATABASE_URL?.trim();
+  const validation = validateDatabaseUrl(configuredUrl);
+
   if (!usingExplicitDatabaseUrl) {
-    console.warn(
-      '[db] DATABASE_URL not set — using local default. On Render: Environment → add DATABASE_URL from PostgreSQL.'
-    );
+    if (configuredUrl && !validation.ok) {
+      console.error('[db] invalid DATABASE_URL:', validation.message);
+    } else {
+      console.warn(
+        '[db] DATABASE_URL not set — using local default. On Render: Environment → add Internal Database URL from PostgreSQL.'
+      );
+    }
+    return;
+  }
+
+  if (!validation.ok) {
+    console.error('[db] invalid DATABASE_URL:', validation.message);
     return;
   }
 

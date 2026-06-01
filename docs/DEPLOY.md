@@ -37,7 +37,7 @@ PostgreSQL: привязать к Web Service (Internal/External `DATABASE_URL`)
 | Переменная | Значение |
 |------------|----------|
 | `NODE_ENV` | `production` |
-| `DATABASE_URL` | **Internal Database URL** из PostgreSQL (тот же регион, что Web Service) |
+| `DATABASE_URL` | **Internal Database URL** из PostgreSQL (хост вида `dpg-xxxxx-a`, **не** `base` / `HOST` / `user:password`) |
 | `PORT` | **не задавайте вручную** — Render подставляет сам |
 | `DATABASE_SSL` | `true` |
 | `JWT_SECRET` | одна длинная случайная строка (сохраните!) |
