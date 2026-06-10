@@ -1,52 +1,35 @@
 /**
- * ФАЙЛ: client.js
- * ЧТО ЭТО: HTTP-клиент API.
- * ЗА ЧТО ОТВЕЧАЕТ: fetch + JWT, базовый URL /api.
+ * HTTP-клиент API. Базовый URL — только VITE_API_URL (см. .env / Vercel).
  */
-function resolveApiBase() {
-  if (import.meta.env.VITE_API_URL) {
-    const raw = String(import.meta.env.VITE_API_URL).replace(/\/$/, '');
-    return raw.endsWith('/api') ? raw : `${raw}/api`;
-  }
-  if (typeof window !== 'undefined') {
-    return `${window.location.origin}/api`;
-  }
-  return import.meta.env.DEV ? '/api' : 'http://localhost:3003/api';
+const API_BASE = String(import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
+
+export function getApiOrigin() {
+  return API_BASE.replace(/\/api\/?$/, '') || '';
 }
-
-const API_BASE = resolveApiBase();
-
-/** Статика (/uploads) всегда с backend :3003, если не задан свой VITE_API_URL */
-const API_ORIGIN = import.meta.env.VITE_API_URL
-  ? API_BASE.replace(/\/api\/?$/, '')
-  : 'http://localhost:3003';
 
 /** URL для статики backend (/uploads/...) */
 export const getStaticUrl = (relativePath) => {
-  const origin = API_ORIGIN;
   const path = relativePath.startsWith('/') ? relativePath : `/${relativePath}`;
-  return `${origin}${path}`;
+  return `${getApiOrigin()}${path}`;
 };
 
-/** Полный URL для запроса к API. Всегда используем прямой адрес backend. */
-export const getApiUrl = (pathPart) => {
-  let path = pathPart.startsWith('/') ? pathPart : `/${pathPart}`;
-  if (!path.startsWith('/api')) path = `/api${path}`;
-  const part = path.startsWith('/api') ? path.slice(4) || '/' : path;
-  return `${API_BASE}${part}`;
+/** Полный URL для запроса к API. */
+export const getApiUrl = (endpoint) => {
+  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  return `${API_BASE}${path}`;
 };
 
 export const request = async (endpoint, options = {}) => {
-  let path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  if (!path.startsWith('/api')) path = `/api${path}`;
-  const url = `${API_BASE}${path.startsWith('/api') ? path.slice(4) || '/' : path}`;
+  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = `${API_BASE}${path}`;
+
   const isDeleteNoBody = (options.method || '').toUpperCase() === 'DELETE' && options.body == null;
   const config = {
+    ...options,
     headers: {
       ...(isDeleteNoBody ? {} : { 'Content-Type': 'application/json' }),
-      ...options.headers,
+      ...(options.headers || {}),
     },
-    ...options,
   };
   if (isDeleteNoBody && config.body !== undefined) delete config.body;
 
@@ -81,9 +64,10 @@ export const request = async (endpoint, options = {}) => {
     return data;
   } catch (err) {
     if (err.name === 'TypeError' && err.message.includes('fetch')) {
-      throw new Error(
-        'Не удалось подключиться к серверу. Проверьте, что бэкенд запущен на http://localhost:3003'
-      );
+      const hint = API_BASE.startsWith('http')
+        ? `Проверьте API: ${getApiOrigin()}/api/health`
+        : 'Запустите backend: npm run docker:up или npm run dev в Backend';
+      throw new Error(`Не удалось подключиться к серверу. ${hint}`);
     }
     throw err;
   }

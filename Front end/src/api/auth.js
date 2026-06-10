@@ -27,7 +27,10 @@ export const authApi = {
   login: (email, password) =>
     request('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({
+        email: String(email).trim().toLowerCase(),
+        password,
+      }),
     }),
 
   getProfile: () => request('/auth/profile'),

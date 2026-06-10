@@ -3,11 +3,9 @@
  * ЧТО ЭТО: API: магазин и корзина.
  * ЗА ЧТО ОТВЕЧАЕТ: товары, cart, checkout.
  */
-import { request } from './client.js';
+import { request, getApiOrigin } from './client.js';
 
-/** Origin бэкенда: картинки грузятся напрямую с backend. */
-export const getApiOrigin = () =>
-  (import.meta.env.VITE_API_URL || 'http://localhost:3003/api').replace(/\/api\/?$/, '') || 'http://localhost:3003';
+export { getApiOrigin };
 
 /** URL картинки. Поддерживает: http(s)://..., /путь (фронт public), /api/uploads/products/xxx (бэкенд). */
 export const getImageUrl = (imageUrl, imageFullUrl = null) => {

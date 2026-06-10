@@ -8,21 +8,61 @@ import { Link, useNavigate } from 'react-router-dom';
 import { EmailIcon, LockIcon, GoogleIcon, VkIcon, YandexIcon } from '../shared/icons';
 import { authApi } from '../api/auth';
 import { useLanguage } from '../i18n/LanguageContext';
-import { getLoginRedirectPath, normalizeRole } from '../utils/roles';
+import { getLoginRedirectPath, isAdmin, normalizeRole } from '../utils/roles';
 import './LoginPage.css';
 
 export default function LoginPage() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
-
-  useEffect(() => {
-    if (localStorage.getItem('token')) {
-      navigate(getLoginRedirectPath(normalizeRole(localStorage.getItem('userRole'))), { replace: true });
-    }
-  }, [navigate]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [activeSession, setActiveSession] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setActiveSession(null);
+      return;
+    }
+
+    const applyRole = (role) => {
+      const normalized = normalizeRole(role);
+      if (isAdmin(normalized)) {
+        navigate(getLoginRedirectPath(normalized), { replace: true });
+        return;
+      }
+      setActiveSession(normalized);
+    };
+
+    const cachedRole = localStorage.getItem('userRole');
+    if (cachedRole) {
+      applyRole(cachedRole);
+      return;
+    }
+
+    authApi
+      .getProfile()
+      .then(({ user }) => {
+        const role = normalizeRole(user?.role);
+        localStorage.setItem('userRole', role);
+        window.dispatchEvent(new CustomEvent('userRoleUpdated'));
+        applyRole(role);
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        setActiveSession(null);
+      });
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    window.dispatchEvent(new CustomEvent('userRoleUpdated'));
+    setActiveSession(null);
+    setError('');
+  };
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -34,7 +74,11 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      const { token, user } = await authApi.login(formData.email, formData.password);
+      const { token, user } = await authApi.login(
+        formData.email.trim().toLowerCase(),
+        formData.password
+      );
+      setActiveSession(null);
       localStorage.setItem('token', token);
       const role = normalizeRole(user?.role);
       localStorage.setItem('userRole', role);
@@ -58,6 +102,14 @@ export default function LoginPage() {
           </Link>
         </div>
         <form className="login-form" onSubmit={handleSubmit}>
+          {activeSession && (
+            <div className="login-form__notice" role="status">
+              <p>{t('auth.alreadyLoggedIn')}</p>
+              <button type="button" className="login-form__logout" onClick={handleLogout}>
+                {t('auth.logoutToSwitch')}
+              </button>
+            </div>
+          )}
           {error && <p className="login-form__error">{error}</p>}
           <div className="login-form__field">
             <label className="login-form__label">{t('auth.email')}</label>

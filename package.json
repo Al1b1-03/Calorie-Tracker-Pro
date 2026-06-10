@@ -1,0 +1,16 @@
+{
+  "name": "calorie-tracker-pro",
+  "private": true,
+  "description": "Calorie Tracker Pro — Docker + PostgreSQL",
+  "scripts": {
+    "docker:init": "docker compose up --build -d && docker compose exec backend node scripts/add-admin.js && docker compose exec backend node scripts/seed-products.js",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "docker:ps": "docker compose ps",
+    "docker:add-admin": "docker compose exec backend node scripts/add-admin.js",
+    "docker:seed": "docker compose exec backend node scripts/seed-products.js",
+    "health": "node -e \"fetch('http://127.0.0.1:3003/api/health').then(r=>r.json()).then(console.log).catch(console.error)\"",
+    "check-db": "docker compose exec backend node scripts/check-db-sync.js"
+  }
+}

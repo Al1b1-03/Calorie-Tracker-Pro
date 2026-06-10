@@ -1,7 +1,8 @@
-# Blueprint в корне репозитория (Render читает render.yaml отсюда).
+# Render: https://calorie-tracker-pro-1.onrender.com
+# Vercel: VITE_API_URL=https://calorie-tracker-pro-1.onrender.com/api
 services:
   - type: web
-    name: calorie-tracker-pro
+    name: calorie-tracker-pro-1
     runtime: docker
     region: frankfurt
     plan: free
@@ -26,7 +27,9 @@ services:
           https://calorie-tracker-pro-smg1.vercel.app,
           https://calorie-tracker-pro-smg1-git-main-al1b1-03s-projects.vercel.app,
           https://calorie-tracker-pro-smg1-qfa2i606k-al1b1-03s-projects.vercel.app,
-          http://localhost:5173
+          https://calorie-tracker-pro-smg1-hu4xhlpox-al1b1-03s-projects.vercel.app,
+          http://localhost:5173,
+          http://localhost:5174
 
 databases:
   - name: calorie-tracker-db

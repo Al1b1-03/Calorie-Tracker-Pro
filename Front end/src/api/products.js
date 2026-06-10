@@ -3,13 +3,9 @@
  * ЧТО ЭТО: API: админ товары.
  * ЗА ЧТО ОТВЕЧАЕТ: CRUD продуктов.
  */
-import { request, getApiUrl } from './client.js';
+import { request, getApiUrl, getApiOrigin } from './client.js';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3003/api';
-
-/** Origin бэкенда для картинок (хост без /api). */
-export const getApiOrigin = () =>
-  (API_BASE.replace(/\/$/, '')).replace(/\/api\/?$/, '') || 'http://localhost:3003';
+export { getApiOrigin };
 
 /** URL картинки. Поддерживает: http(s)://..., /путь (фронт public), /api/uploads/products/xxx (бэкенд). */
 export const getImageUrl = (imageUrl, imageFullUrl = null) => {

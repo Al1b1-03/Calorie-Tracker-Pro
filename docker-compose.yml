@@ -1,10 +1,17 @@
-# Запуск: из папки, где лежат Backend и "Front end" (например Diplomka\Diplomka):
-#   docker compose up --build
-# Сайт: http://localhost:5174   API: http://localhost:3003/api
+# Новая локальная PostgreSQL + backend + frontend
+#   npm run docker:init   — создать БД, таблицы, админ, товары
+#   npm run docker:up     — только запуск
+#
+# Сайт: http://localhost:5174
+# API:  http://localhost:3003/api/health
+# БД:   localhost:5433  postgres / postgres / calorie_tracker
+
+name: diplomka
 
 services:
   db:
     image: postgres:16-alpine
+    container_name: diplomka-db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -14,39 +21,53 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d calorie_tracker"]
       interval: 3s
-      timeout: 3s
-      retries: 5
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
 
   backend:
     build:
       context: ./Backend
       dockerfile: Dockerfile
+    container_name: diplomka-backend
+    ports:
+      - "3003:3003"
     environment:
       PORT: 3003
       NODE_ENV: production
       DATABASE_URL: postgresql://postgres:postgres@db:5432/calorie_tracker
-      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      DATABASE_SSL: "false"
+      JWT_SECRET: ${JWT_SECRET:-CalorieTrackerPro_2026_SuperSecret_Key_8x91mK4Pq7}
+      VISION_PROVIDER: mock
       FRONTEND_URL: http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174
-    ports:
-      - "3003:3003"
+    volumes:
+      - backend_uploads:/app/uploads
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - backend_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3003/api/health').then(r=>r.json()).then(d=>process.exit(d.database?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 45s
+    restart: unless-stopped
 
   frontend:
     build:
       context: ./Front end
       dockerfile: Dockerfile
-    environment:
-      VITE_PROXY_TARGET: http://backend:3003
+    container_name: diplomka-frontend
     ports:
       - "5174:5173"
+    environment:
+      VITE_PROXY_TARGET: http://backend:3003
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   pgdata:

@@ -10,12 +10,15 @@ import { ROLES, normalizeRole } from '../constants/roles.js';
 
 const SALT_ROUNDS = 10;
 
+const normalizeEmail = (value) => String(value || '').trim().toLowerCase();
+
 export const register = async (req, res) => {
   try {
-    const { firstName, lastName, phone, email, password } = req.body;
+    const { firstName, lastName, phone, password } = req.body;
+    const email = normalizeEmail(req.body.email);
 
     const existingUser = await query(
-      'SELECT id FROM users WHERE email = $1',
+      'SELECT id FROM users WHERE LOWER(TRIM(email)) = $1',
       [email]
     );
 
@@ -59,10 +62,11 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = normalizeEmail(req.body.email);
+    const { password } = req.body;
 
     const result = await query(
-      'SELECT id, first_name, last_name, phone, email, password_hash, role, is_banned FROM users WHERE email = $1',
+      'SELECT id, first_name, last_name, phone, email, password_hash, role, is_banned FROM users WHERE LOWER(TRIM(email)) = $1',
       [email]
     );
 

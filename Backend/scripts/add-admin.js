@@ -16,14 +16,15 @@ async function addAdmin() {
   try {
     const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, SALT_ROUNDS);
 
-    const existing = await query('SELECT id, role FROM users WHERE email = $1', [ADMIN_EMAIL]);
+    const existing = await query('SELECT id, role FROM users WHERE LOWER(email) = LOWER($1)', [
+      ADMIN_EMAIL,
+    ]);
 
     if (existing.rows.length > 0) {
-      await query('UPDATE users SET password_hash = $1, role = $2 WHERE email = $3', [
-        passwordHash,
-        ROLES.SUPER_ADMIN,
-        ADMIN_EMAIL,
-      ]);
+      await query(
+        'UPDATE users SET password_hash = $1, role = $2, is_banned = false WHERE LOWER(email) = LOWER($3)',
+        [passwordHash, ROLES.SUPER_ADMIN, ADMIN_EMAIL]
+      );
       console.log('Пользователь', ADMIN_EMAIL, 'обновлён: пароль сброшен, роль SUPER_ADMIN.');
     } else {
       await query(

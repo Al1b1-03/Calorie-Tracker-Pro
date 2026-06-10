@@ -11,7 +11,6 @@ import { resolveConnectionString } from './databaseUrl.js';
 
 const DEFAULT_URL = 'postgresql://postgres:postgres@localhost:5433/calorie_tracker';
 const resolved = resolveConnectionString();
-
 const connectionString = resolved || DEFAULT_URL;
 export const usingExplicitDatabaseUrl = Boolean(resolved);
 

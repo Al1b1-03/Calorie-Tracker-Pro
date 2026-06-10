@@ -21,6 +21,7 @@ const vercelPreviewHosts = [
   'calorie-tracker-pro-smg1.vercel.app',
   'calorie-tracker-pro-smg1-git-main-al1b1-03s-projects.vercel.app',
   'calorie-tracker-pro-smg1-qfa2i606k-al1b1-03s-projects.vercel.app',
+  'calorie-tracker-pro-smg1-hu4xhlpox-al1b1-03s-projects.vercel.app',
 ];
 
 vercelPreviewHosts.forEach((host) => {

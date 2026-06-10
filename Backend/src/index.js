@@ -5,7 +5,7 @@
  */
 import 'dotenv/config';
 
-const BOOT_VERSION = '2026-06-01-render-v5';
+const BOOT_VERSION = '2026-06-01-docker-db-fix';
 console.info(`[boot] Calorie Tracker API ${BOOT_VERSION}`);
 import path from 'path';
 import express from 'express';
@@ -15,7 +15,8 @@ import pool, { usingExplicitDatabaseUrl } from './config/database.js';
 import {
   getDatabaseHostLabel,
   validateDatabaseUrl,
-  normalizeDatabaseUrl,
+  resolveDatabaseUrlFromEnv,
+  describeDatabaseUrlFormat,
 } from './config/databaseUrl.js';
 import { runMigrations } from './database/migrate.js';
 import authRoutes from './routes/authRoutes.js';
@@ -138,24 +139,31 @@ const waitForDb = async (maxAttempts = 30) => {
 };
 
 const setupDatabase = async () => {
-  const configuredUrl = normalizeDatabaseUrl(process.env.DATABASE_URL);
-  const validation = validateDatabaseUrl(configuredUrl);
+  const resolvedUrl = resolveDatabaseUrlFromEnv();
+  const validation = validateDatabaseUrl(resolvedUrl);
 
   if (!usingExplicitDatabaseUrl) {
-    if (configuredUrl && !validation.ok) {
-      console.error('[db] invalid DATABASE_URL:', validation.message);
+    const raw = process.env.DATABASE_URL;
+    if (raw) {
+      console.error(
+        '[db] DATABASE_URL present but invalid:',
+        validation.message,
+        `| format: ${describeDatabaseUrlFormat(raw)}`
+      );
     } else {
       console.warn(
-        '[db] DATABASE_URL not set — using local default. On Render: Environment → add Internal Database URL from PostgreSQL.'
+        '[db] No valid DATABASE_URL. Render: PostgreSQL → Connect → calorie-tracker-pro, or paste Internal Database URL.'
       );
     }
     return;
   }
 
   if (!validation.ok) {
-    console.error('[db] invalid DATABASE_URL:', validation.message);
+    console.error('[db] invalid database config:', validation.message);
     return;
   }
+
+  console.info(`[db] target host: ${validation.host}`);
 
   await waitForDb();
   console.log('[db] connected');

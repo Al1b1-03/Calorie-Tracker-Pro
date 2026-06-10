@@ -1,160 +1,95 @@
-# Единый деплой: Vercel + Render + localhost
+# Единая схема: Docker + Render + Vercel
 
-Один **бэкенд** и одна **база PostgreSQL** на Render.  
-Фронтенд на **Vercel** и локально только обращается к этому API.
-
-| Среда | Что запускается | API |
-|--------|------------------|-----|
-| **Прод (Vercel)** | Статика React | `https://calorie-tracker-pro.onrender.com/api` |
-| **Прод (Render)** | Node + PostgreSQL | тот же сервис |
-| **Локально** | `npm run dev` во Front end | Render API или proxy на localhost |
-
----
-
-## 1. Render (бэкенд + БД)
-
-Сервис: https://calorie-tracker-pro.onrender.com  
-PostgreSQL: привязать к Web Service (Internal/External `DATABASE_URL`).
-
-### Сборка Docker (важно)
-
-Репозиторий — **монорепо**: `Dockerfile` лежит в **корне** (`/Dockerfile`), не в `Backend/`.
-
-В Render Dashboard → Web Service → **Settings**:
-
-| Поле | Значение |
-|------|----------|
-| **Root Directory** | *(пусто — корень репо)* |
-| **Dockerfile Path** | `Dockerfile` |
-| **Docker Context** | `.` |
-
-Альтернатива: Root Directory = `Backend`, Dockerfile = `Dockerfile` (тогда используется `Backend/Dockerfile`).
-
-Ошибка `open Dockerfile: no such file or directory` — Root Directory пустой, а Dockerfile только в `Backend/`. Запушьте корневой `Dockerfile` или укажите Root Directory = `Backend`.
-
-### Переменные окружения (Render → Environment)
-
-| Переменная | Значение |
-|------------|----------|
-| `NODE_ENV` | `production` |
-| `DATABASE_URL` | **Internal Database URL** из PostgreSQL (хост вида `dpg-xxxxx-a`, **не** `base` / `HOST` / `user:password`) |
-| `PORT` | **не задавайте вручную** — Render подставляет сам |
-| `DATABASE_SSL` | `true` |
-| `JWT_SECRET` | одна длинная случайная строка (сохраните!) |
-| `FRONTEND_URL` | см. ниже |
-
-**FRONTEND_URL** (через запятую, без пробелов вокруг URL):
+Один проект, три среды, **один API и одна БД** (при настройке cloud).
 
 ```
-https://calorie-tracker-pro-smg1.vercel.app,https://calorie-tracker-pro-smg1-git-main-al1b1-03s-projects.vercel.app,https://calorie-tracker-pro-smg1-qfa2i606k-al1b1-03s-projects.vercel.app,http://localhost:5173
+┌─────────────────────────────────────────────────────────────┐
+│  Локально (Docker)                                          │
+│  diplomka-db (postgres:16) ← diplomka-backend :3003         │
+│         ↑                          ↑                        │
+│         └──────── diplomka-frontend :5174                   │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│  Продакшен                                                  │
+│  Vercel (React) ──► calorie-tracker-pro-1.onrender.com/api  │
+│                           │                                 │
+│                           ▼                                 │
+│                    PostgreSQL (Render)                      │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-После деплоя в **Shell** Render:
-
-```bash
-node scripts/add-admin.js
-```
-
-Админ: `alibi.maksat@narxoz.kz` / `123456`
-
-Проверка: https://calorie-tracker-pro.onrender.com/api/health
-
----
-
-## 2. Vercel (фронтенд)
-
-**Root Directory:** `Front end`
-
-### Переменные (Vercel → Settings → Environment Variables)
-
-| Имя | Value | Environments |
-|-----|--------|----------------|
-| `VITE_API_URL` | `https://calorie-tracker-pro.onrender.com/api` | Production, Preview, Development |
-
-Пересоберите проект после изменения env (**Deployments → Redeploy**).
-
----
-
-## 3. Локальная разработка (та же БД, что на Render)
-
-### Вариант A — только фронт (проще)
-
-`Front end/.env.development`:
-
-```env
-VITE_API_URL=https://calorie-tracker-pro.onrender.com/api
-```
+## Быстрый старт — Docker (всё вместе)
 
 ```powershell
-cd "Front end"
-npm install
-npm run dev
-```
-
-Откройте http://localhost:5173 — данные с облачной БД.
-
-### Вариант B — локальный бэкенд + облачная БД
-
-`Backend/.env` (скопируйте с Render):
-
-```env
-PORT=3003
-NODE_ENV=development
-DATABASE_URL=<External Database URL из Render>
-DATABASE_SSL=true
-JWT_SECRET=<тот же, что на Render>
-FRONTEND_URL=http://localhost:5173
-```
-
-`Front end/.env.development`:
-
-```env
-VITE_API_URL=http://localhost:3003/api
-```
-
-```powershell
-cd Backend
-npm install
-npm run dev
-
-cd "Front end"
-npm run dev
-```
-
-**Важно:** `JWT_SECRET` и `DATABASE_URL` должны совпадать с Render, иначе вход и данные «разъедутся».
-
-### Вариант C — полностью локально (Docker)
-
-Только для офлайн; **не** общая с продом БД:
-
-```powershell
-cd Backend
-npm run docker:local
+cd "C:\Users\dcchh\OneDrive\Desktop\Diplomka"
+copy .env.example .env
+npm run docker:up
 npm run docker:add-admin
 ```
 
----
+| Сервис | Контейнер | URL |
+|--------|-----------|-----|
+| БД | `diplomka-db` | `localhost:5433` |
+| API | `diplomka-backend` | http://localhost:3003/api |
+| Сайт | `diplomka-frontend` | http://localhost:5174 |
 
-## 4. Частые ошибки
-
-| Симптом | Причина | Решение |
-|---------|---------|---------|
-| CORS в браузере | Старый бэкенд / нет FRONTEND_URL | Обновить Render, любой `*.vercel.app` уже разрешён в коде |
-| «Неверный пароль» на проде, локально ок | Разные БД | В `.env` указать Render `DATABASE_URL` или фронт на Render API |
-| 401 после входа | Разный `JWT_SECRET` | Один секрет на Render и в локальном Backend |
-| Старый API `food-backend-...` | Устаревший `VITE_API_URL` | Заменить на `calorie-tracker-pro.onrender.com` |
-| Пустые картинки на Render | Диск эфемерный | Загрузки пропадают после рестарта — для диплома нормально |
-| `Exited with status 1` после Deploy | Старый Docker-кэш или нет `DATABASE_URL` | **Clear build cache** + redeploy; в логах должно быть `[boot] ... render-v4` |
-| В логах нет `[boot] render-v4` | Деплой старого образа | `git push` + Render → **Clear build cache & deploy** |
-| `Exited with status 1` (~20 сек) | Старая версия: падение до старта HTTP | Обновите код и сбросьте кэш сборки |
-| Health `database: false` | БД ещё подключается или URL неверный | Логи: `[db] connecting to...`; проверить Internal Database URL |
-
----
-
-## 5. Проверка «всё одно целое»
+Админ: `alibi.maksat@narxoz.kz` / `123456`
 
 ```powershell
-Invoke-RestMethod https://calorie-tracker-pro.onrender.com/api/health
+npm run docker:down      # остановить
+npm run docker:reset     # остановить + удалить БД
+npm run docker:logs      # логи
 ```
 
-В браузере на Vercel: F12 → Network → запросы идут на `calorie-tracker-pro.onrender.com`, не на `localhost`.
+## Одна БД: Docker + Render + Vercel
+
+1. Render: PostgreSQL **Connect** → Web Service `calorie-tracker-pro-1`.
+2. В корневой `.env`:
+
+```env
+JWT_SECRET=<тот же, что на Render>
+RENDER_DATABASE_URL=<Internal Database URL из Render>
+```
+
+3. Запуск:
+
+```powershell
+npm run docker:cloud
+npm run docker:add-admin
+```
+
+Локальный Docker использует **облачную** PostgreSQL — те же пользователи, что на Vercel.
+
+## Render (бэкенд)
+
+URL: https://calorie-tracker-pro-1.onrender.com
+
+| Переменная | Значение |
+|------------|----------|
+| `DATABASE_URL` | из PostgreSQL (Connect) |
+| `DATABASE_SSL` | `true` |
+| `JWT_SECRET` | как в `.env` |
+| `NODE_ENV` | `production` |
+| `FRONTEND_URL` | Vercel URLs + `http://localhost:5174` |
+
+Shell: `node scripts/add-admin.js`
+
+## Vercel (фронт)
+
+**Root Directory:** `Front end`
+
+| Переменная | Value |
+|------------|--------|
+| `VITE_API_URL` | `https://calorie-tracker-pro-1.onrender.com/api` |
+
+Redeploy после изменений.
+
+## Проверка
+
+```powershell
+npm run health
+Invoke-RestMethod https://calorie-tracker-pro-1.onrender.com/api/health
+```
+
+`database: true` — БД подключена.
