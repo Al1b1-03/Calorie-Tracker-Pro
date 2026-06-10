@@ -1,7 +1,25 @@
 /**
- * HTTP-клиент API. Базовый URL — только VITE_API_URL (см. .env / Vercel).
+ * HTTP-клиент API.
+ * Dev: /api → Vite proxy (localhost:3003).
+ * Prod: всегда Render (абсолютный URL), иначе Vercel отдаёт index.html → 405.
  */
-const API_BASE = String(import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
+const RENDER_API = 'https://calorie-tracker-pro-1.onrender.com/api';
+
+function resolveApiBase() {
+  if (import.meta.env.DEV) {
+    return '/api';
+  }
+
+  const fromEnv = String(import.meta.env.VITE_API_URL || '').trim();
+  if (fromEnv && fromEnv !== '/api' && fromEnv.startsWith('http')) {
+    const trimmed = fromEnv.replace(/\/$/, '');
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+  }
+
+  return RENDER_API;
+}
+
+const API_BASE = resolveApiBase();
 
 export function getApiOrigin() {
   return API_BASE.replace(/\/api\/?$/, '') || '';
