@@ -129,6 +129,9 @@
     border: none;
     box-shadow: none;
     padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
 }
