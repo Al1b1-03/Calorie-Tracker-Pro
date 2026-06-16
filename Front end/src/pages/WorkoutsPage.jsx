@@ -13,9 +13,10 @@ import PageHero from '../components/ui/PageHero';
 import EmptyState from '../components/ui/EmptyState';
 import { SkeletonCardList } from '../components/ui/Skeleton';
 import { useBodyClass } from '../hooks/useBodyClass';
+import { getWorkoutDifficultyLevel } from '../utils/workoutDifficulty';
 import './WorkoutsPage.css';
 
-const WorkoutIcon = ({ id = 'workout-g' }) => (
+export const WorkoutIcon = ({ id = 'workout-g' }) => (
   <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="64" height="64" rx="12" fill={`url(#workout-gradient-${id})`} />
     <path
@@ -58,13 +59,7 @@ export default function WorkoutsPage() {
       .filter(Boolean);
   };
 
-  const getDifficultyLevel = (difficulty) => {
-    const raw = (difficulty || '').toString().trim().toLowerCase();
-    const d = raw.replace(/ё/g, 'е'); // нормализуем «лёгкая» -> «легкая»
-    if (/легк|easy/i.test(d)) return 'easy'; // Лёгкая
-    if (/высок|сложн|hard|тяжел/i.test(d)) return 'hard'; // Высокая / Сложная
-    return 'medium';
-  };
+  const getDifficultyLevel = getWorkoutDifficultyLevel;
 
   const getWorkoutImageSrc = (workout) => {
     const raw = workout?.imageUrl || workout?.image;

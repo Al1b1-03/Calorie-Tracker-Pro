@@ -170,13 +170,6 @@
   border-radius: var(--radius-md);
   font-weight: 600;
   cursor: pointer;
-  border: none;
-}
-
-.profile-form__logout {
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
-  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
 }
 
 @media (max-width: 768px) {

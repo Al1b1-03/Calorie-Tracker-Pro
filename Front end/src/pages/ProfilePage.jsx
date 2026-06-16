@@ -340,7 +340,7 @@ export default function ProfilePage() {
             <button type="submit" className="profile-form__submit ui-btn ui-btn--primary" disabled={loading}>
               {loading ? t('profile.saving') : t('profile.save')}
             </button>
-            <button type="button" className="profile-form__logout ui-btn ui-btn--danger" onClick={handleLogout}>
+            <button type="button" className="profile-form__logout ui-btn ui-btn--danger-soft" onClick={handleLogout}>
               {t('profile.logout')}
             </button>
           </div>

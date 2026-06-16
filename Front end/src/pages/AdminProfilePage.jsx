@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../api/auth';
 import { useLanguage } from '../i18n/LanguageContext';
+import './ProfilePage.css';
 import './AdminProfilePage.css';
 
 export default function AdminProfilePage() {
@@ -157,13 +158,17 @@ export default function AdminProfilePage() {
             />
           </div>
 
-          <div className="admin-profile-form__actions">
-            <button type="submit" className="admin-profile-form__submit" disabled={loading}>
+          <div className="profile-form__actions">
+            <button
+              type="submit"
+              className="profile-form__submit ui-btn ui-btn--primary"
+              disabled={loading}
+            >
               {loading ? tr.updating : tr.update}
             </button>
             <button
               type="button"
-              className="admin-profile-form__logout"
+              className="profile-form__logout ui-btn ui-btn--danger-soft"
               onClick={handleLogout}
             >
               {tr.logout}

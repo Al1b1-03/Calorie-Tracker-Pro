@@ -4,10 +4,17 @@
  * ЗА ЧТО ОТВЕЧАЕТ: CRUD тренировок.
  */
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { workoutsApi } from '../api/workouts';
 import { getApiOrigin } from '../api/products';
 import { useLanguage } from '../i18n/LanguageContext';
+import { translateWorkoutText } from '../i18n/dynamicContent';
+import PageHero from '../components/ui/PageHero';
+import { SkeletonCardList } from '../components/ui/Skeleton';
 import { useBodyClass } from '../hooks/useBodyClass';
+import { getWorkoutDifficultyLevel } from '../utils/workoutDifficulty';
+import { WorkoutIcon } from './WorkoutsPage';
+import './WorkoutsPage.css';
 import './AdminWorkoutsPage.css';
 
 const INITIAL_FORM = {
@@ -54,6 +61,8 @@ export default function AdminWorkoutsPage() {
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [imageFile, setImageFile] = useState(null);
   const apiOrigin = getApiOrigin();
+
+  const getDifficultyLevel = getWorkoutDifficultyLevel;
 
   const getWorkoutImageSrc = (workout) => {
     const raw = workout?.imageUrl || workout?.image;
@@ -244,59 +253,67 @@ export default function AdminWorkoutsPage() {
 
   if (loading) {
     return (
-      <div className="admin-workouts">
-        <h1 className="admin-workouts__title">{tr.title}</h1>
-        <p className="admin-workouts__loading">{tr.loading}</p>
+      <div className="page workouts-page admin-workouts">
+        <PageHero eyebrow="Admin" title={tr.title} />
+        <SkeletonCardList count={8} />
       </div>
     );
   }
 
   return (
-    <div className="admin-workouts">
-      <div className="admin-workouts__header">
-        <h1 className="admin-workouts__title">{tr.title}</h1>
+    <div className="page workouts-page admin-workouts">
+      <div className="admin-workouts__top">
+        <PageHero eyebrow="Admin" title={tr.title} />
         <button type="button" className="admin-workouts__add-btn" onClick={openAdd}>
           {tr.addWorkout}
         </button>
       </div>
       {error && <p className="admin-workouts__error">{error}</p>}
 
-      <div className="admin-workouts__grid">
+      <div className="workouts-grid">
         {workouts.map((workout) => (
-          <div key={workout.id} className="admin-workouts__card">
-            <div className="admin-workouts__card-image">
+          <div key={workout.id} className="workout-card">
+            <div className="workout-card__image-wrap">
               {getWorkoutImageSrc(workout) ? (
                 <img
                   src={getWorkoutImageSrc(workout)}
-                  alt={workout.title}
-                  className="admin-workouts__card-img"
+                  alt={translateWorkoutText(lang, workout, 'title')}
+                  className="workout-card__image"
+                  loading="lazy"
+                  decoding="async"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                   }}
                 />
-              ) : null}
-            </div>
-            <div className="admin-workouts__card-body">
-              <h3 className="admin-workouts__card-name">{workout.title}</h3>
-              {workout.shortDesc && (
-                <p className="admin-workouts__card-meta">
-                  {workout.shortDesc}
-                </p>
+              ) : (
+                <div className="workout-card__placeholder">
+                  <WorkoutIcon id={workout.id} />
+                </div>
               )}
-              <div className="admin-workouts__card-tags">
-                <span className="admin-workouts__tag admin-workouts__tag--difficulty">
-                  {workout.difficulty}
-                </span>
+            </div>
+            <div className="workout-card__content">
+              <h3 className="workout-card__name">{translateWorkoutText(lang, workout, 'title')}</h3>
+              {workout.shortDesc && (
+                <p className="workout-card__desc">{translateWorkoutText(lang, workout, 'shortDesc')}</p>
+              )}
+              <div className="workout-card__meta">
+                {workout.difficulty && (
+                  <span
+                    className={`workout-card__meta-item workout-card__meta-item--difficulty workout-card__meta-item--${getDifficultyLevel(workout.difficulty)}`}
+                  >
+                    {translateWorkoutText(lang, workout, 'difficulty')}
+                  </span>
+                )}
                 {getTargetMusclesChips(workout).map((muscle) => (
-                  <span key={muscle} className="admin-workouts__tag admin-workouts__tag--muscle">
+                  <span key={muscle} className="workout-card__meta-item">
                     {muscle}
                   </span>
                 ))}
               </div>
-              <div className="admin-workouts__card-actions">
+              <div className="catalog-card__actions">
                 <button
                   type="button"
-                  className="admin-workouts__btn admin-workouts__btn--edit"
+                  className="catalog-card__btn catalog-card__btn--edit"
                   onClick={() => openEdit(workout)}
                   disabled={actionLoading !== null}
                 >
@@ -304,7 +321,7 @@ export default function AdminWorkoutsPage() {
                 </button>
                 <button
                   type="button"
-                  className="admin-workouts__btn admin-workouts__btn--delete"
+                  className="catalog-card__btn catalog-card__btn--delete"
                   onClick={() => handleDelete(workout)}
                   disabled={actionLoading === workout.id}
                 >
@@ -316,7 +333,8 @@ export default function AdminWorkoutsPage() {
         ))}
       </div>
 
-      {showForm && (
+      {showForm &&
+        createPortal(
         <div className="admin-workouts__modal" onClick={closeForm}>
           <div className="admin-workouts__modal-content" onClick={(e) => e.stopPropagation()}>
             <button
@@ -524,7 +542,8 @@ export default function AdminWorkoutsPage() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

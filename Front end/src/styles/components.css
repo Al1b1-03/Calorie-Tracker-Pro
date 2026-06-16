@@ -152,6 +152,53 @@
   background: #b91c1c;
 }
 
+/* Мягкий красный — «Выйти», «Удалить» (как в профиле) */
+.ui-btn--danger-soft,
+.profile-form__logout.ui-btn,
+.catalog-card__btn.catalog-card__btn--delete,
+.users-card__btn.users-card__btn--delete,
+.orders-card__delete,
+.admin-workouts__btn--delete,
+.admin-management__btn.admin-management__btn--danger,
+.support-card__btn.support-card__btn--danger,
+.main-page__entry-delete,
+.cart-item__remove {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+  box-shadow: none;
+}
+
+.ui-btn--danger-soft:hover:not(:disabled),
+.profile-form__logout.ui-btn:hover:not(:disabled),
+.catalog-card__btn.catalog-card__btn--delete:hover:not(:disabled),
+.users-card__btn.users-card__btn--delete:hover:not(:disabled),
+.orders-card__delete:hover:not(:disabled),
+.admin-workouts__btn--delete:hover:not(:disabled),
+.admin-management__btn.admin-management__btn--danger:hover:not(:disabled),
+.support-card__btn.support-card__btn--danger:hover:not(:disabled),
+.main-page__entry-delete:hover:not(:disabled),
+.cart-item__remove:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger-bg) 55%, var(--color-danger) 45%);
+  color: var(--color-danger);
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+
+.ui-btn--danger-soft:disabled,
+.catalog-card__btn.catalog-card__btn--delete:disabled,
+.users-card__btn.users-card__btn--delete:disabled,
+.orders-card__delete:disabled,
+.admin-workouts__btn--delete:disabled,
+.admin-management__btn.admin-management__btn--danger:disabled,
+.support-card__btn.support-card__btn--danger:disabled,
+.main-page__entry-delete:disabled,
+.cart-item__remove:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .ui-btn--icon {
   width: var(--touch-target);
   height: var(--touch-target);
@@ -346,6 +393,87 @@
   .ui-stat-grid {
     grid-template-columns: repeat(4, 1fr);
   }
+}
+
+/* Admin actions on shop/workout catalog cards */
+.catalog-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.shop-card__content .catalog-card__actions,
+.workout-card__content .catalog-card__actions {
+  margin-top: 12px;
+}
+
+.catalog-card__btn {
+  flex: 1 1 0;
+  min-height: var(--touch-target);
+  padding: 0 12px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.catalog-card__btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.catalog-card__btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.catalog-card__btn--edit {
+  background: var(--gradient-brand);
+}
+
+.catalog-card__btn--edit:hover:not(:disabled) {
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+.catalog-card__btn.catalog-card__btn--delete {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+  box-shadow: none;
+}
+
+.catalog-card__btn.catalog-card__btn--delete:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger-bg) 55%, var(--color-danger) 45%);
+  color: var(--color-danger);
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+
+/* Workout difficulty chips — user + admin */
+.workout-card__meta-item--difficulty.workout-card__meta-item--easy {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border-color: transparent;
+}
+
+.workout-card__meta-item--difficulty.workout-card__meta-item--medium {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--color-warning);
+  border-color: transparent;
+}
+
+.workout-card__meta-item--difficulty.workout-card__meta-item--hard {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-color: transparent;
+}
+
+[data-theme='dark'] .workout-card__meta-item--difficulty.workout-card__meta-item--medium {
+  background: rgba(217, 119, 6, 0.2);
+  color: #fbbf24;
 }
 
 @media (max-width: 767px) {

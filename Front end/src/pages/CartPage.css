@@ -133,19 +133,14 @@
 .cart-item__remove {
   width: 40px;
   height: 40px;
-  border: none;
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
   font-size: 1.25rem;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background var(--transition-fast);
   flex-shrink: 0;
-}
-
-.cart-item__remove:hover:not(:disabled) {
-  background: var(--color-danger);
-  color: #fff;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .cart-item__remove:disabled {

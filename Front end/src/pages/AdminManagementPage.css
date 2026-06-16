@@ -115,22 +115,23 @@
 .admin-management__btn {
   min-height: var(--touch-target);
   padding: 10px 16px;
-  border: none;
   border-radius: var(--radius-md);
   font-size: var(--text-sm);
   font-weight: 600;
   cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .admin-management__btn--primary {
   background: var(--gradient-brand);
   color: #fff;
+  border: none;
 }
 
-.admin-management__btn--danger {
-  background: rgba(220, 38, 38, 0.12);
-  color: var(--color-danger);
-}
+/* admin-management__btn--danger → ui-btn--danger-soft */
 
 .admin-management__btn:disabled {
   opacity: 0.6;

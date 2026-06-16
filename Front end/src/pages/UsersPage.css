@@ -105,12 +105,10 @@
   font-family: Montserrat, Inter, system-ui, sans-serif;
   font-size: 16px;
   font-weight: 500;
-  color: #fff;
-  border: none;
   border-radius: 12px;
   padding: 10px 20px;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
 }
 
 .users-card__btn:hover:not(:disabled) {
@@ -125,12 +123,10 @@
 .users-card__btn--ban {
   background: #ea580c;
   color: #fff;
+  border: none;
 }
 
-.users-card__btn--delete {
-  background: #dc2626;
-  color: #fff;
-}
+/* users-card__btn--delete → ui-btn--danger-soft в components.css */
 
 @media (max-width: 768px) {
   .users-page__title {

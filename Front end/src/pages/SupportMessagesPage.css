@@ -85,24 +85,24 @@
 }
 
 .support-card__btn {
-  border: none;
   border-radius: 10px;
   padding: 8px 12px;
-  color: #fff;
   cursor: pointer;
+  font-weight: 600;
+  font-size: var(--text-sm);
 }
 
 .support-card__btn--primary {
   background: #7b00ff;
+  color: #fff;
+  border: none;
 }
 
-.support-card__btn--danger {
-  background: #dc2626;
+.support-card__btn--primary:hover:not(:disabled) {
+  opacity: 0.92;
 }
 
-.support-card__btn--danger:hover {
-  background: #b91c1c;
-}
+/* support-card__btn--danger → ui-btn--danger-soft */
 
 .support-card__btn:disabled {
   opacity: 0.6;

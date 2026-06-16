@@ -201,17 +201,12 @@
   min-width: var(--touch-target);
   min-height: var(--touch-target);
   padding: 0;
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
-  border: 1px solid rgba(220, 38, 38, 0.2);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background var(--transition-fast), color var(--transition-fast);
-}
-
-.main-page__entry-delete:hover {
-  background: var(--color-danger);
-  color: #fff;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .main-page__insights {

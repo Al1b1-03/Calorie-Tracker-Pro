@@ -13,6 +13,8 @@
 
 /* ─── Grids: force single column on phones ─── */
 @media (max-width: 767.98px) {
+  .shop-grid,
+  .workouts-grid,
   .products-grid,
   .users-grid,
   .admin-workouts__grid,
@@ -21,6 +23,8 @@
     grid-template-columns: 1fr !important;
   }
 
+  .shop-grid,
+  .workouts-grid,
   .products-grid,
   .users-grid,
   .admin-workouts__grid {
@@ -45,7 +49,7 @@
   .users-card__btn,
   .support-card__btn,
   .ai-assistant__close,
-  .products-card__btn,
+  .catalog-card__btn,
   .admin-workouts__btn {
     min-height: var(--touch-target);
     min-width: var(--touch-target);
@@ -198,7 +202,7 @@
 @media (max-width: 767.98px) {
   .users-page__title,
   .orders-page__title,
-  .products-page__catalog-title {
+  .shop-section__title {
     font-size: var(--text-xl) !important;
   }
 }
@@ -312,6 +316,8 @@
 
 /* ─── Tablet (768px): comfortable spacing, 2-col grids where useful ─── */
 @media (min-width: 768px) and (max-width: 1023.98px) {
+  .shop-grid,
+  .workouts-grid,
   .products-grid,
   .users-grid,
   .admin-workouts__grid {

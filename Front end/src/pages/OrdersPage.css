@@ -178,25 +178,16 @@
 
 .orders-card__delete {
   font-family: Inter, system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  color: #c62828;
-  background: none;
-  border: 1px solid rgba(198, 40, 40, 0.4);
+  font-size: var(--text-sm);
+  font-weight: 600;
   cursor: pointer;
-  padding: 6px 14px;
-  border-radius: 8px;
-  transition: background 0.2s, color 0.2s;
-}
-
-.orders-card__delete:hover:not(:disabled) {
-  background: #ffebee;
-  color: #b71c1c;
-}
-
-.orders-card__delete:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  padding: 0 16px;
+  min-height: var(--touch-target);
+  border-radius: var(--radius-md);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .orders-card__items {

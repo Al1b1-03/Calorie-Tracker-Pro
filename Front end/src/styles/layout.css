@@ -8,8 +8,7 @@
 
 .app .main-page__grid,
 .app .workouts-grid,
-.app .shop-grid,
-.app .products-grid {
+.app .shop-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-section);
@@ -58,8 +57,7 @@
   }
 
   .app .workouts-grid,
-  .app .shop-grid,
-  .app .products-grid {
+  .app .shop-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -92,17 +90,12 @@
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   }
 
-  .app .admin-workouts__grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  }
-
   .app .workouts-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 
-  .app .shop-grid,
-  .app .products-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .app .shop-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .app .about-page__hero {
@@ -112,8 +105,7 @@
 }
 
 @media (min-width: 1440px) {
-  .app .shop-grid,
-  .app .products-grid {
+  .app .shop-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
@@ -126,6 +118,7 @@
   .app .profile-form__logout,
   .app .products-page__add-btn,
   .app .shop-card__add-btn,
+  .app .catalog-card__btn,
   .app .cart-page__pay-btn,
   .app .workout-card__btn {
     width: 100%;

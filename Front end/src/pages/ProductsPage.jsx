@@ -12,6 +12,7 @@ import PageHero from '../components/ui/PageHero';
 import { SkeletonCardList } from '../components/ui/Skeleton';
 import { useBodyClass } from '../hooks/useBodyClass';
 import './ProductsPage.css';
+import './ProductsShopPage.css';
 
 const CATEGORY_OPTIONS = [
   { value: 'ration', label: 'Рацион питания' },
@@ -256,7 +257,7 @@ export default function ProductsPage() {
 
   if (loading) {
     return (
-      <div className="products-page page">
+      <div className="products-page shop-page page">
         <div className="products-page__top">
           <PageHero eyebrow="Admin" title={adminTitle} subtitle={adminSubtitle} />
         </div>
@@ -266,7 +267,7 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="products-page page">
+    <div className="products-page shop-page page">
       <div className="products-page__top">
         <PageHero eyebrow="Admin" title={adminTitle} subtitle={adminSubtitle} />
         <button
@@ -474,57 +475,56 @@ export default function ProductsPage() {
       )}
 
       {byCategory.map((section) => (
-        <section key={section.key} className="products-page__catalog">
-          <h2 className="products-page__catalog-title">{section.label}</h2>
-          <div className="products-grid">
+        <section key={section.key} className="shop-section">
+          <h2 className="shop-section__title">{section.label}</h2>
+          <div className="shop-grid">
             {section.items.length === 0 ? (
-              <p className="products-page__catalog-empty">{tr.emptyCatalog}</p>
+              <p className="shop-section__empty">{tr.emptyCatalog}</p>
             ) : (
               section.items.map((product) => (
-                <div
-                  key={product.id}
-                  className="products-card"
-                >
-                  <div className="products-card__main">
-                    <div className="products-card__image-wrap">
-                      <img
-                        src={getProductImageSrc(product) || FALLBACK_IMAGE}
-                        alt={translateProductText(lang, product, 'name')}
-                        className="products-card__image"
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = FALLBACK_IMAGE;
-                        }}
-                      />
-                    </div>
-                    <h3 className="products-card__name">{translateProductText(lang, product, 'name')}</h3>
-                    <p className="products-card__price">{product.price ?? 0} ₸</p>
+                <div key={product.id} className="shop-card">
+                  <div className="shop-card__image-wrap">
+                    <img
+                      src={getProductImageSrc(product) || FALLBACK_IMAGE}
+                      alt={translateProductText(lang, product, 'name')}
+                      className="shop-card__image"
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = FALLBACK_IMAGE;
+                      }}
+                    />
+                  </div>
+                  <div className="shop-card__content">
+                    <h3 className="shop-card__name">{translateProductText(lang, product, 'name')}</h3>
+                    <p className="shop-card__price">{product.price ?? 0} ₸</p>
                     {Number(product.calories) ? (
-                      <p className="products-card__calories">{product.calories} Ккал</p>
+                      <p className="shop-card__calories">{product.calories} Ккал</p>
                     ) : null}
                     {(Number(product.protein) || Number(product.fat) || Number(product.carbs)) ? (
-                      <p className="products-card__macros">
+                      <p className="shop-card__macros">
                         Б: {product.protein ?? 0} · Ж: {product.fat ?? 0} · У: {product.carbs ?? 0}
                       </p>
                     ) : null}
-                  </div>
-                  <div className="products-card__actions">
-                    <button
-                      type="button"
-                      className="products-card__btn products-card__btn--edit"
-                      onClick={() => openEditForm(product)}
-                      disabled={actionLoading === product.id}
-                    >
-                      {tr.edit}
-                    </button>
-                    <button
-                      type="button"
-                      className="products-card__btn products-card__btn--delete"
-                      onClick={() => handleDelete(product)}
-                      disabled={actionLoading === product.id}
-                    >
-                      {actionLoading === product.id ? '...' : tr.del}
-                    </button>
+                    <div className="catalog-card__actions">
+                      <button
+                        type="button"
+                        className="catalog-card__btn catalog-card__btn--edit"
+                        onClick={() => openEditForm(product)}
+                        disabled={actionLoading === product.id}
+                      >
+                        {tr.edit}
+                      </button>
+                      <button
+                        type="button"
+                        className="catalog-card__btn catalog-card__btn--delete"
+                        onClick={() => handleDelete(product)}
+                        disabled={actionLoading === product.id}
+                      >
+                        {actionLoading === product.id ? '...' : tr.del}
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))
