@@ -133,51 +133,6 @@
 
 }
 
-/* ─── Cart: keep designed wrap layout (override layout.css column rule) ─── */
-@media (max-width: 767.98px) {
-  .cart-item {
-    display: grid;
-    grid-template-columns: 64px 1fr auto;
-    grid-template-areas:
-      'image info remove'
-      'image qty subtotal';
-    align-items: center;
-    gap: 8px 10px;
-    padding: 12px;
-  }
-
-  .cart-item__image {
-    grid-area: image;
-    width: 64px;
-    height: 64px;
-  }
-
-  .cart-item__info {
-    grid-area: info;
-    min-width: 0;
-  }
-
-  .cart-item__name {
-    word-break: break-word;
-  }
-
-  .cart-item__remove {
-    grid-area: remove;
-    align-self: start;
-    justify-self: end;
-  }
-
-  .cart-item__quantity {
-    grid-area: qty;
-  }
-
-  .cart-item__subtotal {
-    grid-area: subtotal;
-    text-align: right;
-    min-width: 0;
-  }
-}
-
 /* ─── Orders: table → cards on mobile ─── */
 .orders-items-cards {
   display: none;
