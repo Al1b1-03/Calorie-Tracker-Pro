@@ -15,17 +15,18 @@ export const getImageUrl = (imageUrl, imageFullUrl = null) => {
   const trimmed = path.trim();
   if (trimmed.startsWith('http')) return trimmed;
   let normalized = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
-  // Путь к файлу на бэкенде (загруженные фото товаров)
+  if (normalized.startsWith('/images/') || (normalized.startsWith('/') && !normalized.includes('uploads'))) {
+    return normalized;
+  }
   if (normalized.includes('uploads/products/') || normalized.includes('uploads\\products\\')) {
     const filename = normalized.split(/[/\\]/).pop() || '';
     if (filename) return `${origin}/api/uploads/products/${filename}`;
   }
   if (/\.(png|jpe?g|gif|webp)$/i.test(normalized)) {
     const filename = normalized.replace(/^\/+/, '');
-    if (filename.includes('uploads/') || filename.includes('products')) {
+    if (filename.startsWith('uploads/products/') || filename.startsWith('uploads\\products\\')) {
       return `${origin}/api/uploads/products/${filename.split(/[/\\]/).pop() || filename}`;
     }
-    // Путь от корня фронта (public), например /vitamin-b1-fallback.png — оставляем как есть
     return normalized;
   }
   return normalized.startsWith('/') ? normalized : `${origin}${normalized}`;

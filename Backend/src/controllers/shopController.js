@@ -12,19 +12,20 @@ function fullImageUrl(imageUrl) {
   if (!imageUrl || typeof imageUrl !== 'string') return null;
   const normalized = imageUrl.replace(/\\/g, '/').trim();
   if (!normalized) return null;
-  // Внешние URL возвращаем как есть
   if (/^https?:\/\//i.test(normalized)) return normalized;
+  if (normalized.startsWith('/') && !normalized.includes('uploads')) return normalized;
   const filename = path.basename(normalized);
   if (!filename) return null;
   return `/api/uploads/products/${filename}`;
 }
 
-/** Любой локальный путь (/uploads/products/xxx, uploads/products/xxx или только имя файла) → /api/uploads/products/имя_файла. */
+/** Внешний URL, статика фронта (/images/...) или загрузка бэкенда (/uploads/products/...). */
 function displayImageUrl(imageUrl) {
   if (!imageUrl || typeof imageUrl !== 'string') return null;
   const normalized = imageUrl.replace(/\\/g, '/').trim();
   if (!normalized) return null;
   if (/^https?:\/\//i.test(normalized)) return normalized;
+  if (normalized.startsWith('/') && !normalized.includes('uploads')) return normalized;
   return fullImageUrl(normalized);
 }
 
@@ -71,7 +72,7 @@ export const listProductsPublic = async (req, res) => {
         carbs: Number(row.carbs),
         price: Number(row.price ?? 0),
         imageUrl: displayImageUrl(row.image_url),
-        imageFullUrl: fullImageUrl(row.image_url),
+        imageFullUrl: displayImageUrl(row.image_url),
         imageDataUrl: imageDataUrl || undefined,
         category: normCategory(row.category),
         sortOrder: row.sort_order != null ? Number(row.sort_order) : 0,
